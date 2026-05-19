@@ -676,6 +676,8 @@ Rules · architecture · process · history.
 
 Security in the Code-Crash Framework is not a single checklist. It is a linked documentation model:
 
+*Sketch: the security workflow shows how `ARCHITECTURE_DESIGN.md`, `SECURITY.md`, sub-artifacts, skill gates and the learning loop reinforce each other. ([Excalidraw source](docs/security-workflow.en.excalidraw))*
+
 | Layer | Artifact | Role |
 |---|---|---|
 | Lead architecture contract | `ARCHITECTURE_DESIGN.md` | Names Security as a quality dimension, records security/privacy boundaries, and links to the security contract. |
@@ -3213,6 +3215,8 @@ Regeln · Architektur · Prozess · Historie.
 ### Security-Dokumentationsmodell
 
 Security im Code-Crash Framework ist keine einzelne Checkliste, sondern ein verknuepftes Dokumentationsmodell:
+
+*Sketch: Der Security-Workflow zeigt, wie `ARCHITECTURE_DESIGN.md`, `SECURITY.md`, Unterartefakte, Skill-Gates und Learning Loop ineinandergreifen. ([Excalidraw-Quelle](docs/security-workflow.excalidraw))*
 
 | Ebene | Artefakt | Rolle |
 |---|---|---|
