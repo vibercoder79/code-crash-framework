@@ -109,12 +109,12 @@ The bootstrap is structured as **4 interview blocks (A-D)** followed by **execut
 |-------|--------------|---------------|
 | **Phase 0** — Briefing | Skill announces the 4-block flow | Confirmation "ready" |
 | **Block A** — Project core | Stack + name + runtime + backlog adapter + prefix + version + add-ons (Privacy, Cost, Signal, Compliance) | 9 questions |
-| **Block B** — Existing infrastructure | GitHub/Obsidian/Backlog/Env — integrates into existing state | 5 questions |
-| **Block C** — Doc architecture | 3-layer proposal (Story-Specs, Component-Docs, Architecture-Guidelines) + Hub-auto-linking | Confirmation / customization |
+| **Block B** — Existing infrastructure | GitHub, project documentation SSoT, backlog, env, runtime handover — integrates into existing state | 6 questions |
+| **Block C** — Doc architecture | Project Hub, Developer Onboarding, Governance, Target Architecture, Backlog reference + 3-layer proposal | Confirmation / customization |
 | **Phase 4** — Base structure | Directories, Git, core files, `.claudeignore`, hooks, component skeletons | `.env` confirmation |
 | **Phase 5** — Skills via git-clone | Skills copied from `claudecodeskills` repo (no VPS symlinks) | Skill tier |
 | **Block D** — Optional components | Self-Healing / DocSync / Automation-Daemon / Learning-Loop / SonarQube / Research / Visualize / Monitoring — all at the end | targeted questions + provider postflight |
-| **Phase 7** — Registry + finalization | Obsidian PMO hub + project index + final commit | None |
+| **Phase 7** — Registry + finalization | selected documentation SSoT, optional Obsidian PMO hub + project index, final commit | None |
 
 ---
 

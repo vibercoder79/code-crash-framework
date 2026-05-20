@@ -30,17 +30,23 @@ GitHub repo for this project?
 - `b`: No `git remote add`. Hint: "Remote later via `git remote add origin <url>`".
 - `c`: No remote setup.
 
-### B.3 — Obsidian vault
+### B.3 — Documentation SSoT
 
 ```
-Do you have an Obsidian vault for project documentation?
-  a) Yes + absolute path
-  b) No, only document in repo (no SecondBrain layer)
+Where should project documentation be maintained authoritatively?
+  a) Obsidian vault (best practice) + absolute vault path
+  b) Repo docs under docs/project/
+  c) External DMS (SharePoint/Confluence/Notion/Drive/...) + entry point
+  d) Undecided (repo fallback + TODO + postflight WARN)
 ```
 
 **Skill behavior:**
-- `a`: Validate vault path. Check if `02 Projekte/` folder exists (if not → create with confirmation). Check project folder `02 Projekte/{PROJECT_NAME}/` (if exists → merge-mode question).
-- `b`: Only repo docs, no Obsidian integration. Block C is switched to "all docs in repo".
+- `a`: Validate vault path. Check if `02 Projekte/` folder exists (if not → create with confirmation). Check project folder `02 Projekte/{PROJECT_NAME}/` (if exists → merge-mode question). Create `docs/project/README.md` as repo reference file.
+- `b`: Use `docs/project/` as documentation SSoT. Block C is switched to "all project docs in repo".
+- `c`: Document the external DMS as documentation SSoT. Locally create only `docs/project/README.md` with DMS name, entry point, link convention, and standard artifact list. Do not duplicate DMS content.
+- `d`: Create repo fallback `docs/project/`, mark `TODO: finalize documentation SSoT`, postflight `WARN`.
+
+Contract details: `project-documentation-ssot.en.md`.
 
 ### B.4 — Backlog system
 
@@ -103,6 +109,14 @@ EXISTING_INFRA:
   obsidian_vault: /Users/tobi/Obsidian/MyVault
   obsidian_project_path: "02 Projekte/MyProject"
   obsidian_project_existed: false
+  documentation_ssot:
+    mode: "obsidian"  # obsidian | repo-docs | external-dms | undecided
+    primary_path: /Users/tobi/Obsidian/MyVault/02 Projekte/MyProject
+    repo_reference_path: docs/project/README.md
+    external_system: null
+    external_entrypoint: null
+    fallback_active: false
+    postflight_status: "PASS"
   backlog_tool: "linear"
   backlog_team: "MYP"
   backlog_labels_creatable: true  # Linear API available

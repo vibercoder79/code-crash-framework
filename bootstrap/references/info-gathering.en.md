@@ -68,19 +68,22 @@ See separate doc: `existing-infra-check.en.md`. Short form:
 |----------|----------|---------|
 | `PROJECT_PATH` * | Project directory | exists + path / create new |
 | `GITHUB_REPO` | GitHub repo | URL / later / none |
-| `OBSIDIAN_VAULT` | Obsidian vault for docs | path / no |
+| `DOCUMENTATION_SSOT` * | Documentation SSoT | Obsidian vault / repo docs / external DMS / undecided |
+| `OBSIDIAN_VAULT` | Obsidian vault for docs | path / no (only if SSoT is Obsidian) |
+| `EXTERNAL_DMS` | External DMS for docs | system + entry point (only if SSoT is external DMS) |
 | `BACKLOG_TOOL` | Backlog system | Linear + slug / M365 / GitHub Issues / none |
 | `HAS_ENV` | `.env` exists? | yes / no |
 
 ## Block C — Doc architecture
 
-See `doc-architecture-proposal.en.md`. The skill presents a 3-layer proposal:
+See `project-documentation-ssot.en.md` and `doc-architecture-proposal.en.md`. The skill first fixes the documentation SSoT contract from Block B and then presents a 3-layer proposal:
 - Story specs (repo)
+- Project docs (Obsidian, `docs/project/`, external DMS with local reference file, or repo fallback)
 - Component docs (Obsidian or `docs/components/`)
-- Architecture guidelines (Obsidian or `docs/`)
+- Architecture guidelines (Obsidian, `docs/`, or external DMS with repo reference)
 - Hub: `ARCHITECTURE_DESIGN.md` in repo with §9-references auto-link
 
-Operator confirms or adjusts.
+Obsidian is the best practice, but not required. With an external DMS, content is not duplicated; `docs/project/README.md` only documents entry point, link convention, and standard artifacts. With `undecided`, bootstrap creates the repo fallback `docs/project/`, marks a TODO, and sets postflight to `WARN`. Operator confirms or adjusts.
 
 ## Block D — Optional components
 

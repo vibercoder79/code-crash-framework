@@ -30,17 +30,23 @@ GitHub-Repo fuer das Projekt?
 - `b`: Kein `git remote add`. Hinweis: "Remote spaeter via `git remote add origin <url>`".
 - `c`: Kein Remote-Setup.
 
-### B.3 — Obsidian-Vault
+### B.3 — Documentation-SSoT
 
 ```
-Hast du einen Obsidian-Vault fuer Projekt-Dokumentation?
-  a) Ja + absoluter Pfad
-  b) Nein, nur im Repo dokumentieren (keine SecondBrain-Schicht)
+Wo soll Projekt-Dokumentation verbindlich gepflegt werden?
+  a) Obsidian Vault (Best-Practice) + absoluter Vault-Pfad
+  b) Repo docs unter docs/project/
+  c) Externes DMS (SharePoint/Confluence/Notion/Drive/...) + Einstiegspunkt
+  d) Noch unentschieden (Repo-Fallback + TODO + Postflight WARN)
 ```
 
 **Skill-Verhalten:**
-- `a`: Vault-Pfad validieren. Pruefen ob `02 Projekte/` Ordner existiert (wenn nicht → anlegen mit Bestaetigung). Projekt-Ordner `02 Projekte/{PROJECT_NAME}/` pruefen (wenn existiert → Merge-Modus-Frage).
-- `b`: Nur Repo-Doku, keine Obsidian-Integration. Block C wird auf "alle Docs im Repo" umgestellt.
+- `a`: Vault-Pfad validieren. Pruefen ob `02 Projekte/` Ordner existiert (wenn nicht → anlegen mit Bestaetigung). Projekt-Ordner `02 Projekte/{PROJECT_NAME}/` pruefen (wenn existiert → Merge-Modus-Frage). `docs/project/README.md` als Repo-Verweisdatei anlegen.
+- `b`: `docs/project/` als Documentation-SSoT nutzen. Block C wird auf "alle Projekt-Docs im Repo" umgestellt.
+- `c`: Externes DMS als Documentation-SSoT dokumentieren. Lokal nur `docs/project/README.md` mit DMS-Name, Einstiegspunkt, Link-Konvention und Standard-Artefaktliste anlegen. Keine DMS-Inhalte duplizieren.
+- `d`: Repo-Fallback `docs/project/` anlegen, `TODO: Documentation-SSoT final entscheiden` markieren, Postflight `WARN`.
+
+Details zum Contract: `project-documentation-ssot.md`.
 
 ### B.4 — Backlog-System
 
@@ -103,6 +109,14 @@ EXISTING_INFRA:
   obsidian_vault: /Users/tobi/Obsidian/MyVault
   obsidian_project_path: "02 Projekte/MyProject"
   obsidian_project_existed: false
+  documentation_ssot:
+    mode: "obsidian"  # obsidian | repo-docs | external-dms | undecided
+    primary_path: /Users/tobi/Obsidian/MyVault/02 Projekte/MyProject
+    repo_reference_path: docs/project/README.md
+    external_system: null
+    external_entrypoint: null
+    fallback_active: false
+    postflight_status: "PASS"
   backlog_tool: "linear"
   backlog_team: "MYP"
   backlog_labels_creatable: true  # Linear-API verfuegbar

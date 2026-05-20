@@ -18,12 +18,14 @@ Derive the change type from the Linear label or the affected area. Then update t
 | **New file** (every `*.md`) | `ARCHITECTURE_DESIGN.md §9 References` (enforced by `orphan-check.sh` if installed), `INDEX.md` |
 | **Hook / governance hook change** | `GOVERNANCE.md`, `.claude/settings.json` + `settings.local.json`, `hooks-setup.md` if skill-level |
 | **Phase transition** (e.g. Phase 0 → 1) | PMO hub (Obsidian), `ARCHITECTURE_DESIGN.md §6 phase mapping`, all component docs (phase status), `CHANGELOG.md` |
+| **Onboarding/handoff-relevant change** | `DEVELOPER_ONBOARDING.md`, project hub / PMO hub, `ARCHITECTURE_DESIGN.md` if target architecture is affected, `SECURITY.md` if security rules are affected |
 
 **Always:**
 - Update the affected component's component doc (stack, phase status, linked stories, open questions)
 - Bump `lib/config.js` VERSION if DOC_FILES were updated
 - Bring all DOC_FILES to new VERSION (enforced by `doc-version-sync.sh`)
 - `CHANGELOG.md` entry with version + description
+- At the end of every implementation, explicitly document: `DEVELOPER_ONBOARDING.md` updated or "no update needed"; project hub / PMO hub updated or "no update needed"
 
 ---
 
@@ -47,6 +49,7 @@ For privacy-relevant changes: update the Privacy section of `SECURITY.md`.
 - [ ] Error handling present where needed (API calls, file I/O, user input)
 - [ ] Logging implemented on errors and important state changes
 - [ ] Existing patterns respected (don't introduce new conventions unless necessary)
+- [ ] Tool-switch/handoff context still correct? (Claude Code -> Codex/Cursor/GitHub Copilot/Google Antigravity/classic development team)
 
 ---
 

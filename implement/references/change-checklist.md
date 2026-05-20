@@ -18,12 +18,14 @@ Aus dem Linear-Label oder dem geaenderten Bereich den Aenderungs-Typ ableiten. D
 | **Neue Datei** (jede `*.md`) | `ARCHITECTURE_DESIGN.md §9 Referenzen` (erzwungen durch `orphan-check.sh` wenn installiert), `INDEX.md` |
 | **Hook / Governance-Hook-Aenderung** | `GOVERNANCE.md`, `.claude/settings.json` + `settings.local.json`, `hooks-setup.md` falls Skill-Teil |
 | **Phase-Uebergang** (z.B. Phase 0 → 1) | PMO-Hub (Obsidian), `ARCHITECTURE_DESIGN.md §6 Phasen-Mapping`, alle Component-Docs (Phase-Status), `CHANGELOG.md` |
+| **Onboarding-/Handoff-relevante Aenderung** | `DEVELOPER_ONBOARDING.md`, Project Hub / PMO-Hub, `ARCHITECTURE_DESIGN.md` falls Zielarchitektur betroffen, `SECURITY.md` falls Security-Regeln betroffen |
 
 **Immer gilt:**
 - Component-Doc der betroffenen Komponente aktualisieren (Stack, Phase-Status, Verbundene Stories, offene Fragen)
 - `lib/config.js` VERSION bumpen wenn DOC_FILES aktualisiert wurden
 - Alle DOC_FILES auf neue VERSION bringen (erzwungen durch `doc-version-sync.sh`)
 - `CHANGELOG.md` Eintrag mit Version + Beschreibung
+- Am Ende jeder Implementation explizit dokumentieren: `DEVELOPER_ONBOARDING.md` aktualisiert oder "keine Aktualisierung noetig"; Project Hub / PMO-Hub aktualisiert oder "keine Aktualisierung noetig"
 
 ---
 
@@ -47,6 +49,7 @@ Bei Privacy-relevanten Aenderungen: `SECURITY.md` Privacy-Sektion aktualisieren.
 - [ ] Error-Handling vorhanden wo noetig (API-Calls, File-I/O, User-Input)
 - [ ] Logging implementiert bei Fehlern und wichtigen State-Aenderungen
 - [ ] Bestehende Patterns eingehalten (nicht neue Konventionen einfuehren wenn nicht noetig)
+- [ ] Toolwechsel-/Handoff-Kontext weiterhin korrekt? (Claude Code -> Codex/Cursor/GitHub Copilot/Google Antigravity/klassisches Dev-Team)
 
 ---
 

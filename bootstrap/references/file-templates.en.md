@@ -42,6 +42,10 @@ const DOC_FILES = {
     path: 'DEVELOPMENT_PROCESS.md',
     versionPattern: /\*\*Version:\*\*\s*([\d.]+)/
   },
+  'DEVELOPER_ONBOARDING.md': {
+    path: 'DEVELOPER_ONBOARDING.md',
+    versionPattern: /\*\*Version:\*\*\s*([\d.]+)/
+  },
   'GOVERNANCE.md': {
     path: 'GOVERNANCE.md',
     versionPattern: /\*\*Version:\*\*\s*([\d.]+)/
@@ -383,9 +387,22 @@ estimation_basis: |
 - `[file]` — [what it currently does]
 
 ## Tasks
+- T0 Pre-Flight:
+  - [ ] Runtime instructions read (`AGENTS.md`, `CLAUDE.md`, or project-specific entry point)
+  - [ ] Runtime details clarified: setup, tests, lint/SAST, local services, deployment notes
+  - [ ] `DEVELOPER_ONBOARDING.md` or linked Developer Onboarding read
+  - [ ] Project Hub / PMO Hub read
+  - [ ] `ARCHITECTURE_DESIGN.md` and/or Target Architecture read
+  - [ ] `SECURITY.md` read
+  - [ ] Backlog matrix / story order read
+  - [ ] Story blockers checked in the backlog tool or local backlog
+  - [ ] Blockers named or documented as "none"
+  - [ ] Local story spec, spec pack, or uplift matrix read
+  - [ ] Local story spec or spec pack cross-checked against issue/backlog
 - T1: [task] (files: [...]) — verify by [concrete check]
 - T2: [task] (files: [...]) — verify by [concrete check]
 - T3: [task] (files: [...]) — verify by [concrete check]
+- T_last: Documentation + config (files: [`ARCHITECTURE_DESIGN.md`, `INDEX.md`, `DEVELOPER_ONBOARDING.md`, project hub, `CHANGELOG.md`, config SSoT]) — verify by documenting whether onboarding or hub updates were required
 
 ## Agent-Pattern
 **Chosen pattern:** [Solo | Subagent | Parallel-Subagents | Agent-Team]

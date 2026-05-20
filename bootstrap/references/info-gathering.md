@@ -68,19 +68,22 @@ Siehe separates Dokument: `existing-infra-check.md`. Kurzfassung:
 |----------|-------|----------|
 | `PROJECT_PATH` * | Projekt-Verzeichnis | existiert + Pfad / neu anlegen |
 | `GITHUB_REPO` | GitHub-Repo | URL / spaeter / keines |
-| `OBSIDIAN_VAULT` | Obsidian-Vault fuer Doku | Pfad / nein |
+| `DOCUMENTATION_SSOT` * | Documentation-SSoT | Obsidian Vault / Repo docs / externes DMS / unentschieden |
+| `OBSIDIAN_VAULT` | Obsidian-Vault fuer Doku | Pfad / nein (nur wenn SSoT Obsidian) |
+| `EXTERNAL_DMS` | Externes DMS fuer Doku | System + Einstiegspunkt (nur wenn SSoT externes DMS) |
 | `BACKLOG_TOOL` | Backlog-System | Linear + Slug / M365 / GitHub Issues / keines |
 | `HAS_ENV` | .env existiert? | ja / nein |
 
 ## Block C — Doku-Architektur
 
-Siehe `doc-architecture-proposal.md`. Der Skill praesentiert einen 3-Schichten-Vorschlag:
+Siehe `project-documentation-ssot.md` und `doc-architecture-proposal.md`. Der Skill legt zuerst den Documentation-SSoT-Contract aus Block B fest und praesentiert danach einen 3-Schichten-Vorschlag:
 - Story-Specs (Repo)
+- Project-Docs (Obsidian, `docs/project/`, externes DMS mit lokaler Verweisdatei oder Repo-Fallback)
 - Component-Docs (Obsidian oder `docs/components/`)
-- Architektur-Vorgaben (Obsidian oder `docs/`)
+- Architektur-Vorgaben (Obsidian, `docs/` oder externes DMS mit Repo-Verweis)
 - Hub: `ARCHITECTURE_DESIGN.md` im Repo mit §9-Referenzen-Auto-Verlinkung
 
-Operator bestaetigt oder passt an.
+Obsidian ist die Best-Practice, aber nicht Voraussetzung. Bei externem DMS werden keine Inhalte dupliziert; `docs/project/README.md` dokumentiert nur Einstiegspunkt, Link-Konvention und Standard-Artefakte. Bei `undecided` erzeugt der Bootstrap den Repo-Fallback `docs/project/`, markiert ein TODO und setzt Postflight auf `WARN`. Operator bestaetigt oder passt an.
 
 ## Block D — Optional-Komponenten
 

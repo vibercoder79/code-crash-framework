@@ -28,7 +28,8 @@ Systematically implement a user story from the Linear backlog. 8 steps + governa
 3. Extract paths from `paths.*` as needed (e.g. `paths.reports_local`, `paths.lessons_l3`, `paths.specs`, `paths.architecture_design`, `paths.conventions`).
 4. Before any tool invocation, check `tools_available.<tool>` (e.g. `tools_available.eslint`, `tools_available.semgrep`, `tools_available.tests`). If `false` or missing, the skill skips the call and notes it in the output.
 5. Read `SECURITY.md` if present. If missing, warn and add a TODO to the result table for every security-relevant change.
-6. Missing-file fallback: assume the schema defaults (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`) and add a note to the output: "Note: `.claude/environment.json` is missing — defaults active. Recommendation: re-run `/bootstrap` or create the file manually."
+6. Read `DEVELOPER_ONBOARDING.md` if present. If missing, warn: "Note: Developer Onboarding is missing — the project is harder to hand over to unfamiliar teams or other tools."
+7. Missing-file fallback: assume the schema defaults (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`, `DEVELOPER_ONBOARDING.md`) and add a note to the output: "Note: `.claude/environment.json` is missing — defaults active. Recommendation: re-run `/bootstrap` or create the file manually."
 
 ### Step 0b: Token-window pre-flight (BOO-40, soft)
 
@@ -152,6 +153,7 @@ Sub-agent briefings must include: role, task, allowed paths, forbidden paths and
 ### Step 3: Build context
 
 - Read CLAUDE.md (system context)
+- **Read `DEVELOPER_ONBOARDING.md`** if present — handover context for unfamiliar development teams and tool switches (Claude Code -> Codex/Cursor/GitHub Copilot/Google Antigravity/classic development team). Include runtime notes, SSoTs, implementation starting point and maintenance obligation in the plan.
 - **Read `ARCHITECTURE_DESIGN.md`** — the lead document: ADRs, quality attributes, guiding principles. Check whether the story violates existing ADRs or quality attributes (e.g. ADR-6: zero external dependencies, ADR-5: kill-switch first). References all further architecture docs.
 - Identify affected code files (from issue description + your own analysis)
 - Check related completed issues (what's already built?)
@@ -553,6 +555,7 @@ Step 2 — syntax & runtime:
 - For LOW-risk stories: "Security: no new attack vectors" is enough
 - Cross-check against `## Security Validation` from the story: every promised validation needs evidence or a documented exception.
 - Check whether `SECURITY.md`, `API_INVENTORY.md`, `.semgrep.yml`, `.claude/sensitive-paths.json`, `.codex/hooks.json`, `ARCHITECTURE_DESIGN.md`, or `CONVENTIONS.md` must be updated by the change.
+- **Check onboarding/hub impact:** check whether `DEVELOPER_ONBOARDING.md` or the project hub / PMO hub must be updated. Triggers: new runtime/tool notes, changed target architecture, new required reading, changed backlog/issue workflow, new security rules, new implementation starting points, or handover-relevant assumptions. Document the result: updated or "no update needed".
 
 **6f) Result**
 - **PASS:** continue to step 7 (Backlog Record / adapter → Done, change log, push)
@@ -642,6 +645,7 @@ After completion ALWAYS print a summary table:
 | Code change | ✅ detail |
 | Tests/verification | ✅ detail |
 | Documentation | ✅ detail |
+| Onboarding / project hub | ✅ updated or no update needed |
 | Git push | ✅ commit hash |
 | Backlog Record / adapter → Done | ✅ |
 | Obsidian change log | ✅ |
