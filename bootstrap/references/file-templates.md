@@ -38,6 +38,10 @@ const DOC_FILES = {
     path: 'DEVELOPMENT_PROCESS.md',
     versionPattern: /\*\*Version:\*\*\s*([\d.]+)/
   },
+  'DEVELOPER_ONBOARDING.md': {
+    path: 'DEVELOPER_ONBOARDING.md',
+    versionPattern: /\*\*Version:\*\*\s*([\d.]+)/
+  },
   'GOVERNANCE.md': {
     path: 'GOVERNANCE.md',
     versionPattern: /\*\*Version:\*\*\s*([\d.]+)/
@@ -227,6 +231,7 @@ Das Framework ist zuerst eine sequenzielle Engineering-Pipeline mit Quality-Gate
 | `CONVENTIONS.md` | Projekt-Konventionen: Governance-Modus, Execution-Isolation, aktive Gates |
 | `SYSTEM_ARCHITECTURE.md` | Komponenten, Flows, Konfiguration |
 | `ARCHITECTURE_DESIGN.md` | ADRs, Quality Attributes, Referenzen |
+| `DEVELOPER_ONBOARDING.md` | Einstieg, SSoTs, Runtime-/Tool-Hinweise, Pflegepflicht fuer neue Entwicklerteams |
 | `INDEX.md` | Alle Docs kategorisiert |
 | `COMPONENT_INVENTORY.md` | Alle Komponenten mit Status |
 | `GOVERNANCE.md` | Entwicklungs-Prozess, Governance-Regeln |
@@ -397,6 +402,17 @@ estimation_basis: |
 > Letzter Task = IMMER Dokumentation + Config.
 
 ### T0: Prozesskatalog-Check
+- [ ] Runtime-Anweisungen gelesen (`AGENTS.md`, `CLAUDE.md` oder projektspezifischer Einstieg)
+- [ ] Runtime-Details geklaert: Setup, Test, Lint/SAST, lokale Services, Deploy-Hinweise
+- [ ] `DEVELOPER_ONBOARDING.md` oder verlinktes Developer Onboarding gelesen
+- [ ] Project Hub / PMO Hub gelesen
+- [ ] `ARCHITECTURE_DESIGN.md` und/oder Zielarchitektur gelesen
+- [ ] `SECURITY.md` gelesen
+- [ ] Backlog-Matrix / Story-Reihenfolge gelesen
+- [ ] Story-Blocker im Backlog-Tool oder lokalen Backlog geprueft
+- [ ] Blocker benannt oder als "keine" dokumentiert
+- [ ] Lokale Story-Spec, Spec-Pack oder Uplift-Matrix gelesen
+- [ ] Lokale Story-Spec oder Spec-Pack gegen Issue/Backlog abgeglichen
 - [ ] Gibt es einen aehnlichen Prozess der erweitert werden kann? (Referenz)
 - [ ] Welche bestehenden Dateien werden beruehrt?
 
@@ -412,6 +428,8 @@ estimation_basis: |
 - [ ] ARCHITECTURE_DESIGN.md §Referenzen um neue Dateien ergaenzen
 - [ ] INDEX.md um neue Dateien ergaenzen
 - [ ] COMPONENT_INVENTORY.md aktualisieren
+- [ ] DEVELOPER_ONBOARDING.md aktualisieren oder begruenden: keine Aenderung noetig
+- [ ] Project Hub / PMO-Hub aktualisieren oder begruenden: keine Aenderung noetig
 - [ ] CHANGELOG.md Eintrag
 - [ ] config.js VERSION bumpen
 - [ ] Alle DOC_FILES auf neue VERSION setzen

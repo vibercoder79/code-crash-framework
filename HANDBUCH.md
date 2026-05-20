@@ -268,12 +268,12 @@ Claude walks you through four short interview blocks (A–D), then builds everyt
 |------|------|---------|
 | **Phase 0** — Briefing | Announcement | Bootstrap tells you what's coming, you confirm |
 | **Block A** — Project core | Interview (7 questions) | Stack, name, description, path, GitHub URL, backlog tool + prefix, version |
-| **Block B** — Existing infrastructure | Interview (5 questions) | GitHub repo? Obsidian vault? Backlog tool? `.env`? CLAUDE.md? — integrates into what's already there |
-| **Block C** — Doc architecture | Proposal + review | 3-layer proposal (Story-Specs, Component-Docs, Architecture-Guidelines) + `ARCHITECTURE_DESIGN.md` Hub with auto-linking |
+| **Block B** — Existing infrastructure | Interview (6 questions) | GitHub repo? Project documentation SSoT? Backlog tool? `.env`? runtime file? Developer handover? — integrates into what's already there |
+| **Block C** — Doc architecture | Proposal + review | Project Hub, Developer Onboarding, Governance, Target Architecture, Backlog reference + 3-layer proposal |
 | **Phase 4** — Base structure | Automatic (~2 min) | Files, Git init, linting, governance hooks, component skeletons |
 | **Phase 5** — Install skills | Automatic | Skills pulled via `git clone` from `claudecodeskills` (no symlinks) |
 | **Block D** — Optional components | Targeted questions at the end | Self-Healing / DocSync / Automation-Daemon / Learning-Loop / SonarQube / Research / Visualize / Monitoring |
-| **Phase 7** — Finalization | Automatic | SecondBrain integration, global registry entry, final commit |
+| **Phase 7** — Finalization | Automatic | selected documentation SSoT, optional SecondBrain integration, global registry entry, final commit |
 
 > **Why blocks instead of a 14-question batch?** Single questions are easier to answer, and each block builds on the previous one — your doc-architecture proposal in Block C already knows your stack (A.1) and existing infra (B).
 
@@ -326,19 +326,31 @@ Bootstrap installs 8 **standard** architecture dimensions (Reliability, Data Int
 
 Pick any combination — default is "none selected". Every active dimension becomes a section in `ARCHITECTURE_DESIGN.md §3 Quality Attributes` that `/ideation`, `/architecture-review` and `/sprint-review` will check.
 
-### Block B — Existing infrastructure (5 questions)
+### Block B — Existing infrastructure (6 questions)
 
 Bootstrap integrates into what's already there instead of overwriting. It asks:
 
 1. **GitHub repo already exists?** (URL or "create new")
-2. **Obsidian vault in use?** (path or "no")
+2. **Where is the project documentation SSoT?** Obsidian Vault, repo `docs/project/`, external DMS such as Notion/Confluence/SharePoint, or undecided fallback
 3. **Backlog tool configured?** (Linear project / GitHub issues / none)
 4. **`.env` already present?** (keep keys or create template)
-5. **`CLAUDE.md` already present?** (merge or overwrite)
+5. **Runtime instructions already present?** (`AGENTS.md`, `CLAUDE.md`, merge or create)
+6. **Developer Onboarding?** create it as standard artifact or link an existing one
 
 ### Block C — Doc architecture
 
-Based on your stack (A.1) and existing infra (Block B), bootstrap presents a **3-layer doc architecture**:
+Before the layer proposal, Bootstrap operationalizes the selected documentation SSoT. Obsidian is the best-practice path for linked project knowledge, but the framework is not Obsidian-only:
+
+| Option | Bootstrap creates or links |
+|---|---|
+| Obsidian Vault | project folder with Project/PMO Hub, Developer Onboarding, Governance, Target Architecture, Backlog, Decisions, Meetings, Research, Assets, Archive |
+| Repo docs | `docs/project/` with the same standard artifacts |
+| External DMS | local `docs/project/DOCUMENTATION_SSOT.md` pointer to Notion, Confluence, SharePoint or another system |
+| Undecided | repo fallback under `docs/project/` plus TODO and postflight `WARN` |
+
+Developer Onboarding is the handover artifact. Its purpose is that an unfamiliar team or another coding runtime can take over the project: Claude Code -> Codex, Cursor, GitHub Copilot, Google Antigravity, or a classic development team.
+
+Based on your stack (A.1) and existing infra (Block B), bootstrap then presents a **3-layer doc architecture**:
 
 | Layer | Lives in | Purpose |
 |-------|----------|---------|
@@ -400,14 +412,15 @@ A **portable feedback loop** that turns completed sprints into anti-pattern warn
 
 ### Phase 7: Finalization
 
-- **SecondBrain integration** — if Block B.2 confirmed an Obsidian vault, bootstrap creates a PMO hub under `02 Projekte/<ProjectName>/`
+- **Documentation SSoT finalization** — bootstrap creates or links Project Hub, Developer Onboarding, Governance, Target Architecture, Backlog, Decisions, Meetings, Research, Assets and Archive in the selected SSoT
+- **SecondBrain integration** — if Block B selected Obsidian, bootstrap creates a PMO hub under `02 Projekte/<ProjectName>/`
 - **Global registry** — `~/.claude/MEMORY.md` gets a pointer to the new project
 - **Final commit** — everything in one commit with a summary table
 
 ```
 ✓ Block A: Project core + stack + add-ons
-✓ Block B: Existing infrastructure integrated
-✓ Block C: Doc architecture (3 layers + Hub)
+✓ Block B: Existing infrastructure + documentation SSoT integrated
+✓ Block C: Project Hub + Developer Onboarding + doc architecture
 ✓ Phase 4: Base structure (files, Git, linting, hooks, labels)
 ✓ Phase 5: Skills installed ({count})
 ✓ Block D: Optional components ({status})
@@ -2742,12 +2755,12 @@ Claude führt dich jetzt durch vier kurze Interview-Blöcke (A–D) und baut dan
 |---------|-----|--------|
 | **Phase 0** — Briefing | Ankündigung | Bootstrap erklärt was kommt, du bestätigst |
 | **Block A** — Projekt-Kern | Interview (7 Fragen) | Stack, Name, Beschreibung, Pfad, GitHub-URL, Backlog-Tool + Prefix, Version |
-| **Block B** — Bestehende Infrastruktur | Interview (5 Fragen) | GitHub-Repo? Obsidian-Vault? Backlog-Tool? `.env`? CLAUDE.md? — integriert in das was schon da ist |
-| **Block C** — Doku-Architektur | Vorschlag + Review | 3-Schichten-Vorschlag (Story-Specs, Component-Docs, Architektur-Vorgaben) + `ARCHITECTURE_DESIGN.md` Hub mit Auto-Verlinkung |
+| **Block B** — Bestehende Infrastruktur | Interview (6 Fragen) | GitHub-Repo? Projekt-Dokumentations-SSoT? Backlog-Tool? `.env`? Runtime-Datei? Developer-Uebergabe? — integriert in das was schon da ist |
+| **Block C** — Doku-Architektur | Vorschlag + Review | Project Hub, Developer Onboarding, Governance, Zielarchitektur, Backlog-Verweis + 3-Schichten-Vorschlag |
 | **Phase 4** — Grundstruktur | Automatisch (~2 min) | Dateien, Git init, Linting, Governance-Hooks, Component-Skelette |
 | **Phase 5** — Skills installieren | Automatisch | Skills via `git clone` aus `claudecodeskills` (keine Symlinks) |
 | **Block D** — Optional-Komponenten | 4× Ja/Nein am Ende | Self-Healing / DocSync / Automation-Daemon / Learning-Loop (L1/L2/L3) |
-| **Phase 7** — Finalisierung | Automatisch | SecondBrain-Integration, globaler Registry-Eintrag, finaler Commit |
+| **Phase 7** — Finalisierung | Automatisch | gewaehlte Dokumentations-SSoT, optionale SecondBrain-Integration, globaler Registry-Eintrag, finaler Commit |
 
 > **Warum Blöcke statt 14-Fragen-Batch?** Einzelne Fragen sind einfacher zu beantworten und jeder Block baut auf dem vorherigen auf — der Doku-Architektur-Vorschlag in Block C kennt deinen Stack (A.1) und deine bestehende Infra (B) schon.
 
@@ -2800,19 +2813,31 @@ Bootstrap installiert 8 **Standard**-Architektur-Dimensionen (Reliability, Data 
 
 Beliebige Kombination möglich — Default ist "keine". Jede aktive Dimension wird eine Sektion in `ARCHITECTURE_DESIGN.md §3 Quality Attributes`, die `/ideation`, `/architecture-review` und `/sprint-review` pruefen.
 
-### Block B — Bestehende Infrastruktur (5 Fragen)
+### Block B — Bestehende Infrastruktur (6 Fragen)
 
 Bootstrap integriert in das was schon da ist, statt zu überschreiben. Die Fragen:
 
 1. **GitHub-Repo existiert schon?** (URL oder "neu anlegen")
-2. **Obsidian-Vault im Einsatz?** (Pfad oder "nein")
+2. **Wo liegt die Projekt-Dokumentations-SSoT?** Obsidian Vault, Repo `docs/project/`, externes DMS wie Notion/Confluence/SharePoint oder vorlaeufiger Fallback
 3. **Backlog-Tool eingerichtet?** (Linear-Projekt / GitHub-Issues / none)
 4. **`.env` schon da?** (Keys behalten oder Template anlegen)
-5. **`CLAUDE.md` schon da?** (mergen oder überschreiben)
+5. **Runtime-Anweisungen schon da?** (`AGENTS.md`, `CLAUDE.md`, mergen oder erzeugen)
+6. **Developer Onboarding?** als Standard-Artefakt erzeugen oder vorhandenes Onboarding verlinken
 
 ### Block C — Doku-Architektur
 
-Basierend auf Stack (A.1) und bestehender Infra (Block B) schlägt Bootstrap eine **3-Schichten-Doku-Architektur** vor:
+Vor dem Schichtenmodell operationalisiert Bootstrap die gewaehlte Dokumentations-SSoT. Obsidian ist der Best-Practice-Pfad fuer vernetztes Projektwissen, aber das Framework ist nicht Obsidian-only:
+
+| Option | Bootstrap erzeugt oder verlinkt |
+|---|---|
+| Obsidian Vault | Projektordner mit Project/PMO Hub, Developer Onboarding, Governance, Zielarchitektur, Backlog, Decisions, Meetings, Research, Assets, Archive |
+| Repo docs | `docs/project/` mit denselben Standard-Artefakten |
+| Externes DMS | lokaler Pointer `docs/project/DOCUMENTATION_SSOT.md` auf Notion, Confluence, SharePoint oder ein anderes System |
+| Noch unklar | Repo-Fallback unter `docs/project/` plus TODO und Postflight `WARN` |
+
+Developer Onboarding ist das Uebergabe-Artefakt. Ziel ist, dass ein fremdes Team oder eine andere Coding-Runtime das Projekt uebernehmen kann: Claude Code -> Codex, Cursor, GitHub Copilot, Google Antigravity oder ein klassisches Entwicklungsteam.
+
+Basierend auf Stack (A.1) und bestehender Infra (Block B) schlägt Bootstrap dann eine **3-Schichten-Doku-Architektur** vor:
 
 | Schicht | Lebt in | Zweck |
 |---------|---------|-------|
@@ -2876,14 +2901,15 @@ Eine **portable Feedback-Schleife**, die abgeschlossene Sprints in Anti-Pattern-
 
 ### Phase 7: Finalisierung
 
-- **SecondBrain-Integration** — wenn Block B.2 einen Obsidian-Vault bestätigt hat, legt Bootstrap einen PMO-Hub unter `02 Projekte/<ProjektName>/` an
+- **Dokumentations-SSoT finalisieren** — Bootstrap erzeugt oder verlinkt Project Hub, Developer Onboarding, Governance, Zielarchitektur, Backlog, Decisions, Meetings, Research, Assets und Archive in der gewaehlten SSoT
+- **SecondBrain-Integration** — wenn Block B Obsidian gewaehlt hat, legt Bootstrap einen PMO-Hub unter `02 Projekte/<ProjektName>/` an
 - **Globale Registry** — `~/.claude/MEMORY.md` bekommt einen Pointer auf das neue Projekt
 - **Finaler Commit** — alles in einem Commit mit Zusammenfassungs-Tabelle
 
 ```
 ✓ Block A: Projekt-Kern + Stack + Add-ons
-✓ Block B: Bestehende Infrastruktur integriert
-✓ Block C: Doku-Architektur (3 Schichten + Hub)
+✓ Block B: Bestehende Infrastruktur + Dokumentations-SSoT integriert
+✓ Block C: Project Hub + Developer Onboarding + Doku-Architektur
 ✓ Phase 4: Grundstruktur (Dateien, Git, Linting, Hooks, Labels)
 ✓ Phase 5: Skills installiert ({Anzahl})
 ✓ Block D: Optional-Komponenten ({Status})
@@ -4226,6 +4252,8 @@ Die neuen Konventionen haben jetzt dedizierte OWLIST-Sketches fuer Governance-Mo
 | Validate-Fix-Learn-Schleife | erledigt | `docs/validate-fix-learn.excalidraw` |
 | Provider-Postflight-Matrix | erledigt | `docs/provider-postflight-matrix.excalidraw` |
 | Upgrade-Pfad bestehender Projekte | erledigt | `docs/upgrade-path-existing-projects.excalidraw` |
+| Project-Documentation-SSoT | erledigt | `docs/project-documentation-ssot.excalidraw` |
+| Foreign-Developer-Onboarding-Flow | erledigt | `docs/foreign-developer-onboarding-flow.excalidraw` |
 | Quality-Gate-Layer aktualisieren | offen | Governance-Intensitaet ergaenzen |
 
 ### Provider-Postflight und Upgrade

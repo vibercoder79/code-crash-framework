@@ -299,6 +299,27 @@ Role split:
 - `CLAUDE.md` is the Claude Code entry point and compatibility bridge for existing Claude workflows. It may repeat important rules for Claude, but tool-neutral truth belongs in `CONVENTIONS.md`.
 - `CONVENTIONS.md` is the adapter contract. Skills read it for `runtime_target`, `backlog_adapter`, `governance_mode`, `execution_isolation`, active gates, report paths, and postflight status.
 
+### Project documentation SSoT
+
+Every project declares a project documentation SSoT. Obsidian is the recommended best-practice path when a team has a vault, but the framework must also work with repo docs, external DMS tools and a temporary fallback.
+
+```yaml
+documentation_ssot:
+  type: obsidian | repo-docs | external-dms | undecided
+  path_or_url: null
+  project_path: docs/project
+  project_hub: docs/project/PMO_HUB.md
+  developer_onboarding: docs/project/DEVELOPER_ONBOARDING.md
+  status: OK | WARN | SKIP | FAIL
+```
+
+Rules:
+- `obsidian` creates or links the project folder in the vault and treats the Project Hub/PMO Hub there as the navigation center.
+- `repo-docs` creates `docs/project/` and stores the authoritative Project Hub, Developer Onboarding, Governance, Target Architecture and Backlog reference there.
+- `external-dms` creates a local `docs/project/DOCUMENTATION_SSOT.md` pointer so runtime instructions can find the external source even without direct connector access.
+- `undecided` creates the repo fallback under `docs/project/`, adds a TODO to decide the final SSoT and reports postflight as `WARN`.
+- Developer Onboarding is a standard artifact. It is updated whenever architecture, runtime, tech stack, backlog start point, story order, security gates, deployment/CI/monitoring, SSoT paths or local setup/tooling requirements change.
+
 ### Backlog record and adapters
 
 The framework uses a neutral Backlog Record. Linear, GitHub Issues, Jira, Azure DevOps Boards, Microsoft Planner, and `none` are adapters onto that record; none of them is mandatory.
@@ -716,6 +737,27 @@ Rollentrennung:
 - `AGENTS.md` ist der Codex-Einstieg. Die Datei traegt repo-lokale Arbeitsregeln, Sandbox-/Scope-Erwartungen und verweist auf `CONVENTIONS.md`.
 - `CLAUDE.md` ist der Claude-Code-Einstieg und die Kompatibilitaetsbruecke fuer bestehende Claude-Workflows. Sie darf wichtige Regeln fuer Claude wiederholen, aber tool-neutrale Wahrheit gehoert in `CONVENTIONS.md`.
 - `CONVENTIONS.md` ist der Adapter-Vertrag. Skills lesen daraus `runtime_target`, `backlog_adapter`, `governance_mode`, `execution_isolation`, aktive Gates, Report-Pfade und Postflight-Status.
+
+### Projekt-Dokumentations-SSoT
+
+Jedes Projekt deklariert eine Projekt-Dokumentations-SSoT. Obsidian ist der empfohlene Best-Practice-Pfad, wenn ein Team einen Vault nutzt; das Framework muss aber ebenso mit Repo-Doku, externen DMS-Tools und einem temporaeren Fallback funktionieren.
+
+```yaml
+documentation_ssot:
+  type: obsidian | repo-docs | external-dms | undecided
+  path_or_url: null
+  project_path: docs/project
+  project_hub: docs/project/PMO_HUB.md
+  developer_onboarding: docs/project/DEVELOPER_ONBOARDING.md
+  status: OK | WARN | SKIP | FAIL
+```
+
+Regeln:
+- `obsidian` erzeugt oder verlinkt den Projektordner im Vault und behandelt den Project Hub/PMO Hub dort als Navigationszentrale.
+- `repo-docs` erzeugt `docs/project/` und legt verbindlichen Project Hub, Developer Onboarding, Governance, Target Architecture und Backlog-Verweis dort ab.
+- `external-dms` erzeugt einen lokalen Pointer `docs/project/DOCUMENTATION_SSOT.md`, damit Runtime-Anweisungen die externe Wahrheit auch ohne direkten Connector-Zugriff finden.
+- `undecided` erzeugt den Repo-Fallback unter `docs/project/`, legt ein TODO fuer die finale SSoT-Entscheidung an und meldet Postflight als `WARN`.
+- Developer Onboarding ist ein Standard-Artefakt. Es wird aktualisiert, wenn sich Architektur, Runtime, Tech Stack, Backlog-Startpunkt, Story-Reihenfolge, Security-Gates, Deployment/CI/Monitoring, SSoT-Pfade oder lokale Setup-/Tooling-Anforderungen aendern.
 
 ### Backlog-Record und Adapter
 

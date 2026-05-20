@@ -27,7 +27,8 @@ User Story aus dem Linear-Backlog systematisch umsetzen. 8 Schritte + Governance
 3. Bei Bedarf Pfade extrahieren aus `paths.*` (z.B. `paths.reports_local`, `paths.lessons_l3`, `paths.specs`, `paths.architecture_design`, `paths.conventions`).
 4. Bei Tool-Aufruf pruefen: ist Tool in `tools_available.<tool>` aktiv (z.B. `tools_available.eslint`, `tools_available.semgrep`, `tools_available.tests`)? Bei `false` oder fehlendem Eintrag: Skill ueberspringt den Aufruf und gibt einen Hinweis im Output.
 5. Lese `SECURITY.md` falls vorhanden. Bei fehlender Datei Warnung ausgeben und fuer jede Security-relevante Aenderung ein TODO in der Ergebnis-Tabelle notieren.
-6. Fallback bei fehlender Datei: Standard-Pfade aus dem Schema annehmen (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`) und im Output vermerken: "Hinweis: `.claude/environment.json` fehlt — Defaults aktiv. Empfehlung: `/bootstrap` re-rennen oder die Datei manuell anlegen."
+6. Lese `DEVELOPER_ONBOARDING.md` falls vorhanden. Bei fehlender Datei Warnung ausgeben: "Hinweis: Developer Onboarding fehlt — Projekt ist schwerer an fremde Teams oder andere Tools uebergabefaehig."
+7. Fallback bei fehlender Datei: Standard-Pfade aus dem Schema annehmen (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`, `DEVELOPER_ONBOARDING.md`) und im Output vermerken: "Hinweis: `.claude/environment.json` fehlt — Defaults aktiv. Empfehlung: `/bootstrap` re-rennen oder die Datei manuell anlegen."
 
 ### Schritt 0b: Token-Window-Pre-Flight (BOO-40, weich)
 
@@ -198,6 +199,7 @@ Geh zurueck zu /ideation und ergaenze den fehlenden Bestandteil bevor du /implem
 ### Schritt 3: Kontext aufbauen
 
 - CLAUDE.md lesen (Systemkontext)
+- **`DEVELOPER_ONBOARDING.md` lesen** falls vorhanden — Handoff-Kontext fuer fremde Entwicklungsteams und Toolwechsel (Claude Code -> Codex/Cursor/GitHub Copilot/Google Antigravity/klassisches Dev-Team). Runtime-Hinweise, SSoTs, Startpunkt Umsetzung und Pflegepflicht in die Plan-Erstellung einbeziehen.
 - **`ARCHITECTURE_DESIGN.md` lesen** — Lead-Dokument: ADRs, Quality Attributes, Leitprinzipien. Pruefen ob die Story gegen bestehende ADRs oder Quality Attributes verstoesst (z.B. ADR-6: Zero External Dependencies, ADR-5: Kill-Switch First). Verweist auf alle weiteren Architektur-Dokumente.
 - Betroffene Code-Dateien identifizieren (aus Issue-Description + eigene Analyse)
 - Verwandte abgeschlossene Issues pruefen (was wurde schon gebaut?)
@@ -601,6 +603,7 @@ Schritt 2 — Syntax & Laufzeit:
 - Bei LOW-Risk Stories genuegt: "Security: Keine neuen Angriffsvektoren"
 - Abgleich mit `## Security Validation` aus der Story: Jede versprochene Validierung braucht Evidenz oder eine dokumentierte Ausnahme.
 - Pruefen ob `SECURITY.md`, `API_INVENTORY.md`, `.semgrep.yml`, `.claude/sensitive-paths.json`, `.codex/hooks.json`, `ARCHITECTURE_DESIGN.md` oder `CONVENTIONS.md` durch die Aenderung aktualisiert werden muessen.
+- **Onboarding-/Hub-Impact pruefen:** Pruefen ob `DEVELOPER_ONBOARDING.md` oder der Project Hub / PMO-Hub aktualisiert werden muessen. Trigger: neue Runtime-/Tool-Hinweise, geaenderte Zielarchitektur, neue Pflichtlektuere, geaenderte Backlog-/Issue-Arbeitsweise, neue Security-Regeln, neue Startpunkte fuer Umsetzung oder Handoff-relevante Annahmen. Ergebnis dokumentieren: aktualisiert oder "keine Aktualisierung noetig".
 
 **6f) Ergebnis**
 - **PASS:** Weiter zu Schritt 7 (Backlog-Record/Adapter → Done, Change-Log, Push)
@@ -706,6 +709,7 @@ Nach Abschluss IMMER eine Zusammenfassungs-Tabelle ausgeben:
 | Code-Aenderung | ✅ Detail |
 | Tests/Verifikation | ✅ Detail |
 | Dokumentation | ✅ Detail |
+| Onboarding / Project Hub | ✅ aktualisiert oder keine Aktualisierung noetig |
 | Git Push | ✅ Commit-Hash |
 | Linear → Done | ✅ |
 | Obsidian Change-Log | ✅ |

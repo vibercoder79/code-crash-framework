@@ -19,6 +19,7 @@ Sets up a new project with a governance framework. The flow is structured in **4
 References:
 - `references/info-gathering.en.md` — core questions (block A)
 - `references/existing-infra-check.en.md` — existing infrastructure (block B)
+- `references/project-documentation-ssot.en.md` — project documentation SSoT, Project Hub and Developer Onboarding
 - `references/doc-architecture-proposal.en.md` — docs architecture (block C)
 - `references/optional-components.en.md` — self-healing / docsync / daemon / learning loop (block D)
 - `references/learning-loop.en.md` — L1/L2/L3 design
@@ -39,7 +40,7 @@ Inform the operator first, then start:
 Bootstrap v3.0 — I'll walk you through 4 blocks:
 
   Block A — Project core          (9 questions, ~4 min)
-  Block B — Existing infra        (5 questions, ~3 min)
+  Block B — Existing infra        (6 questions, ~4 min)
   Block C — Docs architecture     (proposal + review)
   Block D — Optional components   (targeted yes/no questions at the end)
 
@@ -222,9 +223,11 @@ Do you already have the following? (answer each individually)
    [b] No, create later (no remote for now)
    [c] No GitHub wanted
 
-3. Obsidian vault for docs?
-   [a] Yes + absolute path
-   [b] No, document in the repo only
+3. Project documentation SSoT?
+   [a] Obsidian Vault + absolute vault path
+   [b] Repo docs — project docs under docs/project/
+   [c] External DMS — Notion / Confluence / SharePoint / other + URL/path
+   [d] Undecided — repo fallback docs/project/ + TODO
 
 4. Backlog system / adapter?
    [a] Linear + team slug
@@ -237,6 +240,10 @@ Do you already have the following? (answer each individually)
 5. API keys for the project?
    [a] Already exist in .env
    [b] .env.example is enough, keys later
+
+6. Developer handover?
+   [a] Standard: create Developer Onboarding and keep it current
+   [b] Only link it, it already exists in the documentation SSoT
 ```
 
 **Merge mode:** If a folder/repo/vault exists and already contains files, **before overwriting** ask:
@@ -248,7 +255,7 @@ Warning: {PROJECT_PATH} already contains files.
   [c] Abort
 ```
 
-**Remember:** `EXISTING_INFRA = {...}` for the following phases.
+**Remember:** `EXISTING_INFRA = {...}` and `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` for the following phases.
 
 Phase 2 checkpoint: print a summary.
 
@@ -286,6 +293,14 @@ Visualization:
 ## Phase 3: Block C — Docs architecture proposal
 
 Read `references/doc-architecture-proposal.en.md` for the full rationale.
+Also read `references/project-documentation-ssot.en.md`. Block C must first operationalize the project documentation SSoT selected in Block B:
+
+- `obsidian`: create or confirm the project folder in the vault; Obsidian is the best-practice path, not a framework prerequisite.
+- `repo-docs`: create `docs/project/` as the authoritative project documentation SSoT.
+- `external-dms`: create a local reference file in `docs/project/` and point runtime artifacts to the URL/path.
+- `undecided`: create `docs/project/` as a fallback, add TODO "decide final documentation SSoT" and mark postflight as `WARN`.
+
+Regardless of target location, Project Hub, Developer Onboarding, Project Governance, Target Architecture, Backlog, Decisions, Meetings, Research, Assets and Archive must exist or be clearly linked.
 
 Based on the stack choice (A.1) and infra status (block B), present a concrete docs structure proposal:
 
@@ -1119,22 +1134,40 @@ Phase 6 checkpoint: optional-components status including provider postflight and
 ## Phase 7: Finalization
 
 Read `references/global-registry-update.en.md` for the exact path list.
+Read `references/project-documentation-ssot.en.md` for the SSoT variants. Phase 7 finalizes not only SecondBrain, but always the selected project documentation SSoT.
 
-### 7.1 SecondBrain integration (if B.3 == Obsidian active)
+### 7.1 Finalize project documentation SSoT
+
+- `obsidian`: create or confirm `{OBSIDIAN_VAULT}/<project-area>/{PROJECT_NAME}/`.
+- `repo-docs`: create `{PROJECT_PATH}/docs/project/`.
+- `external-dms`: create `{PROJECT_PATH}/docs/project/DOCUMENTATION_SSOT.md` with URL/path and access notes.
+- `undecided`: create `{PROJECT_PATH}/docs/project/` as fallback and add a TODO for the final SSoT.
+
+Create or link standard artifacts:
+
+- Project Hub / PMO Hub
+- Developer Onboarding
+- Project Governance
+- Target Architecture
+- Backlog overview or backlog reference
+- `Decisions/`, `Meetings/`, `Research/`, `Assets/`, `Archive/`
+
+### 7.2 SecondBrain integration (if Documentation SSoT == Obsidian)
 
 - Create `{OBSIDIAN_VAULT}/02 Projekte/{PROJECT_NAME}/`
 - `{PROJECT_NAME} - PMO HUB.md` with project frontmatter, phase table, backlog link, references block
-- Create `Components/`, `Decisions/`, `Meetings/`, `Research/` folders
+- Create or link `Developer Onboarding.md`, `Projekt-Governance.md`, `Zielarchitektur.md`, `Backlog.md`
+- Create `Components/`, `Decisions/`, `Meetings/`, `Research/`, `Assets/`, `Archive/` folders
 - `Architektur-Vorgaben.md` skeleton (populated by /ideation during research consolidation)
 - Entry in `{OBSIDIAN_VAULT}/00 Kontext/Projekte.md` (project index)
 
-### 7.2 Global registry (~/.claude/)
+### 7.3 Global registry (~/.claude/)
 
 If the operator has a project table in `~/.claude/CLAUDE.md`:
 - Add the project row (name, path, GitHub, Obsidian path, sprint-review frequency)
 - The skill presents the row; the operator confirms the insertion point
 
-### 7.3 Final commit
+### 7.4 Final commit
 
 ```bash
 cd {PROJECT_PATH}
@@ -1143,7 +1176,7 @@ git commit -m "v{VERSION_START} — Complete Governance Bootstrap"
 git push  # only if B.2 == yes
 ```
 
-### 7.4 Closing table
+### 7.5 Closing table
 
 The closing report uses one postflight status model:
 
@@ -1158,7 +1191,7 @@ The closing report uses one postflight status model:
 |-------|------|--------|------|
 | Block A | Project core + stack + runtime + add-ons | OK/WARN/FAIL | name `RUNTIME_TARGET`, `GOVERNANCE_MODE`, `EXECUTION_ISOLATION` |
 | Block B | Existing infrastructure | OK/WARN/FAIL | only reference existing paths/remotes, do not overwrite |
-| Block C | Docs architecture (3 layers + hub) | OK/SKIP/WARN | report the Obsidian layer separately |
+| Block C | Project documentation SSoT + docs architecture | OK/SKIP/WARN | report Obsidian/repo/DMS/fallback separately |
 | Phase 4 | Base structure (files, git, linting, hooks, Backlog Record) | OK/WARN/FAIL | baseline artifacts must not be missing |
 | Phase 5 | Skills installed ({skill_count}) | OK/WARN/FAIL | name target path `.claude/skills` and/or `.codex/skills` |
 | Block D | Optional components | OK/SKIP/WARN/FAIL | list every selected option separately |
@@ -1166,11 +1199,15 @@ The closing report uses one postflight status model:
 
 Mandatory closing checks:
 - Do not write secrets into repo files, chat, `.env.example`, logs, or the closing report.
+- Project documentation SSoT is selected or documented as fallback with TODO.
+- Project Hub, Developer Onboarding, Governance, Target Architecture and Backlog reference exist or are clearly linked.
+- Runtime instructions contain SSoT and Developer Onboarding as required reading.
+- Story-spec template contains the Developer-Onboarding Pre-Flight.
 - Verify external providers separately and do not mark them `OK` just because local files exist: GitHub, Linear, Jira, Azure DevOps, Planner, SonarQube, Grafana, Telegram, Obsidian sync.
 - Print the provider postflight matrix from `references/provider-postflight.en.md`: GitHub, backlog, Research, Visualize/Miro, Monitoring, Obsidian.
 - Document the upgrade principle: existing skills/artifacts remain; migrations add missing baseline and tighten gates, they do not delete project-specific customizations without explicit operator approval.
 
-### 7.4a Upgrade mode for existing projects (BOO-60)
+### 7.5a Upgrade mode for existing projects (BOO-60)
 
 If Bootstrap runs in a project with an existing framework installation, **do not bootstrap from scratch**. Read `references/framework-upgrade.en.md` and ask:
 

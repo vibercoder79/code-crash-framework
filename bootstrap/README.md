@@ -244,14 +244,15 @@ Keine Abhängigkeiten auf andere Dateien. Alle Templates sind in `references/` e
 - Startversion (z.B. `1.0.0`)
 - Architektur-Add-ons: Privacy / Cost / Signal / Compliance (beliebige Kombination, auch keine)
 
-**Block B (Bestehende Infrastruktur, 5 Fragen):**
+**Block B (Bestehende Infrastruktur, 6 Fragen):**
 - GitHub-Repo vorhanden? (URL oder "neu anlegen")
-- Obsidian-Vault im Einsatz? (Pfad oder "nein")
+- Projekt-Dokumentations-SSoT: Obsidian Vault, Repo `docs/project/`, externes DMS oder vorlaeufiger Repo-Fallback
 - Backlog-Tool schon konfiguriert?
 - `.env` schon da?
 - `CLAUDE.md` schon da? (mergen oder überschreiben)
+- Developer Onboarding erzeugen oder vorhandenes Onboarding verlinken
 
-**Block C (Doku-Architektur):** Bootstrap schlägt 3 Schichten + Hub vor — du bestätigst oder passt an.
+**Block C (Doku-Architektur):** Bootstrap schlägt Project Hub, Developer Onboarding, Governance, Zielarchitektur, Backlog-Verweis und die 3-Schichten-Doku vor — du bestätigst oder passt an. Obsidian ist Best Practice, aber keine Voraussetzung.
 
 **Block D (Optional-Komponenten, am Ende):** Self-Healing, DocSync, Automation-Daemon, Learning-Loop L1/L2/L3, SonarQube, Research, Visualize/Miro und Monitoring-Postflight.
 

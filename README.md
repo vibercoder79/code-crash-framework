@@ -16,13 +16,15 @@
 
 `code-crash-framework/` is a container of Claude Code skills that form one coherent development workflow:
 
-- **The orchestrator** (`bootstrap/`) interviews you about a new project and scaffolds the full governance framework: CLAUDE.md, Linear/M365/GitHub integration, Git hooks, skill selection, optional learning-loop.
+- **The orchestrator** (`bootstrap/`) interviews you about a new project and scaffolds the full governance framework: runtime instructions, documentation SSoT, Developer Onboarding, backlog adapter, Git hooks, skill selection, optional learning-loop.
 - **Sub-skills** (`ideation/`, `implement/`, etc.) cover the downstream delivery workflow — from idea to sprint review.
 - **Companion skills** (`../research/`, `../security-architect/`, etc.) are referenced by the governance flow but maintained as stand-alone skills at `claudecodeskills/` top level.
 
 Full setup guide: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
 
 **Tool-neutral specification:** [CONVENTIONS.md](CONVENTIONS.md) — describes the framework conventions without binding to a specific AI tool. Read this first when adopting the framework with Codex, Cursor, or any other tool (see HANDBUCH Appendix K).
+
+**Project handover by design:** every bootstrap now chooses a project documentation SSoT: Obsidian Vault, repo `docs/project/`, external DMS, or an explicit repo fallback. It also creates or links a `Developer Onboarding` artifact so an unfamiliar team or another coding tool can take over the project without relying on old chat history.
 
 ---
 
@@ -99,6 +101,7 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 - **Claude Code** (CLI or IDE extension)
 - **Backlog system** — Linear (recommended) / Microsoft 365 Planner / GitHub Issues / none
 - **GitHub** repository for your project
+- **Project documentation SSoT** — Obsidian Vault, repo `docs/project/`, external DMS, or temporary repo fallback
 - Optional extensions: Grafana Cloud, Miro, Hostinger VPS — skills use what's available
 
 ---
@@ -118,13 +121,15 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 
 `code-crash-framework/` ist ein Container von Claude Code Skills, die zusammen einen kohärenten Entwicklungs-Workflow bilden:
 
-- **Der Orchestrator** (`bootstrap/`) führt das Interview zu einem neuen Projekt und legt das komplette Governance-Framework an: CLAUDE.md, Linear/M365/GitHub-Integration, Git-Hooks, Skill-Auswahl, optionaler Learning-Loop.
+- **Der Orchestrator** (`bootstrap/`) führt das Interview zu einem neuen Projekt und legt das komplette Governance-Framework an: Runtime-Anweisungen, Dokumentations-SSoT, Developer Onboarding, Backlog-Adapter, Git-Hooks, Skill-Auswahl, optionaler Learning-Loop.
 - **Sub-Skills** (`ideation/`, `implement/`, etc.) decken den nachgelagerten Delivery-Workflow ab — von der Idee bis zum Sprint-Review.
 - **Companion-Skills** (`../research/`, `../security-architect/`, etc.) werden vom Governance-Flow referenziert, aber als eigenständige Skills auf Top-Level von `claudecodeskills/` gepflegt.
 
 Komplettes Setup-Handbuch: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
 
 **Tool-neutrale Spezifikation:** [CONVENTIONS.md](CONVENTIONS.md) — beschreibt die Framework-Konventionen ohne Bindung an ein bestimmtes KI-Tool. Lies das zuerst, wenn du das Framework mit Codex, Cursor oder einem anderen Tool aufnimmst (siehe HANDBUCH Anhang K).
+
+**Uebergabe standardmaessig mitgedacht:** Jeder Bootstrap waehlt jetzt eine Projekt-Dokumentations-SSoT: Obsidian Vault, Repo `docs/project/`, externes DMS oder expliziter Repo-Fallback. Zusaetzlich wird ein `Developer Onboarding` erzeugt oder verlinkt, damit ein fremdes Team oder ein anderes Coding-Tool das Projekt ohne alte Chat-Historie uebernehmen kann.
 
 ---
 
@@ -201,6 +206,7 @@ Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem 
 - **Claude Code** (CLI oder IDE-Extension)
 - **Backlog-System** — Linear (empfohlen) / Microsoft 365 Planner / GitHub Issues / keines
 - **GitHub** Repository für dein Projekt
+- **Projekt-Dokumentations-SSoT** — Obsidian Vault, Repo `docs/project/`, externes DMS oder temporaerer Repo-Fallback
 - Optional: Grafana Cloud, Miro, Hostinger VPS — Skills nutzen was verfügbar ist
 
 ---

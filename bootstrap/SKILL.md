@@ -18,6 +18,7 @@ Setzt ein neues Projekt mit Governance-Framework auf. Der Flow ist in **4 Bloeck
 Referenzen:
 - `references/info-gathering.md` — Kern-Fragen (Block A)
 - `references/existing-infra-check.md` — Bestehende Infrastruktur (Block B)
+- `references/project-documentation-ssot.md` — Projekt-Dokumentations-SSoT, Project Hub und Developer-Onboarding
 - `references/doc-architecture-proposal.md` — Doku-Architektur (Block C)
 - `references/optional-components.md` — Self-Healing / DocSync / Daemon / Learning-Loop (Block D)
 - `references/learning-loop.md` — L1/L2/L3 Design
@@ -38,7 +39,7 @@ Den Operator zuerst informieren, dann starten:
 Bootstrap v3.0 — ich fuehre dich durch 4 Bloecke:
 
   Block A — Projekt-Kern           (9 Fragen,  ~4 min)
-  Block B — Bestehende Infra       (5 Fragen,  ~3 min)
+  Block B — Bestehende Infra       (6 Fragen,  ~4 min)
   Block C — Doku-Architektur       (Vorschlag + Review)
   Block D — Optional-Komponenten   (gezielte Ja/Nein-Fragen am Ende)
 
@@ -221,9 +222,11 @@ Hast du bereits folgendes eingerichtet? (jede Frage einzeln beantworten)
    [b] Nein, spaeter anlegen (keine Remote jetzt)
    [c] Kein GitHub gewuenscht
 
-3. Obsidian-Vault fuer Doku?
-   [a] Ja + absoluter Pfad
-   [b] Nein, nur im Repo dokumentieren
+3. Projekt-Dokumentations-SSoT?
+   [a] Obsidian Vault + absoluter Vault-Pfad
+   [b] Repo docs — Projekt-Doku unter docs/project/
+   [c] Externes DMS — Notion / Confluence / SharePoint / anderes + URL/Pfad
+   [d] Noch unklar — Repo-Fallback docs/project/ + TODO
 
 4. Backlog-System / Adapter?
    [a] Linear + Team-Slug
@@ -236,6 +239,10 @@ Hast du bereits folgendes eingerichtet? (jede Frage einzeln beantworten)
 5. API-Keys fuer das Projekt?
    [a] Existieren bereits in .env
    [b] .env.example reicht, Keys spaeter
+
+6. Developer-Uebergabe?
+   [a] Standard: Developer Onboarding erzeugen und fortlaufend pflegen
+   [b] Nur verlinken, existiert bereits in der Doku-SSoT
 ```
 
 **Merge-Modus:** Wenn ein Ordner/Repo/Vault existiert und Dateien enthaelt, **vor dem Ueberschreiben** fragen:
@@ -247,7 +254,7 @@ Warnung: {PROJECT_PATH} enthaelt bereits Dateien.
   [c] Abbruch
 ```
 
-**Merken:** `EXISTING_INFRA = {...}` fuer weitere Phasen.
+**Merken:** `EXISTING_INFRA = {...}` und `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` fuer weitere Phasen.
 
 Phase-2-Checkpoint: Zusammenfassung ausgeben.
 
@@ -285,6 +292,14 @@ Visualisierung:
 ## Phase 3: Block C — Doku-Architektur-Vorschlag
 
 Lies `references/doc-architecture-proposal.md` fuer die vollstaendige Begruendung.
+Lies zusaetzlich `references/project-documentation-ssot.md`. Block C muss zuerst die in Block B gewaehlte Projekt-Dokumentations-SSoT operationalisieren:
+
+- `obsidian`: Projektordner im Vault anlegen oder bestaetigen; Obsidian ist Best-Practice, aber keine Framework-Voraussetzung.
+- `repo-docs`: `docs/project/` als verbindliche Projekt-Dokumentations-SSoT anlegen.
+- `external-dms`: lokale Verweisdatei in `docs/project/` anlegen und Runtime-Artefakte auf URL/Pfad verweisen lassen.
+- `undecided`: `docs/project/` als Fallback anlegen, TODO "finale Dokumentations-SSoT entscheiden" erzeugen und Postflight als `WARN` markieren.
+
+Unabhaengig vom Zielort muessen Project Hub, Developer Onboarding, Projekt-Governance, Zielarchitektur, Backlog, Decisions, Meetings, Research, Assets und Archive existieren oder eindeutig verlinkt sein.
 
 Basierend auf Stack-Wahl (A.1) und Infra-Status (Block B) einen konkreten Doku-Struktur-Vorschlag praesentieren:
 
@@ -1118,22 +1133,40 @@ Phase-6-Checkpoint: Optional-Komponenten-Status inkl. Provider-Postflight und be
 ## Phase 7: Finalisierung
 
 Lies `references/global-registry-update.md` fuer die genaue Pfad-Liste.
+Lies `references/project-documentation-ssot.md` fuer die SSoT-Varianten. Phase 7 finalisiert nicht nur SecondBrain, sondern immer die gewaehlte Projekt-Dokumentations-SSoT.
 
-### 7.1 SecondBrain-Integration (wenn B.3 == Obsidian aktiv)
+### 7.1 Projekt-Dokumentations-SSoT finalisieren
+
+- `obsidian`: `{OBSIDIAN_VAULT}/<Projektbereich>/{PROJECT_NAME}/` anlegen oder bestaetigen.
+- `repo-docs`: `{PROJECT_PATH}/docs/project/` anlegen.
+- `external-dms`: `{PROJECT_PATH}/docs/project/DOCUMENTATION_SSOT.md` mit URL/Pfad und Zugriffshinweisen anlegen.
+- `undecided`: `{PROJECT_PATH}/docs/project/` als Fallback anlegen und TODO fuer finale SSoT aufnehmen.
+
+Standard-Artefakte erzeugen oder verlinken:
+
+- Project Hub / PMO Hub
+- Developer Onboarding
+- Projekt-Governance
+- Zielarchitektur / Target Architecture
+- Backlog-Uebersicht oder Backlog-Verweis
+- `Decisions/`, `Meetings/`, `Research/`, `Assets/`, `Archive/`
+
+### 7.2 SecondBrain-Integration (wenn Documentation-SSoT == Obsidian)
 
 - `{OBSIDIAN_VAULT}/02 Projekte/{PROJECT_NAME}/` anlegen
 - `{PROJECT_NAME} - PMO HUB.md` mit Projekt-Frontmatter, Phase-Tabelle, Backlog-Link, Referenzen-Block
-- `Components/`, `Decisions/`, `Meetings/`, `Research/` Ordner anlegen
+- `Developer Onboarding.md`, `Projekt-Governance.md`, `Zielarchitektur.md`, `Backlog.md` anlegen oder verlinken
+- `Components/`, `Decisions/`, `Meetings/`, `Research/`, `Assets/`, `Archive/` Ordner anlegen
 - `Architektur-Vorgaben.md` Skelett (wird bei /ideation mit Research-Konsolidierung gefuellt)
 - Eintrag in `{OBSIDIAN_VAULT}/00 Kontext/Projekte.md` (Projekt-Index)
 
-### 7.2 Globale Registry (~/.claude/)
+### 7.3 Globale Registry (~/.claude/)
 
 Wenn der Operator in `~/.claude/CLAUDE.md` eine Projekt-Tabelle hat:
 - Projekt-Zeile ergaenzen (Name, Pfad, GitHub, Obsidian-Pfad, Sprint-Review-Frequenz)
 - Skill listet Operator die Zeile vor, der bestaetigt den Einfuegepunkt
 
-### 7.3 Finaler Commit
+### 7.4 Finaler Commit
 
 ```bash
 cd {PROJECT_PATH}
@@ -1142,7 +1175,7 @@ git commit -m "v{VERSION_START} — Complete Governance Bootstrap"
 git push  # nur wenn B.2 == Ja
 ```
 
-### 7.4 Abschluss-Tabelle
+### 7.5 Abschluss-Tabelle
 
 Der Abschlussbericht nutzt ein einheitliches Postflight-Statusmodell:
 
@@ -1157,7 +1190,7 @@ Der Abschlussbericht nutzt ein einheitliches Postflight-Statusmodell:
 |-------|-----|--------|-------|
 | Block A | Projekt-Kern + Stack + Runtime + Add-ons | OK/WARN/FAIL | `RUNTIME_TARGET`, `GOVERNANCE_MODE`, `EXECUTION_ISOLATION` nennen |
 | Block B | Bestehende Infrastruktur | OK/WARN/FAIL | vorhandene Pfade/Remotes nur referenzieren, nicht ueberschreiben |
-| Block C | Doku-Architektur (3 Schichten + Hub) | OK/SKIP/WARN | Obsidian-Schicht separat ausweisen |
+| Block C | Projekt-Dokumentations-SSoT + Doku-Architektur | OK/SKIP/WARN | Obsidian/Repo/DMS/Fallback separat ausweisen |
 | Phase 4 | Grundstruktur (Dateien, Git, Linting, Hooks, Backlog-Record) | OK/WARN/FAIL | Baseline-Artefakte duerfen nicht fehlen |
 | Phase 5 | Skills installiert ({skill_count}) | OK/WARN/FAIL | Zielpfad `.claude/skills` und/oder `.codex/skills` nennen |
 | Block D | Optional-Komponenten | OK/SKIP/WARN/FAIL | jede ausgewaehlte oder bewusst abgewaehlte Option einzeln listen |
@@ -1165,11 +1198,15 @@ Der Abschlussbericht nutzt ein einheitliches Postflight-Statusmodell:
 
 Pflicht-Checks im Abschluss:
 - Keine Secrets in Repo-Dateien, Chat, `.env.example`, Logs oder Abschlussbericht schreiben.
+- Projekt-Dokumentations-SSoT ist festgelegt oder als Fallback mit TODO dokumentiert.
+- Project Hub, Developer Onboarding, Governance, Target Architecture und Backlog-Verweis existieren oder sind eindeutig verlinkt.
+- Runtime-Anweisungen enthalten SSoT und Developer Onboarding als Pflichtlektüre.
+- Story-Spec-Template enthaelt den Developer-Onboarding-Pre-Flight.
 - Externe Provider separat pruefen und nicht als `OK` markieren, nur weil lokale Dateien existieren: GitHub, Linear, Jira, Azure DevOps, Planner, SonarQube, Grafana, Telegram, Obsidian-Sync.
 - Provider-Postflight-Matrix aus `references/provider-postflight.md` ausgeben: GitHub, Backlog, Research, Visualize/Miro, Monitoring, Obsidian.
 - Upgrade-Grundsatz dokumentieren: bestehende Skills/Artefakte bleiben erhalten; Migrationen ergaenzen fehlende Baseline und schaerfen Gates, sie loeschen keine projektspezifischen Anpassungen ohne explizite Operator-Freigabe.
 
-### 7.4a Upgrade-Modus fuer bestehende Projekte (BOO-60)
+### 7.5a Upgrade-Modus fuer bestehende Projekte (BOO-60)
 
 Wenn Bootstrap in einem Projekt mit bestehender Framework-Installation laeuft, **nicht neu bootstrappen**. Lies `references/framework-upgrade.md` und frage:
 
