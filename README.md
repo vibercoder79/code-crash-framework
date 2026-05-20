@@ -93,6 +93,7 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 | Existing project, needs structure | → [HANDBUCH.md §4](HANDBUCH.md) — step-by-step retrofit |
 | Just one specific skill | → Clone the skill folder and install it |
 | Want to understand everything first | → [HANDBUCH.md](HANDBUCH.md) — full reference |
+| Concrete operational question | → [docs/qa.md](docs/qa.md) — living Q&A |
 
 ---
 
@@ -198,6 +199,7 @@ Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem 
 | Bestehendes Projekt, Chaos | → [HANDBUCH.md §4](HANDBUCH.md) |
 | Nur einzelne Skills | → Gewünschten Skill-Ordner klonen und installieren |
 | Alles verstehen bevor ich anfange | → [HANDBUCH.md](HANDBUCH.md) |
+| Konkrete Praxisfrage | → [docs/qa.md](docs/qa.md) — lebendes Q&A |
 
 ---
 

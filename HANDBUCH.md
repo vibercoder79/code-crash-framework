@@ -1634,6 +1634,8 @@ Step 3 — Verify:
 
 ## 12. FAQ
 
+For concrete day-to-day questions that should stay short and easy to extend, also see the living Q&A document: [`docs/qa.md`](docs/qa.md).
+
 ### "I'm not a developer. Does this still work for me?"
 
 Yes. Skills are designed so you don't need deep technical knowledge. You describe what you
@@ -4430,6 +4432,8 @@ Schritt 3 — Prüfen:
 ---
 
 ## 12. Häufige Fragen
+
+Für konkrete Praxisfragen, die kurz bleiben und laufend erweitert werden sollen, gibt es zusätzlich das lebende Q&A-Dokument: [`docs/qa.md`](docs/qa.md).
 
 ### "Ich bin kein Entwickler. Funktioniert das trotzdem für mich?"
 
