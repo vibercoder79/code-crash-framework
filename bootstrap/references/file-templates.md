@@ -3719,3 +3719,39 @@ Platzierung: `.claude/sensitive-paths.json` (im `.gitignore` NICHT — explizit 
 | `{{OPERATOR_NAME}}` | GitHub-Handle oder Name des verantwortlichen Reviewers |
 
 **Hinweis:** Die Pattern-Liste ist ein Minimal-Default. Die Non-Code-Patterns (`n8n/**`, `workflows/**/*.json`, `infra/**`, `**/*.tf`, `**/*.tfvars`, `config/production/**`, `.env.production`) wurden mit BOO-68 hinzugefuegt — sie sind Pflicht, wenn das Projekt Non-Code-Stories (workflow / infrastructure / config) erwartet. Operator ergänzt projektspezifische sensitive Pfade (z.B. `src/api/**` für kritische API-Endpunkte, `stripe/**` für Payment-Integration).
+
+### `.claude/personal-data-paths.json (BOO-69 — Personal-Data-Paths-Gate)`
+
+Wird von `/bootstrap` Phase 4.4n angelegt, wenn der Operator das Privacy-Add-on aktiviert hat.
+Platzierung: `.claude/personal-data-paths.json` (analog zu sensitive-paths.json, NICHT in `.gitignore` — Audit-Trail-Pflicht).
+
+```json
+{
+  "patterns": [
+    "**/user*",
+    "**/customer*",
+    "**/profile*",
+    "**/*pii*",
+    "**/auth/profile/**",
+    "**/billing/**",
+    "**/onboarding/**",
+    "**/consent/**",
+    "**/tracking/**",
+    "**/analytics/**",
+    "db/migrations/*personal*",
+    "db/migrations/*user*",
+    "**/email-templates/**"
+  ],
+  "review_required_by": ["{{OPERATOR_NAME}}"],
+  "privacy_review_reminder": "Diese Story berührt personenbezogene Daten — DPO REVIEW-Modus empfohlen (`/dpo --mode review`), oder manuelle Pruefung mit `privacy-ok`.",
+  "dpo_skill_path": "~/.claude/skills/dpo/"
+}
+```
+
+**Platzhalter ersetzen:**
+
+| Platzhalter | Wert |
+|-------------|------|
+| `{{OPERATOR_NAME}}` | GitHub-Handle oder Name des verantwortlichen Reviewers (kann mit `sensitive-paths.json` identisch sein) |
+
+**Hinweis:** Die Pattern-Liste ist ein Minimal-Default. Operator ergaenzt projektspezifische Personal-Data-Pfade (z.B. `src/auth/**` fuer Authentifizierung mit PII, `webhooks/stripe/**` fuer Zahlungsdaten, `crm/**` fuer Kundendaten). Bei Ueberschneidung mit `sensitive-paths.json` (z.B. `**/*pii*` taucht in beiden auf): beide Gates greifen — erst `review-ok`, dann `privacy-ok`. Doppel-Bestaetigung ist beabsichtigt, weil security und privacy unterschiedliche Disziplinen pruefen.

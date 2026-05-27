@@ -6,7 +6,7 @@ description: |
   a mandatory learning-loop entry (L1/L2/L3). Use for periodic reviews or when
   the operator says "sprint review", "architecture audit", "tech debt", "clean up"
   or "/sprint-review".
-version: 2.5.0
+version: 2.6.0
 language: en
 metadata:
   hermes:
@@ -314,6 +314,27 @@ Present to the operator:
 - **3+ Yes/Unclear:** Propose an ADR (`docs/domain/adrs/`) + issue in backlog for the countermeasure
 
 Full symptoms + countermeasures: `code-crash-framework/references/anti-pattern-katalog.en.md`
+
+### Step 7c: DPO audit trigger (BOO-69, only if Privacy add-on active)
+
+> **Activation:** this step runs only if `PRIVACY.md` exists in the project root AND the sprint counter has reached the `privacy_audit_cadence` threshold (from `environment.json`, default: every 4 sprints).
+
+**Purpose:** periodic privacy compliance check via DPO AUDIT mode. Delivers records-of-processing diff, open compliance items, and possibly a hint about new DPIAs.
+
+**Steps:**
+
+1. **Cadence check:** compare sprint counter (e.g. via count of `journal/sprints/` directory) against `environment.json.privacy_audit_cadence`. If not reached: skip with log entry "BOO-69 DPO audit: cadence not reached (sprint {{N}} of {{CADENCE}})".
+2. **Run DPO AUDIT mode:** `/dpo --mode audit` with the project root as context.
+3. **DPO delivers:**
+   - Records-of-processing diff (which processings have been added, changed, removed since the last audit?)
+   - Open compliance items (e.g. missing legal basis, unclear deletion period, DPIA overdue)
+   - Hint about new or to-be-updated DPIAs under `dpia/`
+4. **Aggregation into the sprint report:** section `## Privacy Audit (BOO-69)` with DPO output, cadence info, recommendations.
+5. **Create backlog follow-up stories** (if open compliance items): per open item one story in the backlog adapter with label `privacy`.
+
+**Skip case:** if `PRIVACY.md` is missing or cadence not reached → skip Step 7c, no further consequences.
+
+> **Issue reference:** BOO-69. DPO skill as standalone under `~/.claude/skills/dpo/`. Configuration: `environment.json.privacy_audit_cadence` (default 4). HANDBUCH background: Appendix O Privacy by Design §AUDIT mode.
 
 ### Step 8: Learning-loop entry (mandatory if learning loop active)
 

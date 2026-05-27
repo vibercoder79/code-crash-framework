@@ -3287,3 +3287,39 @@ content (mostly English code + comments).
 The German original (`file-templates.md`) contains all templates with German-language
 prose and comments for users who prefer to generate project files in German. Both versions
 produce functionally equivalent project scaffolding.
+
+### `.claude/personal-data-paths.json (BOO-69 — Personal-Data-Paths-Gate)`
+
+Created by `/bootstrap` Phase 4.4n when the operator has activated the Privacy add-on.
+Placement: `.claude/personal-data-paths.json` (analogous to sensitive-paths.json, NOT in `.gitignore` — audit-trail obligation).
+
+```json
+{
+  "patterns": [
+    "**/user*",
+    "**/customer*",
+    "**/profile*",
+    "**/*pii*",
+    "**/auth/profile/**",
+    "**/billing/**",
+    "**/onboarding/**",
+    "**/consent/**",
+    "**/tracking/**",
+    "**/analytics/**",
+    "db/migrations/*personal*",
+    "db/migrations/*user*",
+    "**/email-templates/**"
+  ],
+  "review_required_by": ["{{OPERATOR_NAME}}"],
+  "privacy_review_reminder": "This story touches personal data — DPO REVIEW mode recommended (`/dpo --mode review`), or manual check with `privacy-ok`.",
+  "dpo_skill_path": "~/.claude/skills/dpo/"
+}
+```
+
+**Replace placeholders:**
+
+| Placeholder | Value |
+|-------------|-------|
+| `{{OPERATOR_NAME}}` | GitHub handle or name of the responsible reviewer (may be identical to `sensitive-paths.json`) |
+
+**Note:** The pattern list is a minimal default. The operator extends with project-specific personal-data paths (e.g. `src/auth/**` for PII-handling auth, `webhooks/stripe/**` for payment data, `crm/**` for customer data). On overlap with `sensitive-paths.json` (e.g. `**/*pii*` appears in both): both gates trigger — first `review-ok`, then `privacy-ok`. Double confirmation is intentional because security and privacy check different disciplines.

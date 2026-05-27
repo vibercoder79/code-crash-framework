@@ -6,7 +6,7 @@ description: |
   to closing table including post-implement validation. Use when the operator says "go",
   wants to implement a story, or runs "/implement". Also used by the automation daemon
   (no human in the loop).
-version: 2.10.0
+version: 2.11.0
 language: en
 metadata:
   hermes:
@@ -299,6 +299,56 @@ Without explicit confirmation, the commit will not proceed.
    c. Then regular commit with the code changes.
 
 > **Without `review-ok` confirmation:** Step 6 is NOT reached. No exceptions, no auto-bypass.
+
+### Step 5.5b: Personal-Data-Paths-Gate ⛔ STOP FOR PERSONAL-DATA PATH (BOO-69)
+
+> This step runs ONLY if the story frontmatter contains `personal_data: true` AND
+> `.claude/personal-data-paths.json` (or `.codex/personal-data-paths.json`) exists in the project.
+> Without both conditions: immediately on to Step 5.7.
+
+**Procedure:**
+
+1. Read `.claude/personal-data-paths.json` — load `patterns` array.
+2. Determine changed files (same logic as 5.5).
+3. Check each changed file against the pattern list (glob matching).
+4. **No match → gate passed**, on to Step 5.7.
+5. **Match present → MANDATORY STOP + DPO REVIEW:**
+
+```
+[STOP — PERSONAL DATA PATH] The following changed files touch personal data:
+  - src/api/profile.ts  (pattern: **/profile*)
+  - lib/onboarding/consent.ts  (pattern: **/onboarding/**)
+
+Privacy review required (BOO-69, GDPR Art. 25 Privacy by Design).
+
+FULL DIFF FOR REVIEW:
+[diff output here]
+
+Please run `/dpo --mode review` with the diff or confirm manually with:
+  privacy-ok: {your-name} - {brief comment: what was checked (data minimisation, deletion mechanics, consent, etc.)}
+
+Without explicit confirmation, the commit will not proceed.
+```
+
+6. **Wait for DPO review or manual confirmation** — operator answers with `privacy-ok: ...` OR the DPO skill writes a REVIEW report to `journal/reports/local/<date>_<story>/privacy.md`.
+7. **After confirmation:**
+   a. Add privacy block to the spec file under `## Privacy Review`:
+      ```markdown
+      ## Privacy Review
+      - **Date:** {{TODAY}}
+      - **Reviewer:** {{REVIEWER_NAME}}
+      - **Comment:** {{REVIEW_COMMENT}}
+      - **Personal Data Paths Touched:** {{LIST_OF_PERSONAL_DATA_FILES}}
+      - **DPO Report:** {{PATH_TO_DPO_REPORT}} (if available)
+      ```
+   b. Commit spec file: `git commit -m "docs: specs/{{STORY_ID}}.md privacy review documented (BOO-69)"`
+   c. Then regular commit with the code.
+
+**Relation to Step 5.5:** Both gates can trigger simultaneously (sensitive AND personal-data). In that case: first `review-ok` (5.5), then `privacy-ok` (5.5b). Both confirmations are required; neither replaces the other — DPO assesses legally, security-architect technically.
+
+> **Without `privacy-ok` confirmation:** Step 5.7 is NOT reached. No exceptions, no auto-bypass.
+
+> **Issue reference:** BOO-69. Pattern file: `.claude/personal-data-paths.json` (automatically created by Bootstrap with Privacy add-on). DPO skill as standalone under `~/.claude/skills/dpo/`. HANDBUCH background: Appendix O Privacy by Design.
 
 ### Step 5.7: Change-type branching (BOO-68)
 
@@ -630,13 +680,22 @@ Step 2 — syntax & runtime:
 - Plausible output? Signal file written correctly?
 - No unexpected side effects on other agents/signals?
 
-**6e) Document security findings**
+**6e) Document security and privacy findings**
+
+*Security block (always):*
 - What was checked? (from step 3b security checklist)
 - What is safe? What was mitigated?
 - Open risks that were accepted?
 - For LOW-risk stories: "Security: no new attack vectors" is enough
 - Cross-check against `## Security Validation` from the story: every promised validation needs evidence or a documented exception.
 - Check whether `SECURITY.md`, `API_INVENTORY.md`, `.semgrep.yml`, `.claude/sensitive-paths.json`, `.codex/hooks.json`, `ARCHITECTURE_DESIGN.md`, or `CONVENTIONS.md` must be updated by the change.
+
+*Privacy block (MANDATORY on `personal_data: true`, BOO-69):*
+- What was checked (data minimisation, pseudonymisation, no PII in logs, deletion mechanics, consent)?
+- Was DPO REVIEW mode run? Path to report: `journal/reports/local/<date>_<story>/privacy.md`
+- Cross-check against `## Privacy Review` from the spec (Step 5.5b): every documented check needs evidence or a documented exception.
+- Check whether `PRIVACY.md`, `personal-data-paths.json`, or a DPIA under `dpia/` must be updated by the change.
+- On `personal_data: false`: close the privacy block briefly with "n/a — story touches no personal data".
 - **Check onboarding/hub impact:** check whether `DEVELOPER_ONBOARDING.md` or the project hub / PMO hub must be updated. Triggers: new runtime/tool notes, changed target architecture, new required reading, changed backlog/issue workflow, new security rules, new implementation starting points, or handover-relevant assumptions. Document the result: updated or "no update needed".
 
 **6f) Result**

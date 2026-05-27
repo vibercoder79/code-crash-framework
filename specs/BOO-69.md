@@ -1,4 +1,6 @@
-# BOO-69 — Privacy by Design als Standard-Skill im Bundle (DPO-Adoption)
+# BOO-69 — Privacy by Design als Standalone-Skill (DPO-Adoption)
+
+> **Naming-/Architektur-Hinweis (2026-05-27):** In der urspruenglichen Spec stand "DPO als 12. Bundle-Skill". Recherche in der Implementations-Phase zeigte: `security-architect` ist KEIN Bundle-Skill, sondern Standalone unter `~/.claude/skills/security-architect/`. Bootstrap installiert ihn ueber das Standalone-Skill-Set. Operator-Entscheidung: **DPO folgt diesem Pattern und bleibt Standalone**, nicht ins Bundle adoptiert. Konsistenz mit security-architect-Pattern, nicht-destruktiv (DPO bleibt parallel global verfuegbar), Updates ueber `publish_skill.py`. Implementation in Wave J (`docs/releases/wave-j-privacy-by-design.md`).
 
 ## Summary
 

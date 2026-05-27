@@ -6,7 +6,7 @@ description: |
   Learning-Loop-Eintrag (L1/L2/L3) als Pflicht-Schritt. Verwenden fuer periodische Reviews
   oder wenn der Operator "Sprint Review", "Architektur Audit", "Tech Debt", "Aufraumen"
   oder "/sprint-review" sagt.
-version: 2.5.0
+version: 2.6.0
 metadata:
   hermes:
     category: governance
@@ -313,6 +313,27 @@ Dem Operator praesentieren:
 - **3+ Ja/Unklar:** ADR-Vorschlag anlegen (unter `docs/domain/adrs/`) + Issue in Backlog für Gegenmittel
 
 Detaillierte Symptome + Gegenmittel: `code-crash-framework/references/anti-pattern-katalog.md`
+
+### Schritt 7c: DPO-Audit-Trigger (BOO-69, nur wenn Privacy-Add-on aktiv)
+
+> **Aktivierung:** Dieser Schritt wird nur ausgefuehrt, wenn `PRIVACY.md` im Projekt-Root existiert UND der Sprint-Counter die `privacy_audit_cadence`-Schwelle erreicht hat (aus `environment.json`, Default: alle 4 Sprints).
+
+**Zweck:** Periodische Datenschutz-Compliance-Pruefung via DPO AUDIT-Modus. Liefert Verarbeitungsverzeichnis-Diff, offene Compliance-Punkte und ggf. Hinweis auf neue DPIAs.
+
+**Schritte:**
+
+1. **Cadence-Check:** Sprint-Counter (z.B. via `journal/sprints/`-Verzeichnis-Anzahl) gegen `environment.json.privacy_audit_cadence` pruefen. Wenn nicht erreicht: skip mit Log-Eintrag "BOO-69 DPO-Audit: Cadence nicht erreicht (Sprint {{N}} von {{CADENCE}})".
+2. **DPO AUDIT-Modus ausfuehren:** `/dpo --mode audit` mit dem Projekt-Root als Kontext.
+3. **DPO liefert:**
+   - Verarbeitungsverzeichnis-Diff (welche Verarbeitungen sind seit letztem Audit hinzugekommen, geaendert, gestrichen?)
+   - Offene Compliance-Punkte (z.B. fehlende Rechtsgrundlage, Loeschfrist unklar, DPIA ueberfaellig)
+   - Hinweis auf neue oder zu aktualisierende DPIAs unter `dpia/`
+4. **Aggregation in den Sprint-Report:** Sektion `## Privacy Audit (BOO-69)` mit DPO-Output, Cadence-Info, Empfehlungen.
+5. **Backlog-Folge-Stories anlegen** (falls offene Compliance-Punkte): pro offenem Punkt eine Story im Backlog-Adapter mit Label `privacy`.
+
+**Skip-Fall:** Wenn `PRIVACY.md` fehlt oder Cadence nicht erreicht → Schritt 7c ueberspringen, keine weiteren Konsequenzen.
+
+> **Issue-Referenz:** BOO-69. DPO-Skill als Standalone unter `~/.claude/skills/dpo/`. Configuration: `environment.json.privacy_audit_cadence` (Default 4). HANDBUCH-Hintergrund: Anhang O Privacy by Design §AUDIT-Modus.
 
 ### Schritt 8: Learning-Loop-Eintrag (PFLICHT wenn Learning-Loop aktiv)
 

@@ -965,6 +965,31 @@ Mirror of the master checklist in `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-69 — Privacy by Design Standalone Skill (DPO adoption)
+
+**Auto steps** (`migrate_boo_69` in `migrate-to-v2.sh`):
+
+- Render `PRIVACY.md` from `bootstrap/references/privacy-template.md` (placeholders replaced). Skip if already present.
+- Create `.claude/personal-data-paths.json` and/or `.codex/personal-data-paths.json` with default patterns. Skip if already present.
+- Extend `environment.json` with optional `privacy_audit_cadence: 4`.
+- Availability check for DPO skill and security-architect skill (informational).
+
+**Operator steps (manual, after auto-run):**
+
+- [ ] Make DPO skill globally available, if not already: `git clone` from skill repo to `~/.claude/skills/dpo/`.
+- [ ] Make security-architect skill globally available.
+- [ ] Fill in `PRIVACY.md` substantively (legal bases, records of processing, deletion periods).
+- [ ] Extend `personal-data-paths.json` with project-specific patterns.
+- [ ] Create backlog label `privacy` in the backlog adapter.
+- [ ] Add privacy section reference to `ARCHITECTURE_DESIGN.md`.
+- [ ] If needed, create first DPIA via `/dpo --mode assess`.
+
+**When to skip:** solo tool, anonymous data, no EU/CH connection. Entry with status `✗ — Privacy add-on not active`.
+
+**References:** HANDBUCH Appendix O, `bootstrap/SKILL.md` §4.4n, `ideation/SKILL.md` §0e, `implement/SKILL.md` §5.5b, `sprint-review/SKILL.md` §7c.
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.

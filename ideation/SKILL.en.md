@@ -6,7 +6,7 @@ description: |
   learning loop (if active) and warns on anti-pattern matches. Use when the user has a new idea,
   suggests a feature, or says "ideation" / "new story".
   Triggers: "I have an idea", "new feature", "we need X", "/ideation".
-version: 2.6.0
+version: 2.7.0
 language: en
 metadata:
   hermes:
@@ -105,6 +105,37 @@ Operator decides. The answer is documented in the story under `Current State` as
 On `off-intent`: inform the operator + propose how the story could be adjusted to reach `neutral` or `on-intent`. The operator can force an override with an explicit "override intent".
 
 Binary on/off would be too harsh — infrastructure (auth refactor, DB migration) is never directly on-intent but must still be possible (→ `neutral` with rationale).
+
+### Step 0e: Privacy Pre-Flight (BOO-69, only if Privacy add-on active)
+
+> **Activation:** This step runs only if the project has `PRIVACY.md` in the root (Privacy add-on activated in bootstrap). Otherwise skip.
+
+**Purpose:** Extend the story frontmatter with `personal_data: true|false`. On `true`: DPO ASSESS mode is recommended before the spec is finalised.
+
+**Steps:**
+
+1. **Ask the operator:** "Does this story touch personal data (collection, storage, modification, deletion, transfer to third parties)? y/n"
+2. **Extend the story frontmatter** with `personal_data: true` or `personal_data: false`.
+3. **On `personal_data: true`:**
+   - Hint block in story body: "This story processes personal data. DPO ASSESS mode is recommended before spec finalisation — run `/dpo --mode assess` with this story as input. Output: `dpia/DPIA-<feature>.md` with legal basis and risk assessment."
+   - Assign backlog label `privacy` (if backlog adapter is active).
+   - Token heuristic unchanged — privacy steps are covered by DPO, not by ideation.
+4. **On `personal_data: false`:** skip with log entry "BOO-69 Privacy Pre-Flight: no personal data."
+
+**Heuristic for the operator** (for self-check — no skill recommendation):
+
+| Example pattern | Likely `personal_data: true` |
+|------------------|------------------------------|
+| Story affects auth, profile, account management | Yes |
+| Story logs identifiers (e-mail, user ID, IP) | Yes |
+| Story integrates external service with data flow | Yes |
+| Story changes tracking, analytics, cookies | Yes |
+| Story is pure infrastructure without user reference | No |
+| Story is build/CI/test adjustment | No |
+
+**Output:** Story spec with `personal_data:` frontmatter field + optional DPO hint block + label.
+
+> **Issue reference:** BOO-69. Skill invocation: DPO ASSESS mode reads the story and writes the DPIA. Pipeline position: ideation Step 0e (Pre-Flight, soft — no HARD GATE). Hard gate for code changes: `/implement` Step 5.5b (Personal-Data-Paths-Gate).
 
 ### Step 1: Research (if needed)
 

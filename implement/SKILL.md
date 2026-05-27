@@ -6,7 +6,7 @@ description: |
   bis Ergebnis-Tabelle inkl. Post-Implement Validation. Verwenden wenn der Operator "los" sagt,
   eine Story umsetzen will, oder "/implement" ausfuehrt. Wird auch vom Automation Daemon genutzt
   (ohne Human-in-the-Loop).
-version: 2.10.0
+version: 2.11.0
 metadata:
   hermes:
     category: coding
@@ -347,6 +347,56 @@ Ohne explizite Bestätigung wird der Commit nicht durchgeführt.
 
 > **Ohne `review-ok`-Bestätigung:** Schritt 6 wird NICHT erreicht. Keine Ausnahme, kein Auto-Bypass.
 
+### Schritt 5.5b: Personal-Data-Paths-Gate ⛔ STOP BEI PERSONAL-DATA-PFAD (BOO-69)
+
+> Dieser Schritt laeuft NUR wenn das Story-Frontmatter `personal_data: true` enthaelt UND
+> `.claude/personal-data-paths.json` (oder `.codex/personal-data-paths.json`) im Projekt existiert.
+> Ohne beide Bedingungen: sofort weiter zu Schritt 5.7.
+
+**Ablauf:**
+
+1. `.claude/personal-data-paths.json` lesen — `patterns`-Array laden.
+2. Geaenderte Dateien ermitteln (gleiche Logik wie 5.5).
+3. Jede geaenderte Datei gegen die Pattern-Liste pruefen (Glob-Matching).
+4. **Kein Treffer → Gate bestanden**, weiter zu Schritt 5.7.
+5. **Treffer vorhanden → PFLICHT-STOPP + DPO REVIEW:**
+
+```
+[STOP — PERSONAL DATA PATH] Die folgenden geaenderten Dateien beruehren personenbezogene Daten:
+  - src/api/profile.ts  (Pattern: **/profile*)
+  - lib/onboarding/consent.ts  (Pattern: **/onboarding/**)
+
+Privacy Review erforderlich (BOO-69, DSGVO Art. 25 Privacy by Design).
+
+VOLLSTAENDIGER DIFF ZUR REVIEW:
+[diff output hier]
+
+Bitte fuehre `/dpo --mode review` mit dem Diff aus oder bestaetige manuell mit:
+  privacy-ok: {dein-name} - {kurzer Kommentar: was wurde geprueft (Datenminimierung, Loeschmechanik, Consent, etc.)}
+
+Ohne explizite Bestaetigung wird der Commit nicht durchgefuehrt.
+```
+
+6. **Auf DPO-Review oder Manuelle Bestaetigung warten** — Operator antwortet mit `privacy-ok: ...` ODER der DPO-Skill schreibt einen REVIEW-Report nach `journal/reports/local/<date>_<story>/privacy.md`.
+7. **Nach Bestaetigung:**
+   a. Privacy-Block ins Spec-File eintragen unter `## Privacy Review`:
+      ```markdown
+      ## Privacy Review
+      - **Date:** {{TODAY}}
+      - **Reviewer:** {{REVIEWER_NAME}}
+      - **Comment:** {{REVIEW_COMMENT}}
+      - **Personal Data Paths Touched:** {{LIST_OF_PERSONAL_DATA_FILES}}
+      - **DPO Report:** {{PATH_TO_DPO_REPORT}} (falls vorhanden)
+      ```
+   b. Spec-File committen: `git commit -m "docs: specs/{{STORY_ID}}.md Privacy Review dokumentiert (BOO-69)"`
+   c. Danach regulaerer Commit mit dem Code.
+
+**Verhaeltnis zu Schritt 5.5:** Beide Gates koennen gleichzeitig zuschlagen (sensitive UND personal-data). In dem Fall: erst `review-ok` (5.5), dann `privacy-ok` (5.5b). Beide Bestaetigungen sind erforderlich, keine ersetzt die andere — DPO bewertet rechtlich, security-architect technisch.
+
+> **Ohne `privacy-ok`-Bestaetigung:** Schritt 5.7 wird NICHT erreicht. Keine Ausnahme, kein Auto-Bypass.
+
+> **Issue-Referenz:** BOO-69. Pattern-Datei: `.claude/personal-data-paths.json` (bei Bootstrap mit Privacy-Add-on automatisch angelegt). DPO-Skill als Standalone unter `~/.claude/skills/dpo/`. HANDBUCH-Hintergrund: Anhang O Privacy by Design.
+
 ### Schritt 5.7: Change-Type-Verzweigung (BOO-68)
 
 Vor dem Eintritt in die Quality Gates wird der `Change-Type` aus dem Spec-Frontmatter
@@ -681,13 +731,22 @@ Schritt 2 — Syntax & Laufzeit:
 - Output plausibel? Signal-File korrekt geschrieben?
 - Keine unerwarteten Seiteneffekte auf andere Agents/Signals?
 
-**6e) Security-Findings dokumentieren**
+**6e) Security- und Privacy-Findings dokumentieren**
+
+*Security-Block (immer):*
 - Was wurde geprueft? (aus Schritt 3b Security-Checklist)
 - Was ist sicher? Was wurde mitigiert?
 - Offene Risiken die akzeptiert wurden?
 - Bei LOW-Risk Stories genuegt: "Security: Keine neuen Angriffsvektoren"
 - Abgleich mit `## Security Validation` aus der Story: Jede versprochene Validierung braucht Evidenz oder eine dokumentierte Ausnahme.
 - Pruefen ob `SECURITY.md`, `API_INVENTORY.md`, `.semgrep.yml`, `.claude/sensitive-paths.json`, `.codex/hooks.json`, `ARCHITECTURE_DESIGN.md` oder `CONVENTIONS.md` durch die Aenderung aktualisiert werden muessen.
+
+*Privacy-Block (PFLICHT bei `personal_data: true`, BOO-69):*
+- Was wurde geprueft (Datenminimierung, Pseudonymisierung, Logging keine PII, Loeschmechanik, Consent)?
+- Wurde der DPO REVIEW-Modus durchgelaufen? Pfad zum Report: `journal/reports/local/<date>_<story>/privacy.md`
+- Abgleich mit `## Privacy Review` aus dem Spec (Schritt 5.5b): Jede dokumentierte Pruefung braucht Evidenz oder dokumentierte Ausnahme.
+- Pruefen ob `PRIVACY.md`, `personal-data-paths.json`, ggf. DPIA unter `dpia/` durch die Aenderung aktualisiert werden muessen.
+- Bei `personal_data: false`: Privacy-Block kurz mit "n/a — Story beruehrt keine personenbezogenen Daten" abschliessen.
 - **Onboarding-/Hub-Impact pruefen:** Pruefen ob `DEVELOPER_ONBOARDING.md` oder der Project Hub / PMO-Hub aktualisiert werden muessen. Trigger: neue Runtime-/Tool-Hinweise, geaenderte Zielarchitektur, neue Pflichtlektuere, geaenderte Backlog-/Issue-Arbeitsweise, neue Security-Regeln, neue Startpunkte fuer Umsetzung oder Handoff-relevante Annahmen. Ergebnis dokumentieren: aktualisiert oder "keine Aktualisierung noetig".
 
 **6f) Ergebnis**

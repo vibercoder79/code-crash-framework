@@ -2902,9 +2902,78 @@ Bei einer Story mit 5 Lint-Iterationen liest jeder Iterations-Aufruf die `SKILL.
 
 Cache ist optional aktivierbar via Claude-Code-Hook. Wenn der Hook nicht eingerichtet ist: alles funktioniert weiter, nur ohne Caching-Vorteil und ohne Cost-Aggregat im Sprint-Review (`meta.json.token_tracking` bleibt leer). Kein Hard-Block — Operator kann Caching jederzeit nachruesten.
 
+## Anhang O: Privacy by Design (BOO-69) — DPO-Adoption als Standalone-Skill
+
+### Wann brauche ich den Privacy-Modus?
+
+Aktiviere das Privacy-Add-on im `/bootstrap` (Phase A.4), wenn einer dieser Trigger zutrifft:
+
+- Das Projekt verarbeitet personenbezogene Daten von EU-Buergerinnen oder Personen mit Schweiz-Bezug — die DSGVO bzw. das nDSG greifen.
+- Das Projekt hat eine Auftragsverarbeiter-Konstellation (Verarbeitung im Auftrag eines Dritten).
+- Branche mit erhoehter Pflicht: Gesundheit (Patientendaten), Finanz (Bonitaet, KYC), HR (Beschaeftigtendaten), Bildung (Lernerdaten), oeffentliche Verwaltung.
+
+Kein Privacy-Modus noetig: Solo-Tool ohne Datenerhebung, ausschliesslich anonyme Daten, kein EU/CH-Bezug, kein Auftragsverarbeitungs-Kontext.
+
+### Was macht der DPO-Skill (3-Modi-Mapping)
+
+Der DPO-Skill liegt als **Standalone-Skill** unter `~/.claude/skills/dpo/` (analog `security-architect`). Bei aktivem Privacy-Add-on installiert Bootstrap ihn ueber das Standalone-Skill-Set. Drei Modi mit klarem Trigger-Punkt in der Pipeline:
+
+| Modus | Trigger | Pipeline-Stelle | Output |
+|-------|---------|------------------|--------|
+| ASSESS | Story plant neue Verarbeitung personenbezogener Daten | `/ideation` Schritt 0e (`personal_data: true` im Story-Frontmatter) | `dpia/DPIA-<feature>.md` aus DPIA-Template, Rechtsgrundlage gewaehlt |
+| REVIEW | Code-Aenderung trifft personal-data-paths | `/implement` Schritt 5.5b (Personal-Data-Paths-Gate) | Privacy-Findings inline + `journal/reports/local/<date>_<story>/privacy.md` |
+| AUDIT | Alle N Sprints (Default 4, konfigurierbar via `environment.json.privacy_audit_cadence`) | `/sprint-review` Schritt 7c | Verarbeitungsverzeichnis-Diff im Sprint-Report, offene Compliance-Punkte |
+
+DPO deckt DSGVO/GDPR (EU), BDSG (DE) und nDSG (CH) ab. Schweizer Spezialitaeten (kein 72h-Limit, Bussen gegen natuerliche Personen, EDOEB statt EU-Behoerde) sind in den Skill-References dokumentiert.
+
+### Zusammenspiel DPO ↔ security-architect
+
+Klare Trennung der beiden Disziplinen:
+
+| Disziplin | Frage | Skill | Hauptartefakt |
+|-----------|-------|-------|----------------|
+| Privacy | "Darf ich diese Daten verarbeiten?" | `dpo` | `PRIVACY.md` (Rechtsgrundlagen, Verarbeitungsverzeichnis, Loeschkonzept) |
+| Security | "Kann ich diese Daten sicher verarbeiten?" | `security-architect` | `SECURITY.md` (TOMs, Encryption, Access Control) |
+
+Bei aktivem Privacy-Add-on laufen beide Skills parallel. Im Datenschutz-Vorfall (Art. 33 DSGVO) braucht es beide Inputs — DPO bewertet rechtlich (Meldepflicht-Schwellen, Betroffenenrechte), security-architect technisch (Forensik, Mitigation).
+
+### Privacy-Add-on in Bootstrap aktivieren
+
+Phase A.4 Add-on-Block bietet Multi-Select. Bei `[x] Privacy / DSGVO`:
+
+1. Bootstrap installiert den DPO-Skill als Standalone (sofern nicht schon vorhanden).
+2. Bootstrap installiert auch `security-architect` (Voraussetzung fuer das DPO ↔ security-architect-Zusammenspiel).
+3. Bootstrap rendert `PRIVACY.md` aus `bootstrap/references/privacy-template.md` (DE oder EN je nach Projekt-Sprache).
+4. Bootstrap erzeugt `personal-data-paths.json` Template (`.claude/` oder `.codex/`).
+5. Bootstrap setzt Backlog-Label `privacy`.
+6. Bootstrap-Phase 4.4n "Privacy-Setup" lauft (analog 4.4i Sensitive-Paths-Setup).
+
+### Migrations-Hinweise fuer Bestands-Projekte
+
+Bestands-Projekt hat das Privacy-Add-on noch nicht aktiv?
+
+```bash
+bash bootstrap/scripts/migrate-to-v2.sh migrate_boo_69
+```
+
+`migrate_boo_69()` ist idempotent und additiv. Ergebnis:
+
+- `PRIVACY.md` aus Template erzeugt (falls noch nicht vorhanden)
+- `personal-data-paths.json` Template angelegt
+- DPO-Skill-Kopie via Standard-Standalone-Pfad nachgezogen
+- `SECURITY.md` bleibt unveraendert
+- Backlog-Label `privacy` ergaenzt
+
+Operator pflegt `PRIVACY.md` nach der Erstausgabe manuell — fuellt Rechtsgrundlagen, Datenkategorien und Loeschfristen mit Projekt-Realdaten. DPO ASSESS-Modus kann beim Erstausfuellen unterstuetzen.
+
+### Verwandte Anhaenge
+
+- **Anhang N (Token-Effizienz):** DPO laeuft auf `recommended_model: opus` (Compliance-kritisch, Audit-relevant). Bei aktivem Modell-Routing wird das im Sprint-Review-Cost-Aggregat fair als Opus-Tier ausgewiesen.
+- **Anhang Q (Souveraenitaets-Stack, BOO-71, geplant):** Datensouveraenitaet (US-vs-EU-Cloud-Anbieter) ist ein **separates Thema** und kein Privacy-Ersatz — auch ein souveraener Stack braucht Privacy-by-Design. Anhang Q gibt die Inspirations-Schicht fuer EU-konforme Alternativen.
+- **Anhang F (Hermes Compound-Layer):** DPO ist im `metadata.hermes`-Mapping mit `category: governance` und Tags `[privacy, gdpr, dsgvo, ndsg, compliance]` registriert.
+
 ---
 
 *Dieses Handbuch ist Teil des Code-Crash Frameworks.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Letzte Aktualisierung: 2026-05-27 (DE/EN aus bilingualer Single-File in HANDBUCH.md + HANDBUCH.en.md gesplittet)*
-*Letzte Aktualisierung: 2026-05-12*
+*Letzte Aktualisierung: 2026-05-27 (Anhang O Privacy-by-Design ergaenzt — BOO-69)*

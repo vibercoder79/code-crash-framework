@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.26.0
+version: 3.27.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -168,6 +168,8 @@ Bootstrap creates a neutral **Backlog Record** as the contract shape. External t
 ```
 
 Each activated add-on extends the architecture dimensions in `ARCHITECTURE_DESIGN.md` + the corresponding section in `SECURITY.md` / `GOVERNANCE.md`.
+
+> **Privacy add-on (BOO-69):** On `[x] Privacy / GDPR`, bootstrap additionally installs the `dpo` skill as standalone (analogous to `security-architect`), renders `PRIVACY.md` from `references/privacy-template.en.md`, creates `personal-data-paths.json` template, and sets backlog label `privacy`. The operational setup phase is 4.4n (Privacy Setup, analogous to 4.4i Sensitive Paths). DPO runs with three modes (ASSESS in `/ideation` Step 0e, REVIEW in `/implement` Step 5.5b, AUDIT in `/sprint-review` Step 7c). Details: HANDBUCH Appendix O.
 
 **Remember:** `ADDONS = [...activated]`
 
@@ -923,6 +925,40 @@ If `B.2 == no/c` (no GitHub wanted): skip phase 4.4k completely — branch prote
 > **Issue reference:** BOO-84. Source: `references/file-templates.en.md` §`CLAUDE.md (minimum)`, `references/model-tiers.json`. Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-84.
 
 > **Design-decision note:** This story follows the Code-Crash motto "lightweight + pragmatic, no security compromises". Model routing is a recommendation with an override path — not a hard lock. Security skills stay documented on Opus (audit obligation).
+
+### 4.4n Privacy Setup (BOO-69, only if Privacy add-on active)
+
+**Purpose:** When the Privacy add-on is active (see A.4 `[x] Privacy / GDPR`), this phase sets up the privacy infrastructure. Mirrors the Security pattern 1:1: `dpo` standalone skill installed, `PRIVACY.md` rendered from template, `personal-data-paths.json` created as counterpart to `sensitive-paths.json`. Bootstrap adds nothing if the add-on is not active.
+
+**Precondition:** `ADDONS` contains `"Privacy / GDPR"`. Otherwise skip.
+
+**Steps:**
+
+1. **Install DPO skill as standalone** (analogous to `security-architect`):
+   - Path: `~/.claude/skills/dpo/` (global) — if not present, operator hint: "Install via `git clone` from the skill repo or copy from the Code-Crash framework." Non-destructive: existing installation remains unchanged.
+   - Note: DPO remains **simultaneously** globally available for other projects. The Code-Crash framework makes no exclusive claim.
+2. **Install security-architect** (prerequisite for DPO ↔ security-architect interplay) — same standalone mechanism.
+3. **Render `PRIVACY.md`** from `references/privacy-template.md` (DE) or `.en.md` (EN) depending on project language. Replace placeholders `{{PROJECT_NAME}}`, `{{VERSION_START}}`, `{{TODAY}}`. Mandatory sections (records of processing, deletion policy) receive a skeleton — operator fills in.
+4. **Render `.claude/personal-data-paths.json` and/or `.codex/personal-data-paths.json`** from `references/file-templates.md` §`personal-data-paths.json`. Default patterns (`**/user*`, `**/customer*`, `**/profile*`, `**/*pii*`, `**/auth/profile/**`, `**/billing/**`). Operator hint: extend the pattern list project-specifically.
+5. **Backlog label `privacy`** in the configured backlog adapter (Linear / GitHub Issues / MS Planner / Markdown backlog), create if not yet present.
+6. **`ARCHITECTURE_DESIGN.md`** extend with privacy-section reference: "Privacy requirements: see `PRIVACY.md` and DPO skill output under `dpia/`."
+7. **`environment.json`** extend with optional field `privacy_audit_cadence: 4` (default: DPO audit every 4 sprints).
+
+**Operator checkpoint:**
+
+- [ ] DPO skill globally available (`~/.claude/skills/dpo/SKILL.md` exists)
+- [ ] security-architect skill globally available
+- [ ] `PRIVACY.md` rendered in project root with project placeholders
+- [ ] `.claude/personal-data-paths.json` and/or `.codex/personal-data-paths.json` created
+- [ ] Backlog label `privacy` exists
+- [ ] `ARCHITECTURE_DESIGN.md` references `PRIVACY.md`
+- [ ] `environment.json.privacy_audit_cadence` set (default 4)
+
+> **Important:** `PRIVACY.md` is NOT added to `.gitignore` — audit-trail obligation. Privacy documentation belongs in git. **`dpia/*.md`** may be more sensitive — the operator decides whether the DPIA files are committed or kept in a separate private repo.
+
+> **Issue reference:** BOO-69. Source: `references/privacy-template.md` + `references/file-templates.md` §`personal-data-paths.json`. Migration for existing projects: `references/migration-checklist-v1-to-v2.md` §BOO-69. HANDBUCH background: Appendix O Privacy by Design.
+
+> **Design-decision note:** Privacy is optional, but when active: fully operationalised. Mirrors the Security pattern (security-architect + SECURITY.md + sensitive-paths). The operator does not need to bring DPO knowledge — the skill asks the right probing questions. Issuing legal recommendations is not the skill's job; probing questions are.
 
 ### Phase 4.10: Domain Deep Research (MANDATORY)
 

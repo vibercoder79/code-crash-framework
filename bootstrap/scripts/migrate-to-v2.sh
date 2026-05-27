@@ -3016,6 +3016,117 @@ migrate_all() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-69 — Privacy by Design Standalone-Skill Adoption (DPO + PRIVACY.md + Hook)
+# -----------------------------------------------------------------------------
+
+migrate_boo_69() {
+    log_info "BOO-69: Privacy by Design — DPO-Standalone-Skill, PRIVACY.md, personal-data-paths.json"
+    log_info "BOO-69: Privacy by Design — DPO standalone skill, PRIVACY.md, personal-data-paths.json"
+
+    # 1. PRIVACY.md aus Template rendern (idempotent — nur wenn nicht vorhanden, sonst Skip mit Hinweis)
+    if [[ ! -f "PRIVACY.md" ]]; then
+        # SCRIPT_DIR lokal berechnen (Script kann von beliebigem Working-Directory aufgerufen werden)
+        local script_dir
+        script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        local tmpl="${script_dir}/../references/privacy-template.md"
+
+        if [[ -f "$tmpl" ]]; then
+            if [[ "$DRY_RUN" == "true" ]]; then
+                log_info "[dry-run] PRIVACY.md aus $tmpl rendern"
+            else
+                cp "$tmpl" PRIVACY.md
+                # Platzhalter ersetzen (best-effort)
+                local project_name today
+                project_name="$(basename "$(pwd)")"
+                today="$(date +%Y-%m-%d)"
+                sed -i.bak "s|{{PROJECT_NAME}}|${project_name}|g; s|{{TODAY}}|${today}|g; s|{{VERSION_START}}|0.1.0|g" PRIVACY.md
+                rm -f PRIVACY.md.bak
+                log_info "PRIVACY.md erzeugt (BOO-69). Operator pflegt Verarbeitungsverzeichnis + Loeschkonzept manuell nach."
+            fi
+        else
+            log_warn "BOO-69: privacy-template.md nicht gefunden unter $tmpl — Operator muss PRIVACY.md manuell anlegen."
+        fi
+    else
+        log_info "BOO-69: PRIVACY.md existiert bereits — keine Aenderung."
+    fi
+
+    # 2. personal-data-paths.json (.claude und/oder .codex je nach existierender Runtime-Verzeichnisse)
+    local pd_template='{
+  "patterns": [
+    "**/user*",
+    "**/customer*",
+    "**/profile*",
+    "**/*pii*",
+    "**/auth/profile/**",
+    "**/billing/**",
+    "**/onboarding/**",
+    "**/consent/**",
+    "**/tracking/**",
+    "**/analytics/**",
+    "db/migrations/*personal*",
+    "db/migrations/*user*",
+    "**/email-templates/**"
+  ],
+  "review_required_by": ["operator"],
+  "privacy_review_reminder": "Diese Story berührt personenbezogene Daten — DPO REVIEW-Modus empfohlen oder manuelle Pruefung mit privacy-ok.",
+  "dpo_skill_path": "~/.claude/skills/dpo/"
+}'
+
+    for runtime_dir in .claude .codex; do
+        if [[ -d "$runtime_dir" ]]; then
+            local target="${runtime_dir}/personal-data-paths.json"
+            if [[ ! -f "$target" ]]; then
+                if [[ "$DRY_RUN" == "true" ]]; then
+                    log_info "[dry-run] $target erzeugen"
+                else
+                    printf '%s\n' "$pd_template" > "$target"
+                    log_info "$target erzeugt (BOO-69). Operator ergaenzt projektspezifische Pattern."
+                fi
+            else
+                log_info "BOO-69: $target existiert bereits — keine Aenderung."
+            fi
+        fi
+    done
+
+    # 3. DPO-Skill-Verfuegbarkeits-Check (rein informativ, nicht-destruktiv)
+    if [[ -d "${HOME}/.claude/skills/dpo" ]]; then
+        log_info "BOO-69: DPO-Skill global verfuegbar unter ~/.claude/skills/dpo/."
+    else
+        log_warn "BOO-69: DPO-Skill nicht unter ~/.claude/skills/dpo/ gefunden. Operator-Aktion: Skill von Code-Crash-Framework oder Skill-Repo installieren."
+    fi
+
+    # 4. security-architect-Verfuegbarkeit
+    if [[ -d "${HOME}/.claude/skills/security-architect" ]]; then
+        log_info "BOO-69: security-architect-Skill global verfuegbar."
+    else
+        log_warn "BOO-69: security-architect-Skill nicht gefunden. Operator-Aktion: Standalone-Skill installieren (Voraussetzung fuer DPO ↔ security-architect-Zusammenspiel)."
+    fi
+
+    # 5. environment.json um privacy_audit_cadence ergaenzen (idempotent, nur wenn Datei existiert und Feld fehlt)
+    if [[ -f ".claude/environment.json" ]]; then
+        if ! grep -q "privacy_audit_cadence" .claude/environment.json; then
+            if [[ "$DRY_RUN" == "true" ]]; then
+                log_info "[dry-run] .claude/environment.json um privacy_audit_cadence erweitern"
+            else
+                python3 -c "
+import json, sys
+p = '.claude/environment.json'
+with open(p) as f:
+    cfg = json.load(f)
+cfg['privacy_audit_cadence'] = 4
+with open(p, 'w') as f:
+    json.dump(cfg, f, indent=2)
+" && log_info ".claude/environment.json um privacy_audit_cadence (Default 4) ergaenzt."
+            fi
+        else
+            log_info "BOO-69: privacy_audit_cadence bereits in environment.json."
+        fi
+    fi
+
+    log_info "BOO-69 done. Operator-Schritte: PRIVACY.md inhaltlich fuellen, ggf. DPIA anlegen, Backlog-Label 'privacy' setzen."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3029,6 +3140,7 @@ ALL_ISSUES=(
     BOO-20 BOO-37
     BOO-31 BOO-32 BOO-33
     BOO-84
+    BOO-69
 )
 
 print_help() {

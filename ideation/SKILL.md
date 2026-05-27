@@ -6,7 +6,7 @@ description: |
   den Learning-Loop (falls aktiv) und warnt bei Anti-Pattern-Match. Verwenden wenn der Nutzer
   eine neue Idee hat, ein Feature vorschlaegt, oder "ideation" / "neue Story" sagt.
   Ausloeser sind Anfragen wie "ich hab eine Idee", "neues Feature", "wir brauchen X", "/ideation".
-version: 2.6.0
+version: 2.7.0
 metadata:
   hermes:
     category: coding
@@ -104,6 +104,37 @@ Operator entscheidet. Antwort wird in der Story unter `Current State` als Kontex
 Bei `off-intent`: Operator informieren + Vorschlag machen wie die Story angepasst werden koennte um `neutral` oder `on-intent` zu erreichen. Operator kann Override erzwingen mit explizitem "override intent".
 
 Binaeres on/off waere zu hart — Infrastruktur (Auth-Refactor, DB-Migration) ist nie direkt on-intent, muss aber moeglich sein (→ `neutral` mit Begruendung).
+
+### Schritt 0e: Privacy-Pre-Flight (BOO-69, nur wenn Privacy-Add-on aktiv)
+
+> **Aktivierung:** Dieser Schritt wird nur ausgefuehrt, wenn das Projekt `PRIVACY.md` im Root hat (Privacy-Add-on im Bootstrap aktiviert). Sonst ueberspringen.
+
+**Zweck:** Story-Frontmatter um `personal_data: true|false` erweitern. Bei `true`: DPO ASSESS-Modus empfohlen, bevor die Spec finalisiert wird.
+
+**Schritte:**
+
+1. **Operator fragen:** "Beruehrt diese Story personenbezogene Daten (Erhebung, Speicherung, Aenderung, Loeschung, Weitergabe an Dritte)? j/n"
+2. **Story-Frontmatter ergaenzen** um `personal_data: true` oder `personal_data: false`.
+3. **Bei `personal_data: true`:**
+   - Hinweis-Block im Story-Body: "Diese Story verarbeitet personenbezogene Daten. DPO ASSESS-Modus wird vor Spec-Finalisierung empfohlen — fuehre `/dpo --mode assess` mit dieser Story als Input aus. Output: `dpia/DPIA-<feature>.md` mit Rechtsgrundlage und Risikobewertung."
+   - Backlog-Label `privacy` vergeben (falls Backlog-Adapter aktiv).
+   - Token-Heuristik unveraendert — Privacy-Schritte sind durch DPO abgedeckt, nicht durch Ideation.
+4. **Bei `personal_data: false`:** Skip mit Log-Eintrag "BOO-69 Privacy-Pre-Flight: keine personenbezogenen Daten."
+
+**Heuristik fuer den Operator** (zur Selbst-Pruefung — keine Skill-Empfehlung):
+
+| Beispielmuster | Wahrscheinlich `personal_data: true` |
+|----------------|---------------------------------------|
+| Story betrifft Auth, Profil, Account-Management | Ja |
+| Story logged Identifikatoren (E-Mail, User-ID, IP) | Ja |
+| Story integriert externen Dienstleister mit Datenfluss | Ja |
+| Story aendert Tracking, Analytics, Cookies | Ja |
+| Story ist reine Infrastruktur ohne User-Bezug | Nein |
+| Story ist Build/CI/Test-Anpassung | Nein |
+
+**Output:** Story-Spec mit `personal_data:` Frontmatter-Feld + ggf. DPO-Hinweis-Block + Label.
+
+> **Issue-Referenz:** BOO-69. Skill-Aufruf: DPO ASSESS-Modus liest die Story und schreibt DPIA. Pipeline-Stelle: ideation Schritt 0e (Pre-Flight, weich — kein HARD GATE). Hard-Gate fuer Code-Aenderungen: `/implement` Schritt 5.5b (Personal-Data-Paths-Gate).
 
 ### Schritt 1: Research (wenn noetig)
 
