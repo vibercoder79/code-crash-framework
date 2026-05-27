@@ -1076,6 +1076,42 @@ Mirror of the master checklist in `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-74 — DPO + security-architect as framework bundle skills — Wave M
+
+**Status:** ✓ included in the v2 bundle — additive, non-destructive migration. Corrects the Wave J decision (DPO was standalone, is now a framework bundle skill).
+**Effort:** small (~5 min auto step).
+**Linear:** <https://linear.app/owlist/issue/BOO-74>
+**Auto step:** yes (`migrate_boo_74` in `migrate-to-v2.sh`).
+
+**What changes:**
+
+- `dpo/` and `security-architect/` now live as top-level folders in the `code-crash-framework` repo (vendored). Master remains `claudecodeskills` (via `publish_skill.py`); the framework repo is a mirror.
+- Bootstrap Phase 5 clones **only** the framework repo from v3.29.0 (instead of `claudecodeskills`). Optional general-purpose skills (research, design-md-generator, setup-checklist, skill-creator) via a yes/no follow-up question from claudecodeskills.
+- Bootstrap Phase 4.4n installs DPO + security-architect from the framework bundle.
+
+**Auto steps:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-74` — copies `dpo/` + `security-architect/` from the framework repo into `~/.claude/skills/`, **only if not yet present** (idempotent, non-destructive).
+
+**Operator steps (manual, after auto-run):**
+
+- [ ] Check that `~/.claude/skills/dpo/` and `~/.claude/skills/security-architect/` exist (the auto step creates them if not).
+- [ ] With the Privacy add-on active: ensure the bootstrap version is >= 3.29.0 (`grep version: bootstrap/SKILL.md`).
+- [ ] **Remember the sync discipline:** on a future update of DPO/security-architect via `publish_skill.py`, the framework mirror must be refreshed (see `bootstrap/references/skills-setup.en.md` §sync convention).
+
+**When to skip:** the project uses neither the Privacy add-on nor the security dimension and does not install the skills — entry with status `✗ — DPO/security-architect not in use`.
+
+**Test:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-74 --dry-run` second time: reports "already present — no change".
+- `ls code-crash-framework/dpo/SKILL.md code-crash-framework/security-architect/SKILL.md` → both present (in the repo).
+
+**Rollback:** Remove the vendored copies from the framework repo + revert the bootstrap skill source to `claudecodeskills`. Existing `~/.claude/skills/` installations stay untouched.
+
+**References:** HANDBUCH Appendix O (switched to bundle skill), `bootstrap/SKILL.md` Phase 5 + 4.4n, `bootstrap/references/skills-setup.en.md` §sync convention, `specs/BOO-74.md`.
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.

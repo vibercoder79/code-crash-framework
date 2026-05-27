@@ -1091,6 +1091,42 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-74 — DPO + security-architect als Framework-Bundle-Skills — Wave M
+
+**Status:** ✓ in v2-Bundle enthalten — additive, nicht-destruktive Migration. Korrigiert die Wave-J-Decision (DPO war Standalone, ist jetzt Framework-Bundle-Skill).
+**Aufwand:** klein (~5 Min Auto-Schritt).
+**Linear:** <https://linear.app/owlist/issue/BOO-74>
+**Auto-Schritt:** ja (`migrate_boo_74` in `migrate-to-v2.sh`).
+
+**Was sich aendert:**
+
+- `dpo/` und `security-architect/` liegen ab jetzt als Top-Level-Ordner im `code-crash-framework`-Repo (vendored). Master bleibt `claudecodeskills` (via `publish_skill.py`), Framework-Repo ist Mirror.
+- Bootstrap Phase 5 clont ab v3.29.0 **nur** das Framework-Repo (statt `claudecodeskills`). Optionale Allzweck-Skills (research, design-md-generator, setup-checklist, skill-creator) via Ja/Nein-Zusatzfrage aus claudecodeskills.
+- Bootstrap Phase 4.4n installiert DPO + security-architect aus dem Framework-Bundle.
+
+**Auto-Schritte:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-74` — kopiert `dpo/` + `security-architect/` aus dem Framework-Repo nach `~/.claude/skills/`, **nur wenn noch nicht vorhanden** (idempotent, nicht-destruktiv).
+
+**Operator-Schritte (manuell, nach Auto-Run):**
+
+- [ ] Pruefen ob `~/.claude/skills/dpo/` und `~/.claude/skills/security-architect/` existieren (Auto-Schritt legt sie an, falls nicht).
+- [ ] Bei aktivem Privacy-Add-on: sicherstellen dass die Bootstrap-Version >= 3.29.0 ist (`grep version: bootstrap/SKILL.md`).
+- [ ] **Sync-Disziplin merken:** bei einem kuenftigen Update von DPO/security-architect via `publish_skill.py` muss der Framework-Mirror nachgezogen werden (siehe `bootstrap/references/skills-setup.md` §Sync-Konvention).
+
+**Wann ueberspringen:** Projekt nutzt weder Privacy-Add-on noch Security-Dimension und installiert die Skills nicht — Eintrag mit Status `✗ — DPO/security-architect nicht im Einsatz`.
+
+**Test:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-74 --dry-run` zweites Mal: meldet "bereits vorhanden — keine Aenderung".
+- `ls code-crash-framework/dpo/SKILL.md code-crash-framework/security-architect/SKILL.md` → beide vorhanden (im Repo).
+
+**Rollback:** Vendored-Kopien aus dem Framework-Repo entfernen + Bootstrap-Skill-Quelle zurueck auf `claudecodeskills`. Bestehende `~/.claude/skills/`-Installationen bleiben unberuehrt.
+
+**Verweise:** HANDBUCH Anhang O (umgestellt auf Bundle-Skill), `bootstrap/SKILL.md` Phase 5 + 4.4n, `bootstrap/references/skills-setup.md` §Sync-Konvention, `specs/BOO-74.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

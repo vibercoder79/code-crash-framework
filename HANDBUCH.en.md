@@ -2547,7 +2547,7 @@ A story with 5 lint iterations re-reads `SKILL.md` (10k tokens) and the constitu
 
 Caching is optionally enabled via a Claude-Code hook. If the hook is not set up: everything keeps working, just without the caching benefit and without cost aggregate in the sprint review (`meta.json.token_tracking` stays empty). No hard block — operator can retro-fit caching at any time.
 
-## Appendix O: Privacy by Design (BOO-69) — DPO Adoption as Standalone Skill
+## Appendix O: Privacy by Design (BOO-69) — DPO as a Framework Bundle Skill
 
 ### When do I need the Privacy mode?
 
@@ -2561,7 +2561,7 @@ No Privacy mode needed: solo tool without data collection, exclusively anonymous
 
 ### What the DPO skill does (3-mode mapping)
 
-The DPO skill lives as a **standalone skill** under `~/.claude/skills/dpo/` (analogous to `security-architect`). When the Privacy add-on is active, bootstrap installs it via the standalone skill set. Three modes with a clear trigger point in the pipeline:
+Since **BOO-74 (Wave M)** the DPO skill is a **framework bundle skill**: it lives directly in the `code-crash-framework` repo (analogous to `bootstrap/`, `implement/`, `security-architect/`) and is installed by bootstrap Phase 5 from the framework repo into `~/.claude/skills/dpo/`. The skill's master remains the `claudecodeskills` repo (maintained via `publish_skill.py`); the framework repo holds a mirrored vendored copy. Solo operators without the framework can still get DPO directly from `claudecodeskills`. Three modes with a clear trigger point in the pipeline:
 
 | Mode | Trigger | Pipeline Position | Output |
 |------|---------|--------------------|--------|
@@ -2586,8 +2586,8 @@ When the Privacy add-on is active, both skills run in parallel. A privacy breach
 
 Phase A.4 add-on block offers multi-select. On `[x] Privacy / DSGVO`:
 
-1. Bootstrap installs the DPO skill as standalone (unless already present).
-2. Bootstrap also installs `security-architect` (prerequisite for the DPO ↔ security-architect interplay).
+1. Bootstrap installs the DPO skill from the framework bundle (`$SKILL_SRC/dpo/`, unless already present) — BOO-74.
+2. Bootstrap also installs `security-architect` from the framework bundle (prerequisite for the DPO ↔ security-architect interplay).
 3. Bootstrap renders `PRIVACY.md` from `bootstrap/references/privacy-template.md` (DE or EN depending on project language).
 4. Bootstrap creates `personal-data-paths.json` template (`.claude/` or `.codex/`).
 5. Bootstrap sets backlog label `privacy`.
@@ -2605,7 +2605,7 @@ bash bootstrap/scripts/migrate-to-v2.sh migrate_boo_69
 
 - `PRIVACY.md` generated from template (if not yet present)
 - `personal-data-paths.json` template created
-- DPO skill copy installed via the standard standalone path
+- DPO skill copy installed from the framework bundle (BOO-74; `migrate_boo_74` adds DPO + security-architect explicitly)
 - `SECURITY.md` remains unchanged
 - Backlog label `privacy` added
 
@@ -2657,7 +2657,7 @@ This appendix describes four established setup patterns for the Code-Crash Frame
 
 - Central pool under `~/.claude/skills/`. No per-project sync needed.
 - Skill updates via `git pull` in the skill repo apply immediately to all projects.
-- Standalone skills like `security-architect` and `dpo` also live centrally (see Appendix O).
+- `security-architect` and `dpo` (framework bundle skills since BOO-74) also live centrally in the pool (see Appendix O).
 
 **Secrets separation**
 
@@ -3161,4 +3161,4 @@ Spec: BOO-72. Operator question Tobias 2026-05-27 after the Wave K release. Sket
 
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-27 (Appendix R Multi-Operator Coordination added — BOO-72, Wave L)*
+*Last updated: 2026-05-27 (Appendix O switched to DPO as a framework bundle skill — BOO-74, Wave M; Appendix R Multi-Operator Coordination — BOO-72, Wave L)*

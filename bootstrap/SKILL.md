@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.28.0
+version: 3.29.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -168,7 +168,7 @@ Der Bootstrap erzeugt einen neutralen **Backlog-Record** als Vertragsform. Exter
 
 Jedes aktivierte Add-on ergaenzt die Architektur-Dimensionen in `ARCHITECTURE_DESIGN.md` + entsprechende Sektion in `SECURITY.md` / `GOVERNANCE.md`.
 
-> **Privacy-Add-on (BOO-69):** Bei `[x] Privacy / DSGVO` installiert Bootstrap zusaetzlich den `dpo`-Skill als Standalone (analog `security-architect`), rendert `PRIVACY.md` aus `references/privacy-template.md`, legt `personal-data-paths.json`-Template an und setzt Backlog-Label `privacy`. Die operative Setup-Phase ist 4.4n (Privacy-Setup, analog 4.4i Sensitive-Paths). DPO laeuft mit drei Modi (ASSESS in `/ideation` Schritt 0e, REVIEW in `/implement` Schritt 5.5b, AUDIT in `/sprint-review` Schritt 7c). Details: HANDBUCH Anhang O.
+> **Privacy-Add-on (BOO-69/74):** Bei `[x] Privacy / DSGVO` installiert Bootstrap zusaetzlich den `dpo`-Skill **aus dem Framework-Bundle** (`$SKILL_SRC/dpo/`, analog `security-architect`), rendert `PRIVACY.md` aus `references/privacy-template.md`, legt `personal-data-paths.json`-Template an und setzt Backlog-Label `privacy`. Die operative Setup-Phase ist 4.4n (Privacy-Setup, analog 4.4i Sensitive-Paths). DPO laeuft mit drei Modi (ASSESS in `/ideation` Schritt 0e, REVIEW in `/implement` Schritt 5.5b, AUDIT in `/sprint-review` Schritt 7c). Details: HANDBUCH Anhang O.
 
 **Merken:** `ADDONS = [...aktivierte]`
 
@@ -958,10 +958,11 @@ Bei `B.2 == nein/c` (kein GitHub gewuenscht): Phase 4.4k komplett skippen — Br
 
 **Schritte:**
 
-1. **DPO-Skill als Standalone installieren** (analog `security-architect`):
-   - Pfad: `~/.claude/skills/dpo/` (global) — wenn nicht vorhanden, Operator-Hinweis: "Installiere via `git clone` aus dem Skill-Repo oder kopiere aus dem Code-Crash-Framework". Nicht-destruktiv: vorhandene Installation bleibt unveraendert.
+1. **DPO-Skill aus Framework-Bundle installieren** (BOO-74, analog `security-architect`):
+   - Quelle: `$SKILL_SRC/dpo/` (Framework-Repo, in Phase 5 bereits gecloned). Ziel: `~/.claude/skills/dpo/` (global) bzw. `{TARGET_SKILLS_DIR}/dpo/` je nach `RUNTIME_TARGET`. Nicht-destruktiv: vorhandene Installation bleibt unveraendert.
+   - Keine externe Repo-Wahl mehr — der Skill kommt aus demselben Framework-Repo wie bootstrap/ideation/implement. Master des Skills bleibt `claudecodeskills` (Mirror-Konvention, siehe `references/skills-setup.md`).
    - Hinweis: DPO bleibt **gleichzeitig** global verfuegbar fuer andere Projekte. Code-Crash-Framework macht keinen exklusiven Anspruch.
-2. **security-architect** installieren (Voraussetzung fuer DPO ↔ security-architect-Zusammenspiel) — gleicher Standalone-Mechanismus.
+2. **security-architect aus Framework-Bundle installieren** (Voraussetzung fuer DPO ↔ security-architect-Zusammenspiel) — gleiche Quelle `$SKILL_SRC/security-architect/`.
 3. **`PRIVACY.md` rendern** aus `references/privacy-template.md` (DE) oder `.en.md` (EN) je nach Projekt-Sprache. Platzhalter `{{PROJECT_NAME}}`, `{{VERSION_START}}`, `{{TODAY}}` ersetzen. Pflicht-Sektionen (Verarbeitungsverzeichnis, Loeschkonzept) erhalten Skelett — Operator fuellt nach.
 4. **`.claude/personal-data-paths.json` und/oder `.codex/personal-data-paths.json`** aus `references/file-templates.md` §`personal-data-paths.json` rendern. Default-Patterns (`**/user*`, `**/customer*`, `**/profile*`, `**/*pii*`, `**/auth/profile/**`, `**/billing/**`). Operator-Hinweis: Pattern-Liste projektspezifisch ergaenzen.
 5. **Backlog-Label `privacy`** im konfigurierten Backlog-Adapter (Linear / GitHub Issues / MS Planner / Markdown-Backlog) anlegen, falls noch nicht vorhanden.
@@ -1037,57 +1038,75 @@ Phase-4-Checkpoint: Zusammenfassung der angelegten Dateien.
 
 Lies `references/skills-setup.md` fuer Details.
 
-Skills werden aus dem offiziellen GitHub-Repo via `git clone` in einen Temp-Ordner geholt und je nach `RUNTIME_TARGET` kopiert:
+Skills werden aus dem **Framework-Repo** via `git clone` in einen Temp-Ordner geholt und je nach `RUNTIME_TARGET` kopiert:
 - `claude-code` → `{PROJECT_PATH}/.claude/skills/`
 - `codex` → `{PROJECT_PATH}/.codex/skills/`
 - `cross-tool` / `unknown` → beide Zielpfade, identischer Skill-Stand
 
 ```bash
-# Temp-Ordner fuer Skill-Quelle
+# Temp-Ordner fuer Skill-Quelle — Framework-Repo (BOO-74: alle Bundle-Skills + dpo + security-architect liegen hier)
 SKILL_SRC=$(mktemp -d)
-git clone --depth 1 https://github.com/vibercoder79/claudecodeskills "$SKILL_SRC"
+git clone --depth 1 https://github.com/vibercoder79/code-crash-framework "$SKILL_SRC"
 ```
 
-### Repo-Struktur
+### Repo-Struktur (BOO-74)
 
-Das `claudecodeskills`-Repo gruppiert Skills in zwei Bereiche:
+Das `code-crash-framework`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner — keine `code-crash-framework/`-Verschachtelung mehr (das war die alte `claudecodeskills`-Struktur):
 
-- **`$SKILL_SRC/code-crash-framework/<skill>/`** — Governance-Sub-Skills (architecture-review, backlog, cloud-system-engineer, grafana, ideation, implement, sprint-review, visualize)
-- **`$SKILL_SRC/<skill>/`** — Eigenstaendige Top-Level-Skills (design-md-generator, research, security-architect, setup-checklist, skill-creator, u.a.)
+- **`$SKILL_SRC/<skill>/`** — alle Framework-Skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `intent`, `pitch`, `sprint-review`, `visualize` **plus `dpo` und `security-architect`** (vendored, BOO-74).
+
+**Nicht im Framework-Repo:** eigenstaendige Allzweck-Skills wie `research`, `design-md-generator`, `setup-checklist`, `skill-creator` bleiben im `claudecodeskills`-Repo. Sie werden nur auf Wunsch ergaenzend gecloned (siehe optionale Zusatzfrage unten).
+
+> **Master vs. Mirror (BOO-74):** `dpo` und `security-architect` werden im `claudecodeskills`-Repo gepflegt (Master, via `publish_skill.py`) und ins Framework-Repo **gespiegelt** (Vendoring). Bei einem Skill-Update gilt: erst Master in `claudecodeskills` aktualisieren, dann den Framework-Mirror nachziehen. Details: `references/skills-setup.md` §Sync-Konvention.
 
 ### Skill-Auswahl
 
 ```
 Welche Skills installieren?
   a) Minimum (ideation, implement, backlog)
-  b) Standard (+ architecture-review, sprint-review, research, security-architect, skill-creator, setup-checklist)
-  c) Voll (alle verfuegbaren: + grafana, cloud-system-engineer, visualize, design-md-generator)
+  b) Standard (+ architecture-review, sprint-review, security-architect, dpo)
+  c) Voll (alle Framework-Skills: + grafana, cloud-system-engineer, visualize, intent, pitch)
   d) Manuell auswaehlen
 ```
 
+> **Hinweis (BOO-69/74):** `dpo` und `security-architect` sind ab "Standard" dabei, weil das Privacy-Add-on (A.4) und die Security-Dimension auf sie angewiesen sind. Bei aktivem Privacy-Add-on werden beide unabhaengig von der Skill-Auswahl installiert (siehe Phase 4.4n).
+
+### Optionale Allzweck-Skills aus claudecodeskills
+
+```
+Zusaetzliche Allzweck-Skills aus claudecodeskills ergaenzen?
+(research, design-md-generator, setup-checklist, skill-creator — nicht im Framework-Bundle)
+[ja / nein (default)]
+```
+
+Bei `ja`: `claudecodeskills` ergaenzend in einen zweiten Temp-Ordner clonen und die gewaehlten Top-Level-Skills von dort kopieren.
+
 ### Kopieren
 
-Die Kopier-Logik muss wissen, ob ein Skill unter `code-crash-framework/` oder Top-Level liegt:
+Alle Framework-Skills liegen flach als Top-Level-Ordner — keine Sub-Folder-Unterscheidung mehr noetig:
 
 ```bash
-# Skills unter code-crash-framework/ im claudecodeskills-Repo
-BOOTSTRAPPING_SUBSKILLS="architecture-review backlog cloud-system-engineer grafana ideation implement sprint-review visualize"
-
 for skill in $SELECTED_SKILLS; do
-  if echo "$BOOTSTRAPPING_SUBSKILLS" | grep -qw "$skill"; then
-    SRC_PATH="$SKILL_SRC/code-crash-framework/$skill"
-  else
-    SRC_PATH="$SKILL_SRC/$skill"
-  fi
+  SRC_PATH="$SKILL_SRC/$skill"   # Framework-Repo: alles Top-Level
   # Zielpfade aus RUNTIME_TARGET ableiten:
   # claude-code => .claude/skills
   # codex => .codex/skills
   # cross-tool/unknown => beide
   cp -R "$SRC_PATH" "{PROJECT_PATH}/{TARGET_SKILLS_DIR}/$skill"
 done
+
+# Optionale Allzweck-Skills (nur bei "ja" oben):
+if [[ "$ADD_GENERAL_SKILLS" == "yes" ]]; then
+  GENERAL_SRC=$(mktemp -d)
+  git clone --depth 1 https://github.com/vibercoder79/claudecodeskills "$GENERAL_SRC"
+  for skill in $SELECTED_GENERAL_SKILLS; do
+    cp -R "$GENERAL_SRC/$skill" "{PROJECT_PATH}/{TARGET_SKILLS_DIR}/$skill"
+  done
+  rm -rf "$GENERAL_SRC"
+fi
 ```
 
-Ergebnis: Alle Skills landen **flach** in `.claude/skills/<skill>/` und/oder `.codex/skills/<skill>/` — die Verschachtelung `code-crash-framework/` existiert nur im Repo, nicht in der Installation.
+Ergebnis: Alle Skills landen **flach** in `.claude/skills/<skill>/` und/oder `.codex/skills/<skill>/`.
 
 ### Projekt-spezifische Anpassung (generisch, nicht trading-spezifisch)
 

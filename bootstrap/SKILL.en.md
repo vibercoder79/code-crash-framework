@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.28.0
+version: 3.29.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -958,10 +958,11 @@ If `B.2 == no/c` (no GitHub wanted): skip phase 4.4k completely — branch prote
 
 **Steps:**
 
-1. **Install DPO skill as standalone** (analogous to `security-architect`):
-   - Path: `~/.claude/skills/dpo/` (global) — if not present, operator hint: "Install via `git clone` from the skill repo or copy from the Code-Crash framework." Non-destructive: existing installation remains unchanged.
+1. **Install DPO skill from the framework bundle** (BOO-74, analogous to `security-architect`):
+   - Source: `$SKILL_SRC/dpo/` (framework repo, already cloned in Phase 5). Target: `~/.claude/skills/dpo/` (global) or `{TARGET_SKILLS_DIR}/dpo/` per `RUNTIME_TARGET`. Non-destructive: existing installation remains unchanged.
+   - No external repo choice anymore — the skill comes from the same framework repo as bootstrap/ideation/implement. The skill's master remains `claudecodeskills` (mirror convention, see `references/skills-setup.en.md`).
    - Note: DPO remains **simultaneously** globally available for other projects. The Code-Crash framework makes no exclusive claim.
-2. **Install security-architect** (prerequisite for DPO ↔ security-architect interplay) — same standalone mechanism.
+2. **Install security-architect from the framework bundle** (prerequisite for DPO ↔ security-architect interplay) — same source `$SKILL_SRC/security-architect/`.
 3. **Render `PRIVACY.md`** from `references/privacy-template.md` (DE) or `.en.md` (EN) depending on project language. Replace placeholders `{{PROJECT_NAME}}`, `{{VERSION_START}}`, `{{TODAY}}`. Mandatory sections (records of processing, deletion policy) receive a skeleton — operator fills in.
 4. **Render `.claude/personal-data-paths.json` and/or `.codex/personal-data-paths.json`** from `references/file-templates.md` §`personal-data-paths.json`. Default patterns (`**/user*`, `**/customer*`, `**/profile*`, `**/*pii*`, `**/auth/profile/**`, `**/billing/**`). Operator hint: extend the pattern list project-specifically.
 5. **Backlog label `privacy`** in the configured backlog adapter (Linear / GitHub Issues / MS Planner / Markdown backlog), create if not yet present.
@@ -1037,57 +1038,75 @@ Phase 4 checkpoint: summary of files created.
 
 Read `references/skills-setup.en.md` for details.
 
-Skills are fetched from the official GitHub repo via `git clone` into a temp folder and copied according to `RUNTIME_TARGET`:
+Skills are fetched from the **framework repo** via `git clone` into a temp folder and copied according to `RUNTIME_TARGET`:
 - `claude-code` → `{PROJECT_PATH}/.claude/skills/`
 - `codex` → `{PROJECT_PATH}/.codex/skills/`
 - `cross-tool` / `unknown` → both target paths, identical skill revision
 
 ```bash
-# Temp folder for skill source
+# Temp folder for skill source — framework repo (BOO-74: all bundle skills + dpo + security-architect live here)
 SKILL_SRC=$(mktemp -d)
-git clone --depth 1 https://github.com/vibercoder79/claudecodeskills "$SKILL_SRC"
+git clone --depth 1 https://github.com/vibercoder79/code-crash-framework "$SKILL_SRC"
 ```
 
-### Repo structure
+### Repo structure (BOO-74)
 
-The `claudecodeskills` repo groups skills in two areas:
+The `code-crash-framework` repo holds **all** bundle skills flat as top-level folders — no more `code-crash-framework/` nesting (that was the old `claudecodeskills` structure):
 
-- **`$SKILL_SRC/code-crash-framework/<skill>/`** — governance sub-skills (architecture-review, backlog, cloud-system-engineer, grafana, ideation, implement, sprint-review, visualize)
-- **`$SKILL_SRC/<skill>/`** — standalone top-level skills (design-md-generator, research, security-architect, setup-checklist, skill-creator, among others)
+- **`$SKILL_SRC/<skill>/`** — all framework skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `intent`, `pitch`, `sprint-review`, `visualize` **plus `dpo` and `security-architect`** (vendored, BOO-74).
+
+**Not in the framework repo:** general-purpose standalone skills like `research`, `design-md-generator`, `setup-checklist`, `skill-creator` stay in the `claudecodeskills` repo. They are only cloned additionally on request (see optional question below).
+
+> **Master vs. mirror (BOO-74):** `dpo` and `security-architect` are maintained in the `claudecodeskills` repo (master, via `publish_skill.py`) and **mirrored** into the framework repo (vendoring). On a skill update: update the master in `claudecodeskills` first, then refresh the framework mirror. Details: `references/skills-setup.en.md` §sync convention.
 
 ### Skill selection
 
 ```
 Which skills to install?
   a) Minimum (ideation, implement, backlog)
-  b) Standard (+ architecture-review, sprint-review, research, security-architect, skill-creator, setup-checklist)
-  c) Full (all available: + grafana, cloud-system-engineer, visualize, design-md-generator)
+  b) Standard (+ architecture-review, sprint-review, security-architect, dpo)
+  c) Full (all framework skills: + grafana, cloud-system-engineer, visualize, intent, pitch)
   d) Manual selection
 ```
 
+> **Note (BOO-69/74):** `dpo` and `security-architect` are included from "Standard" up, because the Privacy add-on (A.4) and the security dimension depend on them. With the Privacy add-on active, both are installed regardless of the skill selection (see Phase 4.4n).
+
+### Optional general-purpose skills from claudecodeskills
+
+```
+Add additional general-purpose skills from claudecodeskills?
+(research, design-md-generator, setup-checklist, skill-creator — not in the framework bundle)
+[yes / no (default)]
+```
+
+On `yes`: clone `claudecodeskills` into a second temp folder and copy the selected top-level skills from there.
+
 ### Copy
 
-The copy logic needs to know if a skill lives under `code-crash-framework/` or top-level:
+All framework skills are flat top-level folders — no sub-folder distinction needed anymore:
 
 ```bash
-# Skills located under code-crash-framework/ in the claudecodeskills repo
-BOOTSTRAPPING_SUBSKILLS="architecture-review backlog cloud-system-engineer grafana ideation implement sprint-review visualize"
-
 for skill in $SELECTED_SKILLS; do
-  if echo "$BOOTSTRAPPING_SUBSKILLS" | grep -qw "$skill"; then
-    SRC_PATH="$SKILL_SRC/code-crash-framework/$skill"
-  else
-    SRC_PATH="$SKILL_SRC/$skill"
-  fi
+  SRC_PATH="$SKILL_SRC/$skill"   # framework repo: everything top-level
   # Derive target paths from RUNTIME_TARGET:
   # claude-code => .claude/skills
   # codex => .codex/skills
   # cross-tool/unknown => both
   cp -R "$SRC_PATH" "{PROJECT_PATH}/{TARGET_SKILLS_DIR}/$skill"
 done
+
+# Optional general-purpose skills (only on "yes" above):
+if [[ "$ADD_GENERAL_SKILLS" == "yes" ]]; then
+  GENERAL_SRC=$(mktemp -d)
+  git clone --depth 1 https://github.com/vibercoder79/claudecodeskills "$GENERAL_SRC"
+  for skill in $SELECTED_GENERAL_SKILLS; do
+    cp -R "$GENERAL_SRC/$skill" "{PROJECT_PATH}/{TARGET_SKILLS_DIR}/$skill"
+  done
+  rm -rf "$GENERAL_SRC"
+fi
 ```
 
-Result: all skills land **flat** in `.claude/skills/<skill>/` and/or `.codex/skills/<skill>/` — the `code-crash-framework/` nesting only exists in the repo, not in the installation.
+Result: all skills land **flat** in `.claude/skills/<skill>/` and/or `.codex/skills/<skill>/`.
 
 ### Project-specific adjustments (generic, not trading-specific)
 

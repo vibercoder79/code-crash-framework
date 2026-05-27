@@ -140,3 +140,25 @@ Wenn Block D = L1/L2/L3, wird:
 - `ideation`-Skill um Schritt 0.5 (Learnings-Kontext lesen vor Story-Erstellung) erweitert
 
 Aktivierung: `.learning-loop`-File im Projekt-Root mit Inhalt `L1`, `L2` oder `L3`.
+
+## Sync-Konvention: Vendored-Skills (BOO-74)
+
+Seit BOO-74 (Wave M) liegen `dpo` und `security-architect` als **vendored Bundle-Skills** im `code-crash-framework`-Repo. Damit installiert Bootstrap sie aus demselben Repo wie alle anderen Bundle-Skills (Phase 5). Aber: der **Master** dieser zwei Skills bleibt das `claudecodeskills`-Repo.
+
+### Master vs. Mirror
+
+| Rolle | Repo | Pflege |
+|-------|------|--------|
+| Master | `claudecodeskills` | `publish_skill.py <skill>` — Quelle der Wahrheit, auch fuer Solo-Operatoren ohne Framework |
+| Mirror | `code-crash-framework` | Vendored 1:1-Kopie (`dpo/`, `security-architect/`), aus der Bootstrap installiert |
+
+### Pflicht bei jedem DPO- oder security-architect-Update
+
+1. Skill lokal in `~/.claude/skills/<skill>/` aendern.
+2. `python3 ~/.claude/skills/skill-creator/scripts/publish_skill.py <skill> -m "..."` — aktualisiert den Master in `claudecodeskills` + SecondBrain-Doku.
+3. **Mirror nachziehen:** `cp -R ~/.claude/skills/<skill>/ ~/Documents/GitHub/code-crash-framework/<skill>/` und im Framework-Repo committen.
+4. Verifikation: `diff -rq ~/.claude/skills/<skill>/ ~/Documents/GitHub/code-crash-framework/<skill>/` → keine Diff.
+
+### Drift-Risiko
+
+Wird Schritt 3 vergessen, laeuft der Framework-Mirror auf einem aelteren Skill-Stand als der Master. Neue Bootstrap-Laeufe installieren dann die veraltete Version. **Folge-Story (geplant):** `sync_framework_mirror.sh` automatisiert Schritt 3+4 — bis dahin ist es Operator-Pflicht.

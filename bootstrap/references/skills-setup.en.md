@@ -136,3 +136,25 @@ When Block D = L1/L2/L3:
 - `ideation` skill gains Step 0.5 (read learnings context before story creation)
 
 Activation: `.learning-loop` file in project root with content `L1`, `L2` or `L3`.
+
+## Sync convention: vendored skills (BOO-74)
+
+Since BOO-74 (Wave M), `dpo` and `security-architect` live as **vendored bundle skills** in the `code-crash-framework` repo. Bootstrap therefore installs them from the same repo as all other bundle skills (Phase 5). But: the **master** of these two skills remains the `claudecodeskills` repo.
+
+### Master vs. mirror
+
+| Role | Repo | Maintenance |
+|------|------|-------------|
+| Master | `claudecodeskills` | `publish_skill.py <skill>` — source of truth, also for solo operators without the framework |
+| Mirror | `code-crash-framework` | vendored 1:1 copy (`dpo/`, `security-architect/`), the one Bootstrap installs from |
+
+### Mandatory on every DPO or security-architect update
+
+1. Change the skill locally in `~/.claude/skills/<skill>/`.
+2. `python3 ~/.claude/skills/skill-creator/scripts/publish_skill.py <skill> -m "..."` — updates the master in `claudecodeskills` + SecondBrain docs.
+3. **Refresh the mirror:** `cp -R ~/.claude/skills/<skill>/ ~/Documents/GitHub/code-crash-framework/<skill>/` and commit in the framework repo.
+4. Verify: `diff -rq ~/.claude/skills/<skill>/ ~/Documents/GitHub/code-crash-framework/<skill>/` → no diff.
+
+### Drift risk
+
+If step 3 is forgotten, the framework mirror runs on an older skill revision than the master. New bootstrap runs then install the stale version. **Follow-up story (planned):** `sync_framework_mirror.sh` automates steps 3+4 — until then it is the operator's duty.

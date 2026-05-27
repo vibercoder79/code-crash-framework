@@ -3205,6 +3205,48 @@ migrate_boo_72() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-74 — DPO + security-architect als Framework-Bundle-Skills — Wave M
+# -----------------------------------------------------------------------------
+
+migrate_boo_74() {
+    log_info "BOO-74: DPO + security-architect aus Framework-Bundle nach ~/.claude/skills/ nachziehen"
+    log_info "BOO-74: pull DPO + security-architect from the framework bundle into ~/.claude/skills/"
+
+    # Idempotent + nicht-destruktiv: nur kopieren wenn Ziel-Skill noch nicht vorhanden.
+    # Quelle ist das Framework-Repo selbst (dieses Skript liegt darin).
+    local script_dir framework_root
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    framework_root="$(cd "${script_dir}/../.." && pwd)"
+
+    local target_base="${HOME}/.claude/skills"
+    mkdir -p "$target_base" 2>/dev/null || true
+
+    local skill
+    for skill in dpo security-architect; do
+        local src="${framework_root}/${skill}"
+        local dst="${target_base}/${skill}"
+
+        if [[ ! -d "$src" ]]; then
+            log_warn "BOO-74: ${skill} nicht im Framework-Repo gefunden (${src}). Vendoring unvollstaendig — bitte Repo-Stand pruefen."
+            continue
+        fi
+
+        if [[ -d "$dst" ]]; then
+            log_info "BOO-74: ${skill} bereits unter ${dst} vorhanden — keine Aenderung (nicht-destruktiv)."
+        else
+            if [[ "$DRY_RUN" == "true" ]]; then
+                log_info "[dry-run] ${skill} von ${src} nach ${dst} kopieren"
+            else
+                cp -R "$src" "$dst" && log_info "BOO-74: ${skill} aus Framework-Bundle nach ${dst} installiert."
+            fi
+        fi
+    done
+
+    log_info "BOO-74: Master des Skills bleibt 'claudecodeskills' (publish_skill.py). Framework-Repo ist Vendored-Mirror."
+    log_info "BOO-74 done. Bestehende Installationen bleiben unveraendert. Solo-Use via claudecodeskills weiter moeglich."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3221,6 +3263,7 @@ ALL_ISSUES=(
     BOO-69
     BOO-70 BOO-71
     BOO-72
+    BOO-74
 )
 
 print_help() {
