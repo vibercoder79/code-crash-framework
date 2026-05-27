@@ -2619,6 +2619,359 @@ The operator maintains `PRIVACY.md` after the initial generation manually — fi
 
 ---
 
+## Appendix P: Deployment Scenarios — Solo-Mac / Solo-VPS / Multi-User-VPS / Team-Server (BOO-70)
+
+This appendix describes four established setup patterns for the Code-Crash Framework, from a solo operator on a Mac to a multi-user VPS coding factory. It exists because the bootstrap script deliberately asks only **one** additional question (default Solo-Mac) and the details land here, rather than bloating bootstrap. Operators pick their scenario via the decision matrix, read the matching scenario section, and walk through the setup steps once. The framework itself behaves identically in all four scenarios — only the surrounding environment differs.
+
+### Decision Matrix
+
+| Operator Profile | Recommended Scenario | Primary Reason |
+|------------------|----------------------|----------------|
+| Solo operator, stationary (office, single Mac) | Scenario 1 — Solo-Mac | Frictionless default, central skill pool, no server maintenance. |
+| Solo operator, mobile (multiple devices, location-independent) | Scenario 2 — Solo-VPS | 24/7 availability, device-independent access via SSH. |
+| 2-5 operators sharing one code hub | Scenario 4 — Team Coding-Server | Hybrid Mac frontend + VPS backend, shared backlog. |
+| Coding factory with 5+ operators and shared skill pool | Scenario 3 — Multi-User-VPS | Clean user isolation, centrally maintainable skill pool. |
+| Public authority / industry with GDPR obligation | Scenario 2 or 3 (EU-located VPS) | Data location control; see Appendix O Privacy by Design and Appendix Q Sovereignty Stack. |
+| Hobby / experiment, no production claim | Scenario 1 — Solo-Mac | Minimal setup cost, operator can migrate to VPS later. |
+
+### Scenario 1 — Solo-Mac (default, ~80% of operators)
+
+**Operator profile**
+
+- One operator, one Mac (stationary or laptop).
+- No 24/7 background needs, no cross-device mobile access.
+- Wants a frictionless start without server maintenance.
+
+**Setup steps**
+
+1. Install the Claude Code CLI via `npm` (Anthropic standard path).
+2. Keep the skill pool central in `~/.claude/skills/` — all projects share it.
+3. Create the project directory under `~/Documents/GitHub/<project>/`.
+4. Start `claude` in the project and run `/bootstrap` (bootstrap question A.7 = a) Solo-Mac).
+5. Store secrets in `~/.claude/.env` (user level, not in the project).
+6. Check `.gitignore` in the project — `.env`, `.claude/local/`, `journal/reports/local/` must be ignored.
+7. Pick Linear or GitHub Issues as backlog tool during the bootstrap interview.
+8. Enable Time Machine for the Mac (System Settings → Time Machine).
+
+**Skill installation**
+
+- Central pool under `~/.claude/skills/`. No per-project sync needed.
+- Skill updates via `git pull` in the skill repo apply immediately to all projects.
+- Standalone skills like `security-architect` and `dpo` also live centrally (see Appendix O).
+
+**Secrets separation**
+
+- One `.env` at user level under `~/.claude/.env`.
+- Project directories contain **no** secrets — only references to env variables.
+- `.gitignore` check is a mandatory bootstrap step.
+
+**Backup strategy**
+
+- Time Machine to an external drive (primary).
+- Optional: Mac backup to iCloud (Documents folder) or Backblaze B2 as a cloud copy.
+- Skill pool and projects are git-versioned — backup guards against hardware loss, not code loss.
+
+**Tradeoffs**
+
+- No 24/7 background runs (Mac must be awake).
+- Not mobile across devices — the operator's machine is the single point of use.
+- No device redundancy: Mac failure = work stoppage until restore.
+
+### Scenario 2 — Solo-VPS (BOO-9 pattern, for mobile workers and 24/7 background tasks)
+
+**Operator profile**
+
+- One operator, multiple access devices (laptop, tablet, foreign machine).
+- Needs 24/7 reach for cron tasks, long-running background agents, scheduled builds.
+- Accepts server maintenance as a tradeoff for mobility.
+
+**Setup steps**
+
+1. Provision a VPS with a provider of your choice (e.g. Hostinger VPS, Hetzner — operator picks).
+2. Set up SSH key login, disable password login.
+3. On the VPS install Node.js + `npm` and install the Claude Code CLI via `npm`.
+4. Pull the skill pool to `~/.claude/skills/` via `git clone` from the personal skill repo.
+5. Skill sync via `git pull` is manual — heterogeneous skill versions between Mac and VPS are allowed (no auto-sync).
+6. Optional: a cron job for periodic `git pull` if the operator wants formalised update discipline.
+7. Place an own `.env` on the VPS under `~/.claude/.env`, strictly separated from the Mac `.env`.
+8. Configure a backup target (Hetzner Storage Box or Backblaze B2 — operator picks).
+9. Create the project directory under `~/projects/<project>/` and run `/bootstrap`.
+
+**Skill installation**
+
+- Central pool under `~/.claude/skills/` on the VPS, same structure as on the Mac.
+- Skill sync is **manual** (`git pull`) or via cron — no auto-push from the Mac.
+- Heterogeneous versions are fine: the VPS can sit on an older skill version if the operator wants it that way.
+
+**Secrets separation**
+
+- VPS `.env` strictly separated from the Mac `.env`.
+- Do not copy the Mac `.env` to the VPS — distinct values per machine.
+- SSH keys are not `.env` secrets but belong in `~/.ssh/` with mode 600.
+
+**Backup strategy**
+
+- Hetzner Storage Box or Backblaze B2 as backup target (operator picks).
+- Backup frequency: at least daily for `journal/`, `backlog/`, `.claude/local/`.
+- Git-tracked content (code, skills) is covered by the remote — backup covers operator state and secrets.
+
+**Tradeoffs**
+
+- Initial setup 1-2 hours (SSH hardening, skill sync, backup configuration).
+- Single point of failure: VPS down = no access.
+- Slightly higher LLM latency due to EU routing and the extra network hop.
+
+### Scenario 3 — Multi-User-VPS Coding Factory (BOO-83 pattern, for teams + shared skill pool)
+
+**Operator profile**
+
+- 5+ operators on a shared VPS, each with their own system user.
+- Shared skill collection, individual repositories per user.
+- A maintenance owner is defined (otherwise an anti-pattern).
+
+**Setup steps**
+
+1. Size the VPS: at least 8 GB RAM and 4 vCPU as a rule of thumb for five concurrent operators (operator picks).
+2. Create a system user per operator: `sudo useradd -m -s /bin/bash <name>`.
+3. Store SSH keys per user in `/home/<name>/.ssh/authorized_keys`, disable global password login.
+4. Set `UMASK 077` globally so user directories are not world-readable.
+5. Define `sudo` rules per user — who may do what, what stays root-only.
+6. Decide the skill pool strategy: either global under `/opt/claude/skills/` (read-only for users) **or** per user in `~/.claude/skills/` (own copy per operator). Both patterns are documented and supported.
+7. Repository worktrees per user: each user clones into their own home — no shared working trees.
+8. Secrets STRICTLY per user in `~/.claude/.env`. No shared `.env` files.
+9. Backup strategy centrally (provider VPS snapshot) plus per home directory (Hetzner Storage Box or Backblaze B2 — operator picks).
+10. Check configuration drift periodically (`jq` diff over `~/.claude/settings.json` per user).
+
+**Skill installation**
+
+- **Variant A (global):** `/opt/claude/skills/` read-only, maintained by the owner. Updates via `git pull` as root. Users cannot patch themselves.
+- **Variant B (per user):** each user maintains their own `~/.claude/skills/`. More freedom, more drift risk.
+- Document the choice — switching mid-stream is expensive.
+
+**Secrets separation**
+
+- Strictly per user in `~/.claude/.env`, mode 600.
+- No shared secrets via `/etc/` or `/opt/`.
+- On operator handover: delete the user account, the `.env` goes with it.
+
+**Backup strategy**
+
+- VPS-wide snapshot at the provider (daily, operator picks).
+- Plus per-home backup to Hetzner Storage Box or Backblaze B2.
+- Git remotes per user cover code — backup covers operator state, journal, secrets.
+
+**Tradeoffs**
+
+- Maintenance overhead is noticeable: user onboarding, skill updates, drift detection, snapshot verification.
+- User isolation is critical — a compromised user must not see other users.
+- Configuration drift between users must be actively monitored ("why does skill X work for Alice but not Bob").
+
+### Scenario 4 — Team Coding-Server (hybrid Mac frontend + VPS backend, 2-5 operators)
+
+**Operator profile**
+
+- 2-5 operators, each with their own Mac, but a shared code hub on a VPS.
+- Editor runs locally (VS Code Remote-SSH), code lives on the server.
+- Distributed team across time zones or locations.
+
+**Setup steps**
+
+1. Provision the VPS (see Scenario 2 steps 1-3).
+2. Install the VS Code Remote-SSH extension on each operator's Mac.
+3. One system user per operator on the VPS (analogous to Scenario 3 steps 2-3).
+4. Install the Claude Code CLI on the VPS — operators start `claude` over the Remote-SSH session.
+5. Set up a shared backlog in Linear or GitHub Issues — all operators work against the same backlog.
+6. Secrets per operator in `~/.claude/.env` on the VPS, **not** in shared directories.
+7. Optional: use Syncthing for file sync between Macs and VPS if operator data must be kept locally (operator picks).
+8. Backup as in Scenario 3 (VPS snapshot plus per home).
+
+**Skill installation**
+
+- As in Scenario 3 — either global under `/opt/claude/skills/` or per user.
+- For small teams (2-3 operators) Variant B (per user) often suffices because drift risk is lower.
+
+**Secrets separation**
+
+- Per operator in `~/.claude/.env` on the VPS.
+- Do not carry Mac `.env` files into the VPS workflow.
+- Optional: the operator's secret vault (e.g. <secret vault tool of your choice>) — the framework assumes nothing.
+
+**Backup strategy**
+
+- Provider VPS snapshot (daily).
+- Plus Hetzner Storage Box or Backblaze B2 for home directories.
+- Mac side: Time Machine covers local state if operators work locally too.
+
+**Tradeoffs**
+
+- Complex to set up: SSH hardening, remote extension, shared backlog, secrets discipline.
+- Only useful for distributed teams with a shared code hub — overkill for solo setups.
+- LLM latency depends on VPS location, not operator location.
+
+### Bootstrap Question A.7 (BOO-70)
+
+`/bootstrap` Phase A asks exactly one question about the deployment scenario:
+
+```
+A.7 Deployment scenario:
+  a) Solo-Mac (default)
+  b) other → see HANDBUCH Appendix P
+```
+
+On `a)` the existing bootstrap path runs unchanged. On `b)` bootstrap emits only a pointer block referring to this appendix — **no** interview fork, **no** scenario-specific setup code inside the bootstrap skill. The operator sets up their scenario manually using the steps in the matching section.
+
+### Related appendices
+
+- **Appendix I (Self-Hosted Runner):** Operators on Scenarios 2-4 can host a self-hosted CI runner on the same VPS — sizing hints in Appendix I.
+- **Appendix F (Hermes Compound-Layer):** Hermes routing works identically across scenarios because it acts at the skill level, not the deployment level.
+- **Appendix O (Privacy by Design):** For GDPR-bound projects on Scenarios 2-4, pick an EU VPS location — Appendix O provides the legal-basis lens.
+- **Appendix Q (Sovereignty Stack Guide):** Inspiration layer for EU-compliant provider alternatives when data sovereignty is an explicit driver.
+
+Based on BOO-9 (VPS rollout) and BOO-83 (VPS multi-user pattern).
+## Appendix Q: Sovereignty Stack Guide + LLM Proxy Hook (BOO-71)
+
+Code-Crash operators increasingly work in regulated industries — FINMA, BaFin, MaRisk, NIS-2 sectors, public-sector contracts. In those contexts the default stack composition (GitHub, Anthropic USA, iCloud) is not sovereignty-compliant, and an auditor will eventually ask for EU alternatives. This appendix is the **inspiration layer** of the framework: a curated table of EU-compliant components plus a single hook point (`llm_proxy_url`) for operator-run anonymisation or routing proxies. **No anonymisation engine inside the framework itself** — that is runtime infrastructure and belongs in the operator's hands.
+
+### When is a sovereignty switch worth it?
+
+Not every project needs a sovereign stack. This decision matrix gives an honest orientation — when in doubt, align with the strictest criterion that applies.
+
+| Trigger | Sovereignty switch needed? | Reason |
+|---------|----------------------------|--------|
+| Regulated industry (FINMA / BaFin / MaRisk) | Yes | Supervisory requirement for data location and outsourcing chain; US cloud usually only with special review. |
+| Public-sector contract (federal / state / cantonal) | Yes | Procurement law and IT baseline protection typically demand EU location and EU contracting party. |
+| NIS-2 sector (energy, transport, health, water, digital) | Yes | NIS-2 requires control over critical supply chain including LLM and code-hosting providers. |
+| Personal data tier 3 (health, finance, criminal record) | Yes | Highest GDPR risk class; CLOUD-Act exposure is an audit finding. |
+| Swiss client mandate with nDSG obligation | Yes | nDSG requires demonstrable data-location control and EU/CH contracting party. |
+| Solo tool without EU exposure | No | Default stack is fine; sovereignty would add friction without return. |
+| Code-Crash-Lite setup for hobby projects | No | Learning curve and operator effort are out of proportion; keep the default. |
+
+### EU-compliant alternatives per stack component
+
+The table below is the short overview. Each component then has its own subsection with a brief migration guide and a pointer to the relevant official documentation — no full setup guides, just springboard material.
+
+| Component | US default | EU alternative | Tradeoff / Note |
+|-----------|------------|----------------|------------------|
+| Code hosting | GitHub | Codeberg (Forgejo) or GitLab self-hosted | Codeberg is a non-profit cooperative; GitLab self-hosted requires own maintenance. |
+| Vault sync | iCloud or Obsidian Sync | Syncthing or Hetzner Storage Box with Git sync | Syncthing is peer-to-peer and needs running devices; Storage Box plus Git sync is more robust but more manual. |
+| LLM endpoint | Anthropic API (USA) or OpenAI (USA) | Mistral La Plateforme (EU), AWS Bedrock Frankfurt (with CLOUD-Act residual risk), Ollama local | Mistral is an EU contracting party; Bedrock Frankfurt is still a US company with CLOUD-Act exposure; Ollama local shifts cost onto hardware. |
+| Issue tracker | Linear | Plane (self-hosted) or GitLab Issues | Plane has Linear-like UX, needs self-hosting; GitLab Issues are less slim but integrate with GitLab hosting. |
+| CI / build | GitHub Actions | Forgejo Actions or Drone CI on Hetzner | Forgejo Actions is mostly GitHub-Actions-compatible; Drone CI is lighter and decoupled from the forge. |
+
+### Code hosting: GitHub → Codeberg / GitLab self-hosted
+
+**Migration steps**
+
+1. Create a Codeberg or GitLab account (for self-hosted: install a GitLab server on an EU VPS, see Appendix P).
+2. Mirror the repo via `git push --mirror` to the new remote.
+3. Review CI workflows — GitHub Actions do not run 1:1 on Codeberg/Forgejo (see CI section below).
+4. Recreate team permissions and secrets in the new forge — do not copy `.env` content over.
+5. Set the `git_provider` field in the bootstrap interview accordingly; disable the Linear-GitHub bridge if needed.
+
+**External documentation**
+
+- Consult the official Codeberg documentation (operator obtains it).
+- Consult the official GitLab self-hosted documentation (operator obtains it).
+
+### Vault sync: iCloud / Obsidian Sync → Syncthing / Hetzner Storage Box + Git sync
+
+**Migration steps**
+
+1. Initialise the vault as a Git repo if not already done.
+2. Install Syncthing on all devices, or mount the Storage Box via SSHFS.
+3. Explicitly disable iCloud sync for the vault folder (otherwise race conditions).
+4. With the Storage Box variant: set up a cron job for regular Git commit and push.
+5. Backup strategy as in Appendix P — Storage Box covers operator state, Git remote covers code state.
+
+**External documentation**
+
+- Consult the official Syncthing documentation (operator obtains it).
+- Consult the Hetzner Storage Box documentation (operator obtains it).
+
+### LLM endpoint: Anthropic / OpenAI USA → Mistral La Plateforme / AWS Bedrock Frankfurt / Ollama
+
+**Migration steps**
+
+1. Pick an EU endpoint contracting party — Mistral La Plateforme (EU contracting party) or AWS Bedrock Frankfurt (document CLOUD-Act residual risk explicitly).
+2. Alternatively run Ollama locally if no cloud is acceptable; check the hardware requirements.
+3. Adjust the model-tier mapping in `bootstrap/references/model-tiers.json` — other providers have different tier names and prices.
+4. Validate cost tracking in `meta.json.token_tracking` — switching providers changes token prices; operator checks the current price list of the new provider.
+5. For sensitive data, additionally set `llm_proxy_url` to insert anonymisation in front of the provider (see next section).
+
+**External documentation**
+
+- Consult the official Mistral La Plateforme documentation (operator obtains it).
+- Consult the AWS Bedrock documentation for the Frankfurt region (operator obtains it).
+- Consult the official Ollama documentation (operator obtains it).
+
+### Issue tracker: Linear → Plane / GitLab Issues
+
+**Migration steps**
+
+1. Deploy Plane (self-hosted) on an EU VPS or use GitLab Issues in the already migrated GitLab.
+2. Export existing Linear issues (CSV or API) and import them into the new tracker.
+3. Switch the backlog tool in `/bootstrap` — the `backlog` skill supports multiple tools via configuration.
+4. Reconnect webhook and bot integrations (Linear-specific automations are not portable).
+5. Review action items from meeting skills — trigger logic stays, the endpoint changes.
+
+**External documentation**
+
+- Consult the official Plane documentation (operator obtains it).
+- Consult the official GitLab Issues documentation (operator obtains it).
+
+### CI / build: GitHub Actions → Forgejo Actions / Drone CI
+
+**Migration steps**
+
+1. Pick a CI provider — Forgejo Actions if you switched to Codeberg/Forgejo, Drone CI for a decoupled runner.
+2. Review workflow definitions — Forgejo Actions is largely GitHub-Actions-compatible, but not every marketplace action is ported.
+3. Set up a self-hosted runner (see Appendix I) — sizing as described there.
+4. Store secrets in the new CI; do not copy from GitHub Actions secrets.
+5. Verify coverage and lint gates from `CONVENTIONS.md` against the new runner.
+
+**External documentation**
+
+- Consult the official Forgejo Actions documentation (operator obtains it).
+- Consult the official Drone CI documentation (operator obtains it).
+
+### LLM proxy hook (`llm_proxy_url`)
+
+The framework offers **one** configurable hook point for operator-side proxy solutions: the optional field `llm_proxy_url` in `.claude/environment.json`. The default is `null` — meaning a direct LLM call as before. If the operator sets a value, it is an HTTP endpoint of a self-run proxy server that performs anonymisation, logging or sovereignty routing. **The framework does NOT implement the routing** — it reads the field, records it in `meta.json.llm_routing` as an audit trail and leaves the proxy implementation to the operator.
+
+**`environment.json` schema snippet**
+
+```json
+{
+  "llm_proxy_url": "http://localhost:8000"
+}
+```
+
+Default value: `null`. Any HTTP or HTTPS endpoint the operator keeps reachable is allowed.
+
+**Example use case: anonymisation proxy with Microsoft Presidio**
+
+A typical setup: the proxy receives the outgoing prompt, identifies personal entities (names, emails, IBANs) via Microsoft Presidio, replaces them with deterministic tokens and forwards the anonymised prompt to the actual LLM endpoint. On the way back the same proxy unmasks the response. The LLM provider therefore never sees plaintext PII while skill behaviour stays unchanged. Alternatives are equally valid — instead of Microsoft Presidio the operator can use spaCy, a custom Lambda function or another proxy. The framework prescribes nothing here.
+
+> **Design decision:** Anonymisation is runtime infrastructure, not framework responsibility. Code-Crash provides the hook point and the audit trail — nothing more.
+
+### Bootstrap behaviour
+
+Bootstrap does **not** change with BOO-71 — no new interview step, no new mandatory question. `llm_proxy_url` is a power-user field; the operator sets it manually in `.claude/environment.json` after the bootstrap run. For existing projects the migration script `migrate_boo_71()` inserts the field idempotently with default `null` into `environment.json`. If you want a sovereign stack but no proxy yet, leave the field empty and switch it on later.
+
+### Privacy ≠ sovereignty
+
+Data sovereignty (US-vs-EU cloud providers) and privacy-by-design are **orthogonal** topics and do not replace each other. A sovereign stack with EU hosting does not exempt you from GDPR — legal bases, records of processing, deletion policy and data-subject rights apply regardless of the hosting location. Conversely, a GDPR-compliant default stack on US cloud does not protect against CLOUD-Act access or public-sector procurement rules. Operators with both requirements activate the Privacy add-on (see Appendix O) **and** pick their stack components according to this Appendix Q.
+
+### Related appendices
+
+- **Appendix N (Token efficiency, BOO-84):** `llm_proxy_url` and `model_overrides:` can conceptually live in the same CLAUDE.md section — both address operator choice at the LLM level.
+- **Appendix O (Privacy by Design, BOO-69):** GDPR/nDSG obligations apply regardless of hosting location; the Privacy add-on and the sovereignty stack are orthogonally combinable.
+- **Appendix P (Deployment scenarios, BOO-70):** An EU VPS location is a prerequisite for a sovereign stack — scenarios 2 to 4 in Appendix P are the natural home for Appendix Q.
+- **Appendix F (Hermes compound layer):** Hermes routing does not change because of a proxy — the compound layer acts before the LLM call and is independent of the endpoint.
+
+Source: BOO-71 spec. Operator feedback Martin 2026-05-27.
+
+
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-27 (Appendix O Privacy-by-Design added — BOO-69)*
+*Last updated: 2026-05-27 (Appendix P Deployment Scenarios + Appendix Q Sovereignty Stack added — BOO-70 + BOO-71, Wave K)*

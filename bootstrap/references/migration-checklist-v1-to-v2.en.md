@@ -990,6 +990,62 @@ Mirror of the master checklist in `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-70 — Deployment Scenarios (HANDBUCH Appendix P) — Wave K
+
+**Status:** ✓ included in the v2 bundle — pure documentation issue, no repository change in existing projects.
+**Effort:** small (~10 min reading + status note).
+**Linear:** <https://linear.app/owlist/issue/BOO-70>
+**Auto step:** yes (`migrate_boo_70` in `migrate-to-v2.sh`) — prints a hint block only, no file operations.
+
+**Auto steps:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-70` — lists Appendix P and the operator steps, idempotent without file changes.
+
+**Operator steps (manual, after auto-run):**
+
+- [ ] Read HANDBUCH Appendix P — decision matrix + 4 scenarios (Solo-Mac / Solo-VPS / Multi-User VPS coding factory / Team with coding server).
+- [ ] Record the current deployment scenario in `migration-status.md` under §BOO-70 (e.g. "Solo-Mac" or "Solo-VPS — Hostinger srv1443320").
+- [ ] When the next bootstrap runs: question A.7 now exposes the new deployment-scenario field; default Solo-Mac stays unchanged.
+- [ ] When switching scenarios: walk through the setup steps in Appendix P once (skill-pool layout, secrets separation, backup strategy).
+
+**When to skip:** Solo-Mac setup with no plans to switch — entry with status `✓ Solo-Mac (default)`.
+
+**References:** HANDBUCH Appendix P, `bootstrap/SKILL.md` §A.7, BOO-9 (VPS rollout) and BOO-83 (VPS multi-user pattern) as sources.
+
+---
+
+## §BOO-71 — Sovereignty Stack Guide + LLM Proxy Hook — Wave K
+
+**Status:** ✓ included in the v2 bundle — additive migration: 1 optional field in `environment.json`, otherwise documentation.
+**Effort:** small (~5 min auto step, appendix reading on demand).
+**Linear:** <https://linear.app/owlist/issue/BOO-71>
+**Auto step:** yes (`migrate_boo_71` in `migrate-to-v2.sh`).
+
+**Auto steps:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-71` — inserts `llm_proxy_url: null` (default) into `.claude/environment.json` **if** the file exists and the field is missing. Idempotent: safe to re-run; reports a skip when the field is already there.
+- When `.claude/environment.json` is missing: a warning points to `bash .claude/generate-environment-json.sh` (bootstrap phase 4.4e).
+
+**Operator steps (manual, after auto-run):**
+
+- [ ] Read HANDBUCH Appendix Q — decision matrix + EU alternatives table (code hosting / vault sync / LLM / issue tracker / CI) + LLM proxy hook section.
+- [ ] Decide whether a sovereignty switch is needed: regulated industry, public-sector contract, NIS-2 sector, personal data tier 3, Swiss nDSG mandate → yes. Solo tool without EU connection → no.
+- [ ] When running anonymisation or sovereignty routing: set `llm_proxy_url` in `.claude/environment.json` to the operator-run proxy endpoint (default remains `null` = direct LLM call). The framework does NOT perform the routing — the operator provides the proxy.
+- [ ] If stack components are swapped: walk through the short migration guide per component in Appendix Q and obtain the tool's official external documentation.
+
+**When to skip:** no sovereignty requirement in the project — default stack stays, entry with status `✗ — sovereignty switch not required`. The auto-step field `llm_proxy_url: null` may still be set (non-destructive, no effect).
+
+**Test:**
+
+- `grep llm_proxy_url .claude/environment.json` → match (value `null` or operator endpoint).
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-71` second time: reports `BOO-71: llm_proxy_url bereits in environment.json.`.
+
+**Rollback:** Remove the field manually from `environment.json`. Skills read the field defensively (default `null`); rollback is non-destructive.
+
+**References:** HANDBUCH Appendix Q, `bootstrap/references/file-templates.en.md` §`.claude/environment.json`, `implement/SKILL.en.md` §step 0 (point 7 `llm_proxy_url`).
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.

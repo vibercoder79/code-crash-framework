@@ -2754,7 +2754,7 @@ Bootstrap v3.23.0 fuegt `paths.pitches: "pitch/"` (und `paths.intents: "intents/
 
 ## Anhang M: Schrader-Decoder — Wir haben das Operating System fuer Code Crash gebaut
 
-Dieser Anhang ist die Karte vom Buch ins Bundle. Schraders "Code Crash" (2026) liefert die Theorie der KI-Software-Aera, dieses Bundle liefert die ausfuehrbare Praxis dazu. Wenn du das Buch nicht gelesen hast, ist das kein Problem — der Decoder ist kein Re-Reading, sondern eine Uebersetzung: pro Kapitel ein Konzept, ein Sketch, eine konkrete Stelle im Bundle, wo das Konzept als Skill, BOO oder Governance-Regel lebt.
+Dieser Anhang ist die Karte vom Buch ins Bundle. Schraders "Code Crash" (2026) liefert die Theorie der KI-Software-Aera, dieses Bundle liefert die ausfuehrbare Praxis dazu. Wenn du das Buch nicht gelesen hast, ist das kein Problem — der Decoder ist kein Re-Reading, sondern eine Uebersetzung: pro Schrader-Kapitel ein Konzept, ein Hero-Sketch, eine Hand voll Detail-Sketches mit den zentralen Buch-Argumenten, und eine konkrete Stelle im Bundle, wo das Konzept als Skill, BOO oder Governance-Regel lebt.
 
 ![Operating System Overview](docs/schrader-sketches/operating-system-overview.png)
 
@@ -2764,65 +2764,225 @@ Das Bundle ist mein Operating System fuer Code-Crash-Engineering. Schrader besch
 
 ### Kapitel 1 — Effekte zweiter Ordnung
 
-![Kapitel 1](docs/schrader-sketches/chapter-01-hero.png)
+![Kapitel 1 — ChatGPT-Moment](docs/schrader-sketches/chapter-01-hero.png)
+
+*Der ChatGPT-Moment im November 2022 — der Riss in der Realitaet, mit dem das Buch beginnt.*
 
 **Schrader sagt:** Der Flaschenhals Code-Schreiben ist weg. Der neue Flaschenhals heisst Intent — und die Effekte zweiter Ordnung (Jevons-Paradox) sind groesser als die offensichtlichen Effizienzgewinne. Schrader stellt die Triade Soul-System-Speed vor und skizziert erstmals die 4P-Pipeline aus Perceive, Prompt, Produce und Pitch.
+
+**Vertiefung im Buch:**
+
+![Silent Revolution — Wer gewinnt, wer verliert](docs/schrader-sketches/chapter-02-hero.png)
+
+*Die stille Revolution: agentische KI-Tools machen LLMs zu Produktivitaets-Monstern; die Coordination Class verliert, kleine autonome Teams gewinnen.*
+
+![Das neue Paradox](docs/schrader-sketches/chapter-02-detail-1.png)
+
+*Software-Entwicklung wird gleichzeitig leichter und auf neue Weise schwerer — wenn alle bauen koennen, entscheidet der Spark statt der Syntax.*
+
+![Two Paradigm Shifts](docs/schrader-sketches/chapter-02-detail-2.png)
+
+*Zwei parallele Brueche: Agile in der Krise + Intent wird produktiv. Wenn Output nichts mehr kostet, wird Input zur knappen Ressource.*
 
 **Wir loesen das so:** Das gesamte Bundle ist die Antwort auf Jevons — wenn Code billiger wird, wird Intent teurer, also bekommt Intent einen eigenen Skill am Anfang der Pipeline. Die 4P-Struktur ist nicht Deko, sondern in der Skill-Architektur verankert: jeder Skill gehoert eindeutig zu einem P. Details siehe Anhang L (4P-Pipeline-Mapping).
 
 ### Kapitel 2 — Die agile Illusion
 
-![Kapitel 2](docs/schrader-sketches/chapter-02-hero.png)
+![Kapitel 2 — Cargo Cult Agile](docs/schrader-sketches/chapter-03-hero.png)
+
+*Cargo Cult: Rituale ohne Kern. Standups ohne Hindernis-Talk, Story Points als Performance-Mass, Sprints mit Top-Down-Scope — Mini-Wasserfall in agiler Tarnung.*
 
 **Schrader sagt:** Cargo-Cult-Agile wiederholt Rituale ohne den Kern zu treffen. Output hat Outcome verdraengt, SAFe loest das falsche Problem, und die kleinste sinnvolle Einheit ist nicht mehr das Team, sondern Individuum plus KI. Teams werden nur noch dann gebaut, wenn sie nachweislich beschleunigen.
+
+**Vertiefung im Buch:**
+
+![SAFe — Anatomie des Versagens](docs/schrader-sketches/chapter-03-detail-1.png)
+
+*Agile Release Trains mit 50-125 Personen, Rollen-Inflation, Artefakt-Explosion, Zeremonien-Flut — SAFe skaliert nicht Agilitaet, sondern die Illusion von Agilitaet.*
+
+![Wer profitiert von SAFe](docs/schrader-sketches/chapter-03-detail-2.png)
+
+*Das Geschaeftsmodell hinter dem Festhalten: Zertifizierungs-Industrie, Consulting-Komplexitaet, Middle-Management-Kontrolle, organisierte Unverantwortlichkeit.*
 
 **Wir loesen das so:** Velocity ist tot — kein Burndown, keine Story-Points-pro-Sprint-Statistik. Ein Sprint im Bundle ist 80 Prozent des Context-Windows des verwendeten Modells, also eine Token-Box statt einer Zeit-Box. Outcome wird ueber Intent-Erfuellung gemessen, nicht ueber Storypoint-Verbrauch. Details: HANDBUCH Anhang G (Sprint-Sizing-Mechanik), BOO-38, BOO-39, BOO-40.
 
 ### Kapitel 3 — Die KI-Revolution in der Softwareentwicklung
 
-![Kapitel 3](docs/schrader-sketches/chapter-03-hero.png)
+![Kapitel 3 — Vier Generationen KI-Coding](docs/schrader-sketches/chapter-04-hero.png)
+
+*Von Autocomplete ueber Chat und Terminal-first bis zu Agentic IDEs — mit Opus 4.5 wird KI vom Assistenten zum Produktionspartner.*
 
 **Schrader sagt:** Vier Generationen KI-Coding — Autocomplete, Chat, Terminal-first, Agentic IDEs — und mit Opus 4.5 wird KI vom Assistenten zum Produktionspartner. Vibe Coding allein reicht nicht mehr, daraus muss Agentic Engineering werden. Die neue Latte heisst Produktionsreife.
+
+**Vertiefung im Buch:**
+
+![Vibe Coding vs Agentic Engineering](docs/schrader-sketches/chapter-04-detail-1.png)
+
+*Der Unterschied liegt in der Haltung: Vibe-Coder hoffen, dass es funktioniert. Agentic Engineers stellen sicher, dass es funktioniert — strukturiert, mit Tests, mit Security-Grenzen.*
+
+![Senior vs Junior + Skill Atrophy](docs/schrader-sketches/chapter-04-detail-2.png)
+
+*Fastly-Studie (Juli 2025): Senior-Entwickler nutzen KI-Code 2,5-mal so oft wie Juniors und profitieren staerker. Anfaenger brauchen Reibung, um Urteilsvermoegen zu entwickeln — sonst entsteht die naechste Generation, die KI dirigiert, ohne ihre Werke zu verstehen.*
 
 **Wir loesen das so:** Drei-Layer-Quality-Gate-Architektur macht aus Vibe Coding produktionsreifes Agentic Engineering — Layer 1 in der IDE, Layer 2 als Pre-Commit-Hook, Layer 3 in der CI. ESLint, Semgrep, Coverage-Gate, Performance-Baseline und SonarQube greifen ineinander, damit nichts an den Gates vorbei in main wandert. Details: HANDBUCH §6 + §8d, BOO-2 (ESLint), BOO-4 (Semgrep), BOO-15 (Coverage), BOO-16 (Performance), BOO-5 (SonarQube), BOO-24 (KI-Architektur-Prinzipien).
 
 ### Kapitel 4 — Intent is the new Code (Kernkapitel)
 
-![Kapitel 4](docs/schrader-sketches/chapter-04-hero.png)
+![Kapitel 4 — Intent als knappste Ressource](docs/schrader-sketches/chapter-05-hero.png)
+
+*Intent als Startpunkt der Wertschoepfung: Soul-System-Speed-Triade ersetzt die alte Wirkungskette Vision → Objective → Outcome → Tech Requirement.*
 
 **Schrader sagt:** Intent ist die neue knappe Ressource. Die Soul-System-Speed-Triade verwandelt Intent in Realitaet, und Agency — Judgment, Cultural Fluency, Meaning-Setting — ist die menschliche Faehigkeit, die KI nicht ersetzen kann. Das Kapitel listet die Top 5 Intent-Fehler und liefert das Template: "[Nutzergruppe] soll [messbares Ergebnis] erreichen, ohne [Reibung]. Erfolg = [Metrik]."
+
+**Vertiefung im Buch:**
+
+![Feed the Soul — Agency](docs/schrader-sketches/chapter-05-detail-1.png)
+
+*Soul hat zwei Dimensionen — die menschliche (Agency: Entscheidungsfaehigkeit, Verantwortung, innere Verankerung) und die produktbezogene (das, was differenziert).*
+
+![Intent vor Prompt — die richtige Reihenfolge](docs/schrader-sketches/chapter-05-detail-2.png)
+
+*Zuerst Intent (technologie-agnostisch), dann Optionen generieren lassen, dann gegen den Intent bewerten, erst zum Schluss Prompts schreiben. Wer mit Prompts startet, baut das Falsche schnell.*
+
+![Intent Session — der 6-Schritte-Workshop](docs/schrader-sketches/chapter-05-detail-3.png)
+
+*Ein guter Intent entsteht im Team aus Product, Design, Engineering plus Domaenen-Wildcard: Stories hoeren, Status quantifizieren, Brainstormen, Schaerfen, Validieren, Verschriftlichen.*
 
 **Wir loesen das so:** Der /intent-Skill ist die direkte Antwort auf das Kernkapitel — vorgeschaltet vor /ideation, mit Anti-Pattern-Self-Check, der die drei Soulkiller und die fuenf Intent-Fehler aus Schrader explizit durchgeht. Der formulierte Intent propagiert anschliessend durch alle nachgelagerten Skills: er ist Gate in der Ideation, Gewicht im Backlog, Messpunkt im Implement-Measure-Loop. Details: BOO-1 (Intent-Skill), BOO-10 (Intent-Propagation), `intent/SKILL.md`, `intent/references/intent-anti-patterns.md`.
 
 ### Kapitel 5 — Die Intent-to-Production Pipeline
 
-![Kapitel 5](docs/schrader-sketches/chapter-05-hero.png)
+![Kapitel 5 — 4P-Pipeline](docs/schrader-sketches/chapter-06-hero.png)
+
+*Vier Boxen, ein Prozess: Perceive → Prompt → Produce → Pitch. Der klassische Genehmigungs-Stage-Gate-Prozess wird ersetzt durch eine Pipeline, die in Wochen liefert statt in Quartalen.*
 
 **Schrader sagt:** Die 4P-Pipeline aus Perceive, Prompt, Produce und Pitch ersetzt den klassischen Genehmigungsprozess. Prototypen sind tot — die neue Pitch-Form ist die Live-Demo mit Vorher-Nachher-Metriken. Dazu die Two-Document Rule: ein Intent Document fuer das Was, ein Execution Plan fuer das Wie.
+
+**Vertiefung im Buch:**
+
+![Vier Phasen fliessen ineinander](docs/schrader-sketches/chapter-06-detail-3.png)
+
+*Perceive → Prompt → Produce → Pitch im Detail: jede Phase Stunden bis Tage statt Wochen. Gesamter Zyklus 1-4 Wochen fuer klar definierte Features, 8-12 Wochen fuer regulierte Umgebungen.*
+
+![Quality Gates statt Menschen-Kontrolle](docs/schrader-sketches/chapter-06-detail-2.png)
+
+*Old vs New Model: Statt Tech Lead, Architect und Security Officer als Genehmiger gibt es automatisierte Gates auf jedem Commit. Das Autonomy-Paradox: autonome Teams brauchen haertere, automatisierte Guardrails, weil keine Zeit fuer menschliche Intervention bleibt.*
+
+![Multi-Agent Orchestration](docs/schrader-sketches/chapter-06-detail-5.png)
+
+*Writer Agent, Editor Agent, Code Agent — jeder mit eigener SOUL.md fuer Persoenlichkeit und Entscheidungsprinzipien. Der Product Engineer wird Orchestrator: Mission definieren, Spezialisten koordinieren, statt selbst zu implementieren.*
+
+![Pitch als Moment der Wahrheit](docs/schrader-sketches/chapter-06-detail-4.png)
+
+*Schlechte Ideen werden gebaut und scheitern sichtbar. Gute Ideen beweisen sich. Niemand kann sich mehr hinter Konzepten verstecken — der Pitch entscheidet, ob weitere Mittel fliessen.*
+
+![Feature Flag Strategy](docs/schrader-sketches/chapter-06-detail-1.png)
+
+*Statt Big-Bang-Releases: schrittweiser Rollout per Feature Flag. Die 4P-Pipeline liefert kontinuierlich, das Risiko wird durch graduellen Roll-out gemanagt statt durch laenger werdendes Testen.*
 
 **Wir loesen das so:** Die komplette Skill-Pipeline ist 4P — /intent ist Perceive, /ideation und /backlog sind Prompt, /implement plus /architecture-review plus /sprint-review sind Produce, und /pitch ist Pitch. Pitch laeuft seit BOO-37 als Hybrid: der Skill sammelt Evidenz und baut die Argumentations-Struktur, die eigentliche Live-Demo macht der Mensch. Details: HANDBUCH Anhang L (4P-Pipeline-Mapping), BOO-37 (Pitch-Skill).
 
 ### Kapitel 6 — Product Teams (Kernkapitel)
 
-![Kapitel 6](docs/schrader-sketches/chapter-06-hero.png)
+![Kapitel 6 — Klassisches Team vs Product Team](docs/schrader-sketches/chapter-07-hero.png)
+
+*Vier Koepfe, ein Outcome ("Checkout-Abbruch von 12% auf 8%"), eigene Architektur, mehrfacher Deploy pro Tag — keine Genehmigungen mehr. So sieht ein echtes Product Team aus.*
 
 **Schrader sagt:** Individuum plus KI ist die neue kleinste Einheit. Product Teams folgen der 3-5-Koepfe-Regel, der Product Engineer hat fuenf Kernfaehigkeiten — Intent-Klarheit, technisches Urteilsvermoegen, Systemdenken, User Empathy, Ownership. Dazu das Alliance Model, Communities of Profession und Outcome Governance ueber drei Saeulen.
+
+**Vertiefung im Buch — Team-Aufbau:**
+
+![No-Team-Test](docs/schrader-sketches/chapter-07-detail-4.png)
+
+*Vor jeder Team-Bildung der ehrliche Check: Brauchst du wirklich ein Team, oder ist Individuum + KI schneller? Vier Fragen — alle "Nein" heisst: kein Team noetig.*
+
+![3-5-Koepfe-Regel](docs/schrader-sketches/chapter-07-detail-2.png)
+
+*Product Engineer + Design + Software Engineer als Kern, plus Wildcard und Junior. Mehr als 5 Koepfe ist Warnsignal: splitten statt aufblaehen — Kommunikationswege wachsen quadratisch.*
+
+![Ownership Architecture](docs/schrader-sketches/chapter-07-detail-1.png)
+
+*Wer besitzt was: Soul (Vision, Meaning) gehoert Product Engineer und Design, System (Architektur, Security) den Engineers, Speed (Pipeline, Go/No-Go) dem gesamten Team.*
+
+![Shared Speed Ownership](docs/schrader-sketches/chapter-07-detail-3.png)
+
+*Geteilte Verantwortung fuer Speed ist kein Kompromiss, sondern Kern: jedes Mitglied traegt persoenlich Verantwortung fuer Velocity — keine unverbindliche Gruppenaufgabe.*
+
+**Vertiefung im Buch — neue Rollen:**
+
+![Kapitel 6 — Product Engineer](docs/schrader-sketches/chapter-08-hero.png)
+
+*Die alten Trennungen zwischen PM, Developer und Designer loesen sich auf. Was entsteht, ist neu: der Product Engineer arbeitet mit KI durchgaengig von Intent zu Outcome — ohne Handoffs.*
+
+![Software Engineer — Skill Atrophy](docs/schrader-sketches/chapter-08-detail-1.png)
+
+*Der Software Developer wird wieder Software Engineer: weniger Implementierung, mehr technischer Intent, mehr Kontrolle. Gegenmittel gegen das Verkuemmern der Coding-Muskeln: manuelle Coding-Uebungen behalten.*
+
+![Designer — Select Rather Than Create](docs/schrader-sketches/chapter-08-detail-2.png)
+
+*KI liefert Best Practice, nicht Markenidentitaet. Der Designer waehlt aus zehn KI-Varianten die richtige, nicht die schoenste. Auswaehlen verlangt Urteilsvermoegen, nicht Handwerk.*
+
+**Vertiefung im Buch — Skalierung & Fuehrung:**
+
+![Kapitel 6 — Alignment Model](docs/schrader-sketches/chapter-09-hero.png)
+
+*Die 2x2-Matrix: hohe Autonomie kombiniert mit hohem Alignment ergibt Empowered Teams. Chaos, Buerokratie und Command-and-Control sind die anderen Quadranten.*
+
+![Human in the Lead vs Human in the Loop](docs/schrader-sketches/chapter-09-detail-3.png)
+
+*Loop ist gefaehrlich unzureichend: KI arbeitet, Mensch greift gelegentlich ein. Lead ist die noetige Haltung: Mensch fuehrt, KI unterstuetzt — proaktiv, mit klarer Verantwortung.*
+
+![Alliance Model — Guardrails](docs/schrader-sketches/chapter-09-detail-1.png)
+
+*Statt SAFe-Trains kommen Alliances: 4-10 Teams (15-40 Personen), getragen von Mission und transparenter Info, nicht von Hierarchie. Guardrails reduzieren Autonomie — also sparsam setzen.*
+
+![Wer entscheidet was](docs/schrader-sketches/chapter-09-detail-4.png)
+
+*Entscheidungs-Architektur: 90 Prozent lokal im Team, bilateral zwischen zwei Teams, alliance-weit nur was wirklich alle betrifft. Eskalations-Stufen: bilateral → Mediation → Alliance-Decision.*
+
+![Alliance vs SAFe-Train](docs/schrader-sketches/chapter-09-detail-2.png)
+
+*Der fundamentale Unterschied: SAFe koordiniert Abhaengigkeiten, Alliances eliminieren sie. Vertikale Schnitte ("Team Checkout"), API-Contracts, sparsame Shared Services, manchmal bewusst Duplizieren.*
+
+![J-Curve der Team-Transformation](docs/schrader-sketches/chapter-09-detail-5.png)
+
+*Drei bis sechs Monate Produktivitaets-Tal in der Lernphase — die J-Curve ist Teil der Investitionsrechnung, nicht ein Bug. Direkte Kosten + indirekte Kosten + Risiken muessen vor dem Start klar sein.*
 
 **Wir loesen das so:** Issue-Writing-Guidelines mit dreistufigem Ausfuehrungsmodus — agentic fuer komplexe Aufgaben mit parallelen Sub-Agents, sub-agent fuer mittlere fokussierte Aufgaben, linear fuer kleine direkte Aufgaben. Story Points haben dabei eine duale Rolle: Token-Schaetzung UND Modus-Selektor. Sub-Agents bekommen beim Spawn ein Mini-Briefing mit Rolle, Kontext und konkreter Aufgabe, statt sich aus dem Chat-Verlauf etwas zusammenzureimen. Details: BOO-11 (Issue-Guidelines v3.0), BOO-38 (SP dual), HANDBUCH §8g (Linear-Setup), `.claude/ISSUE_WRITING_GUIDELINES.md`.
 
 ### Kapitel 7 — Risiken und Anti-Patterns
 
-![Kapitel 7](docs/schrader-sketches/chapter-07-hero.png)
+![Kapitel 7 — Drei Kategorien Pathologien](docs/schrader-sketches/chapter-10-hero.png)
+
+*Jede neue Arbeitsweise erzeugt eigene Pathologien. Drei Kategorien — Prozess, Qualitaet, Kultur — plus Frueh-Warnsystem und Kill-Kriterien. Wer Risiken kennt, antizipiert sie.*
 
 **Schrader sagt:** Elf Anti-Patterns in drei Kategorien — drei Prozess-, drei Qualitaets- und fuenf Kultur-Pathologien — plus ein Frueh-Warnsystem und harte Kill-Kriterien fuer Projekte und Skills. Der zentrale Begriff ist Slopware: KI-Mittelmaessigkeit, die die Qualitaetsschwelle nach unten zieht, bis niemand mehr merkt, dass etwas fehlt.
+
+**Vertiefung im Buch:**
+
+![Slopware statt Software](docs/schrader-sketches/chapter-10-detail-1.png)
+
+*KI macht Produktion billig — also wird mehr produziert. Mehr Code, mehr Features, mehr Mittelmass. Ohne strikte Quality Gates ertrinkt die Codebase in derselben Flut, die ab 2026 GitHub, Substack und ArXiv ueberschwemmt.*
+
+![Early Warning System](docs/schrader-sketches/chapter-10-detail-2.png)
+
+*Zwei Ebenen — Organisation und Team — mit konkreten Signalen: alte Meetings kehren zurueck, Reporting-Overhead steigt, Autonomie wird beschnitten, Security-Luecken haeufen sich, niemand nutzt KI-Tools. Pro Signal ein Bedeutung-und-Action-Eintrag.*
 
 **Wir loesen das so:** /sprint-review hat einen eigenen Schritt 7 fuer Anti-Pattern-Selbstdiagnose, der den Katalog aus `sprint-review/references/anti-pattern-katalog.md` Punkt fuer Punkt durchgeht. Ergaenzend pruefen /architecture-review und /implement KI-spezifische Architektur-Anti-Patterns, bevor Code in den Hauptzweig wandert. Details: BOO-26 (Anti-Pattern-Katalog), BOO-24 und BOO-7 (KI-Architektur), HANDBUCH §8b (Kulturelle Anti-Patterns).
 
 ### Kapitel 8 — Still Day One (Epilog)
 
-![Kapitel 8](docs/schrader-sketches/chapter-08-hero.png)
+![Kapitel 8 — Still Day One](docs/schrader-sketches/chapter-11-hero.png)
+
+*Februar 2026, Schrader-Manuskript: Die Motivation bleibt gleich, das HOW aendert sich radikal. Was uebrig bleibt, wenn alles sich aendert: Menschen-Probleme. Teams scheitern an Kommunikation, nicht an Technologie.*
 
 **Schrader sagt:** Europa hat eine Chance ueber Branchenwissen plus Leapfrogging — der Rueckstand wird zum Vorteil, wenn man Generationen ueberspringt. "Human in the Lead" ist der neue Fuehrungs-Modus, keine passive Loop-Wache, sondern aktive Steuerung. Trusted AI plus Regulatory Fast Lanes sind der eigentliche Wettbewerbsvorteil.
+
+**Vertiefung im Buch:**
+
+![Fuenf Jahre, drei Handlungsfelder](docs/schrader-sketches/chapter-11-detail-1.png)
+
+*Unternehmen bauen Product Engineering Teams (Beispiel Maschinenbauer 2028: drei Teams, neuer Konfigurator, Predictive Maintenance, Embedded-AI — bis 2030 Plattform-Unternehmen). Gesellschaft profitiert von 10x billiger Software in Schule, Verwaltung, Gesundheit. Startups bekommen das groesste Fenster der Tech-Geschichte.*
 
 **Wir loesen das so:** Das Bundle ist tool-agnostisch — primary ist Claude Code, aber es laeuft genauso mit Codex, Cursor, Aider und lokalen LLMs. Der Operator bleibt im Fahrersitz, die Skills sind Werkzeug, nicht Pilot. Hermes ist ein optionaler Compound-Layer, der Muster ueber mehrere Projekte hinweg erkennt, aber das Bundle funktioniert auch ohne. Details: HANDBUCH Anhang K (Tool-Adapter, BOO-49), Anhang D-F (Hermes), `CONVENTIONS.md` (tool-neutrale Spec).
 
@@ -2830,7 +2990,9 @@ Das Bundle ist mein Operating System fuer Code-Crash-Engineering. Schrader besch
 
 ![Buch-Uebersicht](docs/schrader-sketches/chapter-overview.png)
 
-Schrader liefert die Theorie, das Bundle liefert die Praxis — Skill-Code, Konventionen, Hooks, CI-Gates. Jedes zentrale Konzept des Buchs hat eine ausfuehrbare Entsprechung in einem Skill, einer BOO oder einer HANDBUCH-Sektion. Dieser Decoder ist gleichzeitig das Skelett fuer ein geplantes Folge-Buch, das die Uebersetzung von Schraders Theorie in operative Praxis vertieft: nicht "was sollte sich aendern", sondern "so machst du es konkret". Bis dahin ist dieser Anhang die kuerzeste Brueckenversion — eine Seite Theorie, eine Seite Bundle, pro Kapitel.
+*Vom Theorie-Buch zum operativen Folge-Buch: Schrader sagt, was sich aendert; das Bundle zeigt, wie es konkret aussieht.*
+
+Schrader liefert die Theorie, das Bundle liefert die Praxis — Skill-Code, Konventionen, Hooks, CI-Gates. Jedes zentrale Konzept des Buchs hat eine ausfuehrbare Entsprechung in einem Skill, einer BOO oder einer HANDBUCH-Sektion. Dieser Decoder ist gleichzeitig das Skelett fuer ein geplantes Folge-Buch, das die Uebersetzung von Schraders Theorie in operative Praxis vertieft: nicht "was sollte sich aendern", sondern "so machst du es konkret". Bis dahin ist dieser Anhang die kuerzeste Brueckenversion — eine Seite Theorie, mehrere Sketches mit den zentralen Buch-Argumenten, eine Seite Bundle, pro Kapitel.
 
 ## Anhang N: Token-Effizienz-Policy (BOO-84) — Modell-Routing + Prompt-Caching
 
@@ -2974,6 +3136,359 @@ Operator pflegt `PRIVACY.md` nach der Erstausgabe manuell — fuellt Rechtsgrund
 
 ---
 
+## Anhang P: Deployment-Szenarien — Solo-Mac / Solo-VPS / Multi-User-VPS / Team-Server (BOO-70)
+
+Dieser Anhang beschreibt vier gelebte Setup-Patterns fuer das Code-Crash-Framework, vom Solo-Operator am Mac bis zur Multi-User-VPS-Coding-Factory. Er existiert, weil das Bootstrap-Skript bewusst nur **eine** zusaetzliche Frage stellt (Default Solo-Mac) und Details hier landen, statt den Bootstrap aufzublaehen. Operatoren waehlen ihr Szenario via Decision-Matrix, lesen die zugehoerige Szenario-Sektion und arbeiten die Setup-Schritte einmalig ab. Das Framework selbst funktioniert in allen vier Szenarien gleich — nur die Umgebung drumherum unterscheidet sich.
+
+### Decision-Matrix
+
+| Operator-Profil | Empfohlenes Szenario | Hauptgrund |
+|-----------------|----------------------|------------|
+| Solo-Operator stationaer (Buero, ein Mac) | Szenario 1 — Solo-Mac | Frictionless Default, Skill-Pool zentral, keine Server-Wartung. |
+| Solo-Operator mobil (mehrere Geraete, ortsunabhaengig) | Szenario 2 — Solo-VPS | 24/7-Erreichbarkeit, Geraete-unabhaengiger Zugriff via SSH. |
+| 2-5 Operatoren mit gemeinsamem Code-Hub | Szenario 4 — Team-mit-Coding-Server | Hybrid Mac-Frontend + VPS-Backend, geteilter Backlog. |
+| Coding-Factory mit 5+ Operatoren und geteilter Skill-Sammlung | Szenario 3 — Multi-User-VPS | Saubere User-Isolation, zentral wartbarer Skill-Pool. |
+| Behoerde / Branche mit DSGVO-Pflicht | Szenario 2 oder 3 (EU-VPS) | Datenstandort-Kontrolle; Verweis auf Anhang O Privacy by Design + Anhang Q Souveraenitaets-Stack. |
+| Hobby / Experiment ohne Produktiv-Anspruch | Szenario 1 — Solo-Mac | Minimaler Setup-Aufwand, Operator kann jederzeit auf VPS migrieren. |
+
+### Szenario 1 — Solo-Mac (Default, ~80% der Operatoren)
+
+**Operator-Profil**
+
+- Ein Operator, ein Mac (stationaer oder Laptop).
+- Kein 24/7-Background-Bedarf, keine Mobile-Zugriffe ueber Geraete-Grenzen hinweg.
+- Will frictionless starten und ohne Server-Wartung arbeiten.
+
+**Setup-Schritte**
+
+1. Claude Code CLI via `npm` installieren (Anthropic-Standardpfad).
+2. Skill-Pool zentral in `~/.claude/skills/` halten — alle Projekte greifen darauf zu.
+3. Projekt-Verzeichnis unter `~/Documents/GitHub/<projekt>/` anlegen.
+4. Im Projekt `claude` starten und `/bootstrap` ausfuehren (Bootstrap-Frage A.7 = a) Solo-Mac).
+5. Secrets in `~/.claude/.env` ablegen (User-Ebene, nicht im Projekt).
+6. `.gitignore` im Projekt pruefen — `.env`, `.claude/local/`, `journal/reports/local/` muessen drin sein.
+7. Linear oder GitHub Issues als Backlog-Tool im Bootstrap-Interview waehlen.
+8. Time Machine fuer den Mac aktivieren (System-Einstellungen → Time Machine).
+
+**Skill-Installation**
+
+- Zentraler Pool unter `~/.claude/skills/`. Kein pro-Projekt-Sync noetig.
+- Skill-Updates via `git pull` im Skill-Repo, gilt sofort fuer alle Projekte.
+- Standalone-Skills wie `security-architect` und `dpo` ebenfalls zentral (siehe Anhang O).
+
+**Secrets-Trennung**
+
+- Eine `.env` auf User-Ebene unter `~/.claude/.env`.
+- Projekt-Verzeichnisse enthalten **keine** Secrets — nur Verweise auf Env-Variablen.
+- `.gitignore`-Pruefung ist Pflicht-Schritt im Bootstrap.
+
+**Backup-Strategie**
+
+- Time Machine auf externe Festplatte (primaer).
+- Optional: Mac-Backup nach iCloud (Dokumente-Ordner) oder Backblaze B2 fuer Cloud-Kopie.
+- Skill-Pool und Projekte sind ueber Git versioniert — Backup ist Schutz gegen Hardware-Defekt, nicht gegen Code-Verlust.
+
+**Tradeoffs**
+
+- Kein 24/7-Background-Run moeglich (Mac muss laufen).
+- Nicht mobil ueber Geraete-Grenzen hinweg — Operator-Geraet ist der Single Point of Use.
+- Keine Geraete-Redundanz: Mac-Ausfall = Arbeitsstillstand bis Backup-Restore.
+
+### Szenario 2 — Solo-VPS (BOO-9-Pattern, fuer Mobile-Worker und 24/7-Background-Tasks)
+
+**Operator-Profil**
+
+- Ein Operator, mehrere Zugriffsgeraete (Laptop, Tablet, fremder Rechner).
+- Braucht 24/7-Erreichbarkeit fuer Cron-Tasks, lang laufende Background-Agenten, geplante Builds.
+- Akzeptiert Server-Wartung als Tradeoff fuer Mobilitaet.
+
+**Setup-Schritte**
+
+1. VPS beim Provider deiner Wahl bereitstellen (z.B. Hostinger VPS, Hetzner — Operator waehlt aus).
+2. SSH-Key-basierten Login einrichten, Passwort-Login deaktivieren.
+3. Auf dem VPS Node.js + `npm` installieren und Claude Code CLI via `npm` installieren.
+4. Skill-Pool unter `~/.claude/skills/` per `git clone` aus dem persoenlichen Skill-Repo holen.
+5. Skill-Sync via `git pull` manuell — heterogene Skill-Versionen zwischen Mac und VPS sind erlaubt (siehe Memory-Hinweis: kein Auto-Sync).
+6. Optional: Cron-Job fuer regelmaessiges `git pull` einrichten, wenn der Operator Update-Disziplin formalisieren will.
+7. Eigene `.env` auf dem VPS unter `~/.claude/.env` ablegen — strikt getrennt vom Mac-`.env`.
+8. Backup-Ziel konfigurieren (Hetzner Storage Box oder Backblaze B2 — Operator waehlt aus).
+9. Projekt-Verzeichnis unter `~/projects/<projekt>/` anlegen und `/bootstrap` ausfuehren.
+
+**Skill-Installation**
+
+- Zentraler Pool unter `~/.claude/skills/` auf dem VPS, identische Struktur wie am Mac.
+- Skill-Sync ist **manuell** (`git pull`) oder via Cron — kein Auto-Push vom Mac.
+- Heterogene Versionen erlaubt: VPS kann auf einer aelteren Skill-Version stehen, wenn der Operator das so will.
+
+**Secrets-Trennung**
+
+- VPS-`.env` strikt getrennt vom Mac-`.env`.
+- Keine `.env` aus dem Mac-Backup auf den VPS uebertragen — pro Geraet eigene Werte.
+- SSH-Keys sind keine Secrets im Sinne der `.env`, gehoeren aber in `~/.ssh/` mit Mode 600.
+
+**Backup-Strategie**
+
+- Hetzner Storage Box oder Backblaze B2 als Backup-Ziel (Operator waehlt aus).
+- Backup-Frequenz: mindestens taeglich fuer `journal/`, `backlog/`, `.claude/local/`.
+- Git-versionierte Inhalte (Code, Skills) sind durch das Remote-Repo abgedeckt — Backup deckt Operator-State und Secrets.
+
+**Tradeoffs**
+
+- Setup-Aufwand 1-2 Stunden initial (SSH-Hardening, Skill-Sync, Backup-Konfiguration).
+- Single Point of Failure: VPS down = kein Zugriff.
+- Etwas hoehere LLM-Latenz wegen EU-Routing und zusaetzlichem Netzwerk-Hop.
+
+### Szenario 3 — Multi-User-VPS-Coding-Factory (BOO-83-Pattern, fuer Teams + geteilte Skill-Sammlung)
+
+**Operator-Profil**
+
+- 5+ Operatoren auf gemeinsamem VPS, jeweils mit eigenem System-User.
+- Geteilte Skill-Sammlung, eigene Repositories pro User.
+- Wartungs-Owner ist definiert (sonst Anti-Pattern).
+
+**Setup-Schritte**
+
+1. VPS-Sizing dimensionieren: mindestens 8 GB RAM und 4 vCPU als Daumenwert fuer 5 parallele Operatoren (Operator waehlt aus).
+2. Pro Operator System-User anlegen: `sudo useradd -m -s /bin/bash <name>`.
+3. SSH-Keys pro User in `/home/<name>/.ssh/authorized_keys` hinterlegen, Passwort-Login global aus.
+4. `UMASK 077` global setzen, damit User-Verzeichnisse nicht weltlesbar werden.
+5. `sudo`-Regeln pro User definieren — wer darf was, was bleibt root-only.
+6. Skill-Pool-Strategie entscheiden: entweder global unter `/opt/claude/skills/` (read-only fuer User) **oder** pro User in `~/.claude/skills/` (eigene Kopie pro Operator). Beide Patterns sind dokumentiert und unterstuetzt.
+7. Repository-Worktrees pro User: jeder User cloned seine Projekte in sein eigenes Home — keine geteilten Working Trees.
+8. Secrets STRIKT pro User in `~/.claude/.env`. Keine geteilten `.env`-Dateien.
+9. Backup-Strategie zentral (VPS-Snapshot beim Provider) plus pro Home-Verzeichnis (Hetzner Storage Box oder Backblaze B2 — Operator waehlt aus).
+10. Konfigurations-Drift regelmaessig pruefen (`jq` auf `~/.claude/settings.json` pro User vergleichen).
+
+**Skill-Installation**
+
+- **Variante A (global):** `/opt/claude/skills/` read-only, gepflegt von Wartungs-Owner. Updates via `git pull` als root. User koennen nicht selbst patchen.
+- **Variante B (pro User):** jeder User pflegt sein eigenes `~/.claude/skills/`. Mehr Freiheit, mehr Drift-Risiko.
+- Entscheidung dokumentieren — Wechsel mittendrin ist teuer.
+
+**Secrets-Trennung**
+
+- Strikt pro User in `~/.claude/.env`, Mode 600.
+- Keine Shared-Secrets ueber `/etc/` oder `/opt/`.
+- Bei Operator-Wechsel: User-Account loeschen, `.env` ist mit weg.
+
+**Backup-Strategie**
+
+- VPS-weiter Snapshot beim Provider (taeglich, Operator waehlt aus).
+- Plus pro Home-Verzeichnis-Backup nach Hetzner Storage Box oder Backblaze B2.
+- Git-Remotes pro User decken Code ab — Backup deckt Operator-State, Journal, Secrets.
+
+**Tradeoffs**
+
+- Wartungsaufwand spuerbar: User-Onboarding, Skill-Updates, Drift-Erkennung, Snapshot-Pruefung.
+- User-Isolation ist kritisch — ein kompromittierter User darf nicht andere User sehen.
+- Konfigurations-Drift zwischen Usern muss aktiv ueberwacht werden (sonst "wieso laeuft Skill X bei Alice und nicht bei Bob").
+
+### Szenario 4 — Team-mit-Coding-Server (Hybrid Mac-Frontend + VPS-Backend, 2-5 Operatoren)
+
+**Operator-Profil**
+
+- 2-5 Operatoren mit eigenem Mac, aber gemeinsamem Code-Hub auf VPS.
+- Editor laeuft lokal (VS Code Remote-SSH), Code lebt auf dem Server.
+- Verteiltes Team mit Zeitzonen-Versatz oder unterschiedlichen Standorten.
+
+**Setup-Schritte**
+
+1. VPS bereitstellen (siehe Szenario 2 Schritte 1-3).
+2. VS Code Remote-SSH-Extension auf jedem Operator-Mac installieren.
+3. Pro Operator System-User auf dem VPS (analog Szenario 3 Schritte 2-3).
+4. Claude Code CLI auf dem VPS installieren — Operatoren starten `claude` ueber die Remote-SSH-Session.
+5. Geteilten Backlog in Linear oder GitHub Issues anlegen — alle Operatoren arbeiten gegen dasselbe Backlog.
+6. Secrets pro Operator in `~/.claude/.env` auf dem VPS, **nicht** in geteilten Verzeichnissen.
+7. Optional: Syncthing fuer Datei-Sync zwischen Macs und VPS einsetzen, wenn Operator-Daten lokal vorgehalten werden muessen (Operator waehlt aus).
+8. Backup wie Szenario 3 (VPS-Snapshot plus pro Home).
+
+**Skill-Installation**
+
+- Wie Szenario 3 — entweder global unter `/opt/claude/skills/` oder pro User.
+- Bei kleinen Teams (2-3 Operatoren) reicht oft Variante B (pro User), weil Drift-Risiko kleiner ist.
+
+**Secrets-Trennung**
+
+- Pro Operator in `~/.claude/.env` auf dem VPS.
+- Keine Mac-`.env` in den VPS-Workflow uebertragen.
+- Optional: Secrets-Vault des Operators (z.B. <Secret-Vault-Tool deiner Wahl>) — Framework setzt nichts voraus.
+
+**Backup-Strategie**
+
+- VPS-Snapshot beim Provider (taeglich).
+- Plus Hetzner Storage Box oder Backblaze B2 fuer Home-Verzeichnisse.
+- Mac-seitig: Time Machine deckt lokalen State ab, falls Operatoren lokal arbeiten.
+
+**Tradeoffs**
+
+- Komplex im Setup: SSH-Hardening, Remote-Extension, geteilter Backlog, Secrets-Disziplin.
+- Brauchbar nur bei verteiltem Team mit gemeinsamem Code-Hub — fuer Solo-Setups Overkill.
+- LLM-Latenz haengt vom VPS-Standort ab, nicht vom Operator-Standort.
+
+### Bootstrap-Frage A.7 (BOO-70)
+
+Im `/bootstrap` Phase A wird genau eine Frage zum Deployment-Szenario gestellt:
+
+```
+A.7 Deployment-Szenario:
+  a) Solo-Mac (Default)
+  b) anders → siehe HANDBUCH Anhang P
+```
+
+Bei `a)` laeuft der bestehende Bootstrap-Pfad unveraendert weiter. Bei `b)` gibt der Bootstrap nur einen Hinweis-Block aus, der auf diesen Anhang verweist — **kein** Interview-Fork, **kein** szenarienspezifischer Setup-Code im Bootstrap-Skill. Operator setzt sein Szenario manuell anhand der Schritte in der jeweiligen Sektion auf.
+
+### Verwandte Anhaenge
+
+- **Anhang I (Self-Hosted Runner):** Wer Szenario 2-4 nutzt, kann auf demselben VPS auch einen Self-Hosted CI-Runner betreiben — Sizing-Hinweise in Anhang I.
+- **Anhang F (Hermes Compound-Layer):** Hermes-Routing funktioniert in allen Szenarien identisch, weil es auf Skill-Ebene wirkt, nicht auf Deployment-Ebene.
+- **Anhang O (Privacy by Design):** Bei DSGVO-pflichtigen Projekten in Szenario 2-4 EU-Standort fuer den VPS waehlen — Anhang O liefert die Rechtsgrundlagen-Sicht.
+- **Anhang Q (Souveraenitaets-Stack-Guide):** Inspirations-Schicht fuer EU-konforme Provider-Alternativen, falls Datensouveraenitaet ein expliziter Treiber ist.
+
+Basiert auf BOO-9 (VPS-Rollout) und BOO-83 (VPS-Multi-User-Pattern).
+## Anhang Q: Souveraenitaets-Stack-Guide + LLM-Proxy-Hook (BOO-71)
+
+Code-Crash-Operatoren arbeiten zunehmend in regulierten Branchen — FINMA, BaFin, MaRisk, NIS-2-Pflichtsektoren, Behoerden-Auftraege. In diesen Kontexten ist die Default-Stack-Zusammensetzung (GitHub, Anthropic USA, iCloud) nicht souveraenitaetskonform, und ein Auditor fragt frueher oder spaeter nach EU-Alternativen. Dieser Anhang ist die **Inspirations-Schicht** des Frameworks: eine kuratierte Tabelle EU-konformer Komponenten plus ein einziger Hook-Punkt (`llm_proxy_url`) fuer Operator-seitige Anonymisierungs- oder Routing-Proxys. **Keine Anonymisierungs-Engine im Framework selbst** — das ist Runtime-Infrastruktur und gehoert in die Hand des Operators.
+
+### Wann lohnt der Souveraenitaets-Switch?
+
+Nicht jedes Projekt braucht einen souveraenen Stack. Diese Decision-Matrix gibt eine ehrliche Orientierung — bei Unsicherheit auf das strengste zutreffende Kriterium ausrichten.
+
+| Trigger | Souveraenitaets-Switch noetig? | Begruendung |
+|---------|--------------------------------|-------------|
+| Regulierte Branche (FINMA / BaFin / MaRisk) | Ja | Aufsichtsrechtliche Anforderung an Datenstandort und Auslagerungs-Kette; US-Cloud meist nur mit Sonderpruefung. |
+| Behoerden-Auftrag (Bund / Land / Kanton) | Ja | Vergaberecht und IT-Grundschutz fordern in der Regel EU-Standort und EU-Vertragspartner. |
+| NIS-2-Pflichtsektor (Energie, Transport, Gesundheit, Wasser, Digital) | Ja | NIS-2 verlangt Kontrolle ueber kritische Lieferkette inkl. LLM- und Code-Hosting-Anbieter. |
+| Personenbezogene Daten Tier 3 (Gesundheit, Finanz, Strafregister) | Ja | Hoechste DSGVO-Risikoklasse; CLOUD-Act-Exposure ist Audit-Befund. |
+| Schweizer Kundenmandat mit nDSG-Pflicht | Ja | nDSG verlangt nachweisbare Datenstandort-Kontrolle und EU/CH-Vertragspartner. |
+| Solo-Tool ohne EU-Bezug | Nein | Default-Stack ist okay; Souveraenitaet wuerde Friction ohne Gegenwert hinzufuegen. |
+| Code-Crash-Lite-Setup fuer Hobby-Projekte | Nein | Lernkurve und Operator-Aufwand stehen in keinem Verhaeltnis; Default bleibt. |
+
+### EU-konforme Alternativen pro Stack-Komponente
+
+Die folgende Tabelle ist die Kurz-Uebersicht. Pro Komponente folgt unten je eine eigene Sektion mit kurzer Migrations-Anleitung und Hinweis auf die jeweilige offizielle Doku — keine Voll-Setup-Guides, sondern Sprungbrett-Material.
+
+| Komponente | US-Default | EU-Alternative | Tradeoff / Hinweis |
+|-----------|------------|----------------|--------------------|
+| Code-Hosting | GitHub | Codeberg (Forgejo) oder GitLab Self-hosted | Codeberg ist genossenschaftlich, gemeinnuetzig; GitLab Self-hosted braucht eigene Wartung. |
+| Vault-Sync | iCloud oder Obsidian Sync | Syncthing oder Hetzner Storage Box mit Git-Sync | Syncthing ist Peer-to-Peer und braucht laufende Geraete; Storage Box plus Git-Sync ist robuster, aber manueller. |
+| LLM-Endpoint | Anthropic API (USA) oder OpenAI (USA) | Mistral La Plateforme (EU), AWS Bedrock Frankfurt (mit CLOUD-Act-Restrisiko), Ollama lokal | Mistral ist EU-Vertragspartner; Bedrock Frankfurt bleibt US-Konzern mit CLOUD-Act-Exposure; Ollama lokal verschiebt Kosten auf Hardware. |
+| Issue-Tracker | Linear | Plane (self-hosted) oder GitLab Issues | Plane ist Linear-aehnliche UX, Self-Hosting noetig; GitLab Issues sind weniger schlank, aber mit GitLab-Hosting integriert. |
+| CI / Build | GitHub Actions | Forgejo Actions oder Drone CI auf Hetzner | Forgejo Actions sind GitHub-Actions-kompatibel; Drone CI ist leichter und vom Forge entkoppelt. |
+
+### Code-Hosting: GitHub → Codeberg / GitLab Self-hosted
+
+**Migrations-Anleitung**
+
+1. Codeberg- oder GitLab-Account anlegen (bei Self-hosted: GitLab-Server auf EU-VPS installieren, siehe Anhang P).
+2. Repo via `git push --mirror` auf den neuen Remote spiegeln.
+3. CI-Workflows pruefen — GitHub Actions laufen nicht 1:1 auf Codeberg/Forgejo (siehe Sektion CI weiter unten).
+4. Teamberechtigungen und Secrets im neuen Forge erneut einrichten — keine `.env`-Inhalte uebernehmen.
+5. Im Bootstrap-Interview `git_provider`-Frage entsprechend setzen; Linear-Github-Bridge gegebenenfalls deaktivieren.
+
+**Externe Doku**
+
+- Offizielle Codeberg-Doku konsultieren (Operator beschafft selbst).
+- Offizielle GitLab-Self-Hosted-Doku konsultieren (Operator beschafft selbst).
+
+### Vault-Sync: iCloud / Obsidian Sync → Syncthing / Hetzner Storage Box + Git-Sync
+
+**Migrations-Anleitung**
+
+1. Vault als Git-Repo initialisieren, falls noch nicht geschehen.
+2. Syncthing auf allen Geraeten installieren oder Storage-Box-Mount via SSHFS einrichten.
+3. iCloud-Sync fuer den Vault-Ordner explizit deaktivieren (sonst Race-Conditions).
+4. Bei Storage-Box-Variante: Cron-Job fuer regelmaessigen Git-Commit und -Push einrichten.
+5. Backup-Strategie wie in Anhang P — Storage Box deckt Operator-State, Git-Remote deckt Code-Stand.
+
+**Externe Doku**
+
+- Offizielle Syncthing-Doku konsultieren (Operator beschafft selbst).
+- Hetzner-Storage-Box-Doku konsultieren (Operator beschafft selbst).
+
+### LLM-Endpoint: Anthropic / OpenAI USA → Mistral La Plateforme / AWS Bedrock Frankfurt / Ollama
+
+**Migrations-Anleitung**
+
+1. EU-Endpoint-Vertragspartner waehlen — Mistral La Plateforme (EU-Vertragspartner) oder AWS Bedrock Frankfurt (CLOUD-Act-Restrisiko explizit dokumentieren).
+2. Alternativ Ollama lokal aufsetzen, wenn keine Cloud akzeptabel ist; Hardware-Anforderungen pruefen.
+3. Modell-Tier-Mapping in `bootstrap/references/model-tiers.json` anpassen — andere Provider haben andere Tier-Namen und Preise.
+4. Cost-Tracking in `meta.json.token_tracking` validieren — Provider-Wechsel veraendert Token-Preise; Operator prueft die aktuelle Preisliste des neuen Providers.
+5. Bei sensiblen Daten zusaetzlich `llm_proxy_url` setzen, um Anonymisierung vor dem Provider zu schalten (siehe naechste Sektion).
+
+**Externe Doku**
+
+- Offizielle Mistral-La-Plateforme-Doku konsultieren (Operator beschafft selbst).
+- AWS-Bedrock-Doku fuer Frankfurt-Region konsultieren (Operator beschafft selbst).
+- Offizielle Ollama-Doku konsultieren (Operator beschafft selbst).
+
+### Issue-Tracker: Linear → Plane / GitLab Issues
+
+**Migrations-Anleitung**
+
+1. Plane (self-hosted) auf EU-VPS deployen oder GitLab Issues im bereits migrierten GitLab nutzen.
+2. Bestehende Linear-Issues exportieren (CSV oder API) und in den neuen Tracker importieren.
+3. Backlog-Tool im `/bootstrap` umstellen — Skill `backlog` unterstuetzt verschiedene Tools per Konfiguration.
+4. Webhook- und Bot-Integrationen neu einrichten (Linear-spezifische Automatisierungen sind nicht portabel).
+5. Action-Items aus Meeting-Skills pruefen — Trigger-Logik bleibt, Endpunkt aendert sich.
+
+**Externe Doku**
+
+- Offizielle Plane-Doku konsultieren (Operator beschafft selbst).
+- Offizielle GitLab-Issues-Doku konsultieren (Operator beschafft selbst).
+
+### CI / Build: GitHub Actions → Forgejo Actions / Drone CI
+
+**Migrations-Anleitung**
+
+1. CI-Provider waehlen — Forgejo Actions wenn auf Codeberg/Forgejo gewechselt wurde, Drone CI fuer entkoppelten Runner.
+2. Workflow-Definitionen pruefen — Forgejo Actions ist groesstenteils GitHub-Actions-kompatibel, aber nicht alle Marketplace-Actions sind portiert.
+3. Self-Hosted Runner aufsetzen (siehe Anhang I) — Sizing wie dort beschrieben.
+4. Secrets im neuen CI hinterlegen, nicht aus GitHub-Actions-Secrets uebernehmen.
+5. Coverage- und Lint-Gates aus `CONVENTIONS.md` gegen den neuen Runner verifizieren.
+
+**Externe Doku**
+
+- Offizielle Forgejo-Actions-Doku konsultieren (Operator beschafft selbst).
+- Offizielle Drone-CI-Doku konsultieren (Operator beschafft selbst).
+
+### LLM-Proxy-Hook (`llm_proxy_url`)
+
+Das Framework bietet **einen** konfigurierbaren Hook-Punkt fuer Operator-seitige Proxy-Loesungen: das optionale Feld `llm_proxy_url` in `.claude/environment.json`. Default ist `null` — das bedeutet direkter LLM-Call wie bisher. Setzt der Operator einen Wert, dann ist dieser Wert ein HTTP-Endpunkt eines selbst betriebenen Proxy-Servers, der Anonymisierung, Logging oder Souveraenitaets-Routing macht. **Das Framework setzt das Routing NICHT um** — es liest das Feld, protokolliert es in `meta.json.llm_routing` als Audit-Spur und ueberlaesst dem Operator die Proxy-Implementierung.
+
+**Schema-Snippet `environment.json`**
+
+```json
+{
+  "llm_proxy_url": "http://localhost:8000"
+}
+```
+
+Default-Wert: `null`. Erlaubt sind beliebige HTTP- oder HTTPS-Endpunkte, die der Operator erreichbar haelt.
+
+**Beispiel-Use-Case: Anonymisierungs-Proxy mit Microsoft Presidio**
+
+Ein typisches Setup: der Proxy nimmt den ausgehenden Prompt entgegen, identifiziert per Microsoft Presidio personenbezogene Entitaeten (Namen, E-Mails, IBANs), ersetzt sie durch deterministische Tokens und leitet den anonymisierten Prompt an den eigentlichen LLM-Endpoint weiter. Die Response wird beim Rueckweg vom selben Proxy demaskiert. So sieht der LLM-Provider nie Klartext-PII, das Skill-Verhalten bleibt unveraendert. Alternativen sind genauso valide — Operator kann statt Microsoft Presidio auch spaCy, eine eigene Lambda-Funktion oder einen anderen Proxy nutzen. Das Framework macht hier keine Vorgabe.
+
+> **Designentscheid:** Anonymisierung ist Runtime-Infrastruktur, nicht Framework-Aufgabe. Code-Crash bietet den Hook-Punkt und den Audit-Trail — nicht mehr.
+
+### Bootstrap-Verhalten
+
+Bootstrap aendert sich durch BOO-71 **nicht** — kein neuer Interview-Schritt, keine neue Pflicht-Frage. `llm_proxy_url` ist ein Power-User-Feld, der Operator setzt es manuell in `.claude/environment.json` nach dem Bootstrap-Lauf. Fuer Bestands-Projekte fuegt das Migrations-Skript `migrate_boo_71()` das Feld idempotent mit Default `null` in die `environment.json` ein. Wer den Stack souveraen haben will, aber den Proxy noch nicht braucht, kann das Feld leer lassen und spaeter einschalten.
+
+### Privacy ≠ Souveraenitaet
+
+Datensouveraenitaet (US-vs-EU-Cloud-Anbieter) und Privacy-by-Design sind **orthogonale** Themen und ersetzen sich nicht gegenseitig. Ein souveraener Stack mit EU-Hosting befreit nicht von DSGVO-Pflichten — Rechtsgrundlagen, Verarbeitungsverzeichnis, Loeschkonzept und Betroffenenrechte gelten unabhaengig vom Hosting-Standort. Umgekehrt schuetzt ein DSGVO-konformer Default-Stack auf US-Cloud nicht vor CLOUD-Act-Zugriffen oder Behoerden-Vergaberecht. Operatoren mit beiden Anforderungen aktivieren das Privacy-Add-on (siehe Anhang O) **und** waehlen ihre Stack-Komponenten gemaess diesem Anhang Q.
+
+### Verwandte Anhaenge
+
+- **Anhang N (Token-Effizienz, BOO-84):** `llm_proxy_url` und `model_overrides:` koennen konzeptionell in derselben CLAUDE.md-Sektion stehen — beide adressieren Operator-Wahl auf LLM-Ebene.
+- **Anhang O (Privacy by Design, BOO-69):** DSGVO/nDSG-Pflicht greift unabhaengig vom Hosting-Standort; Privacy-Add-on und Souveraenitaets-Stack sind orthogonal kombinierbar.
+- **Anhang P (Deployment-Szenarien, BOO-70):** EU-VPS-Standort ist Voraussetzung fuer einen souveraenen Stack — Szenarien 2-4 in Anhang P sind die natuerliche Heimat fuer Anhang Q.
+- **Anhang F (Hermes Compound-Layer):** Hermes-Routing aendert sich nicht durch einen Proxy — der Compound-Layer wirkt vor dem LLM-Call und ist unabhaengig vom Endpunkt.
+
+Spec: BOO-71. Operator-Feedback Martin 2026-05-27.
+
+
 *Dieses Handbuch ist Teil des Code-Crash Frameworks.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Letzte Aktualisierung: 2026-05-27 (Anhang O Privacy-by-Design ergaenzt — BOO-69)*
+*Letzte Aktualisierung: 2026-05-27 (Anhang P Deployment-Szenarien + Anhang Q Souveraenitaets-Stack ergaenzt — BOO-70 + BOO-71, Wave K)*

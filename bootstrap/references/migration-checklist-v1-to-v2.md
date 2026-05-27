@@ -1005,6 +1005,62 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-70 — Deployment-Szenarien (HANDBUCH Anhang P) — Wave K
+
+**Status:** ✓ in v2-Bundle enthalten — reines Doku-Issue, keine Repository-Aenderung in Bestands-Projekten.
+**Aufwand:** klein (~10 Min Lesen + Status-Notiz).
+**Linear:** <https://linear.app/owlist/issue/BOO-70>
+**Auto-Schritt:** ja (`migrate_boo_70` in `migrate-to-v2.sh`) — gibt nur Hinweis-Block aus, keine Datei-Operationen.
+
+**Auto-Schritte:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-70` — listet Anhang P und Operator-Schritte, idempotent ohne File-Changes.
+
+**Operator-Schritte (manuell, nach Auto-Run):**
+
+- [ ] HANDBUCH Anhang P (DE) bzw. Appendix P (EN) lesen — Decision-Matrix + 4 Szenarien (Solo-Mac / Solo-VPS / Multi-User-VPS-Coding-Factory / Team-mit-Coding-Server).
+- [ ] Aktuelles Deployment-Szenario in `migration-status.md` unter §BOO-70 vermerken (z.B. "Solo-Mac" oder "Solo-VPS — Hostinger srv1443320").
+- [ ] Bei aktivem Bootstrap-Lauf: Frage A.7 sieht jetzt das neue Deployment-Szenario-Feld; Default Solo-Mac unveraendert.
+- [ ] Bei Szenarienwechsel: die in Anhang P beschriebenen Setup-Schritte einmalig abarbeiten (Skill-Pool-Lage, Secrets-Trennung, Backup-Strategie).
+
+**Wann ueberspringen:** Solo-Mac-Setup ohne Wechsel-Plan — Eintrag mit Status `✓ Solo-Mac (Default)`.
+
+**Verweise:** HANDBUCH Anhang P, `bootstrap/SKILL.md` §A.7, BOO-9 (VPS-Rollout) und BOO-83 (VPS-Multi-User-Pattern) als Quellen.
+
+---
+
+## §BOO-71 — Souveraenitaets-Stack-Guide + LLM-Proxy-Hook — Wave K
+
+**Status:** ✓ in v2-Bundle enthalten — additive Migration: 1 optionales Feld in `environment.json`, sonst Doku.
+**Aufwand:** klein (~5 Min Auto-Schritt, Anhang-Lesen nach Bedarf).
+**Linear:** <https://linear.app/owlist/issue/BOO-71>
+**Auto-Schritt:** ja (`migrate_boo_71` in `migrate-to-v2.sh`).
+
+**Auto-Schritte:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-71` — fuegt `llm_proxy_url: null` (Default) in `.claude/environment.json` ein, **wenn** Datei existiert und Feld noch fehlt. Idempotent: Re-Run gefahrlos, meldet Skip wenn Feld schon da.
+- Fehlt `.claude/environment.json`: Warnung mit Hinweis auf `bash .claude/generate-environment-json.sh` (Bootstrap Phase 4.4e).
+
+**Operator-Schritte (manuell, nach Auto-Run):**
+
+- [ ] HANDBUCH Anhang Q (DE) bzw. Appendix Q (EN) lesen — Decision-Matrix + EU-Alternativen-Tabelle (Code-Hosting / Vault-Sync / LLM / Issue-Tracker / CI) + LLM-Proxy-Hook-Sektion.
+- [ ] Pruefen ob Souveraenitaets-Switch noetig: regulierte Branche, Behoerden-Auftrag, NIS-2-Pflichtsektor, personenbezogene Daten Tier 3, Schweizer nDSG-Mandat → ja. Solo-Tool ohne EU-Bezug → nein.
+- [ ] Bei aktiver Anonymisierung oder Souveraenitaets-Routing: `llm_proxy_url` in `.claude/environment.json` auf den Operator-betriebenen Proxy-Endpunkt setzen (Default bleibt `null` = direkter LLM-Call). Framework setzt das Routing NICHT um — Operator stellt den Proxy bereit.
+- [ ] Falls Stack-Komponenten getauscht werden: pro Komponente die kurze Migrations-Anleitung in Anhang Q durcharbeiten und externe Doku des jeweiligen Tools beschaffen.
+
+**Wann ueberspringen:** kein Souveraenitaets-Anspruch im Projekt — Default-Stack bleibt, Eintrag mit Status `✗ — Souveraenitaets-Switch nicht erforderlich`. Das Auto-Schritt-Feld `llm_proxy_url: null` darf trotzdem gesetzt werden (nicht-destruktiv, hat keine Wirkung).
+
+**Test:**
+
+- `grep llm_proxy_url .claude/environment.json` → Treffer (Wert `null` oder Operator-Endpunkt).
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-71` zweites Mal: meldet `BOO-71: llm_proxy_url bereits in environment.json.`.
+
+**Rollback:** Feld manuell aus `environment.json` entfernen. Skills lesen das Feld nur defensiv (Default `null`), Rollback ist nicht-destruktiv.
+
+**Verweise:** HANDBUCH Anhang Q, `bootstrap/references/file-templates.md` §`.claude/environment.json`, `implement/SKILL.md` §Schritt 0 (Punkt 7 `llm_proxy_url`).
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

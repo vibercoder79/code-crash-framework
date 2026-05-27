@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.27.0
+version: 3.28.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -39,7 +39,7 @@ Den Operator zuerst informieren, dann starten:
 ```
 Bootstrap v3.0 — ich fuehre dich durch 4 Bloecke:
 
-  Block A — Projekt-Kern           (9 Fragen,  ~4 min)
+  Block A — Projekt-Kern           (10 Fragen, ~4 min)
   Block B — Bestehende Infra       (6 Fragen,  ~4 min)
   Block C — Doku-Architektur       (Vorschlag + Review)
   Block D — Optional-Komponenten   (gezielte Ja/Nein-Fragen am Ende)
@@ -202,6 +202,31 @@ Regeln:
 - Wenn `GOVERNANCE_MODE = heavy`, Default `EXECUTION_ISOLATION = git-worktree`.
 - `agentic`-Execution ist nur erlaubt, wenn `EXECUTION_ISOLATION = git-worktree`.
 - `none` ist kein Governance-Modus, sondern nur eine Execution-Isolation ohne Parallel-Agenten-Schutz.
+
+### A.7 Deployment-Szenario (BOO-70)
+
+```
+10. Deployment-Szenario?
+    a) Solo-Mac (Default — ~80% der Operatoren)
+    b) anders → siehe HANDBUCH Anhang P (Solo-VPS / Multi-User-VPS-Coding-Factory / Team-mit-Coding-Server)
+```
+
+**Merken:** `DEPLOYMENT_SCENARIO = solo-mac | other`
+
+- Bei `a)` laeuft der bestehende Bootstrap-Pfad unveraendert weiter — Solo-Mac ist Default, keine zusaetzliche Setup-Logik.
+- Bei `b)` gibt der Bootstrap nur einen Hinweis-Block aus und keinen Interview-Fork:
+
+  ```
+  Du hast "anders" gewaehlt. Code-Crash bringt selbst keine szenarien-
+  spezifische Setup-Automatik mit — lies HANDBUCH Anhang P, waehle dein
+  Szenario (Solo-VPS / Multi-User-VPS / Team-Server) und arbeite die
+  dort beschriebenen Schritte einmalig ab. Danach kannst du Bootstrap
+  unveraendert weiterlaufen lassen.
+  ```
+
+- Konsequenz fuer Phase 4 / 5: keine, ausser dass `DEPLOYMENT_SCENARIO` in `metadata.deployment_scenario` der `.claude/environment.json` festgehalten wird (informativ, kein Skill-Verhalten haengt davon ab).
+
+> **Issue-Referenz:** BOO-70. Quelle: HANDBUCH Anhang P (Deployment-Szenarien). Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-70.
 
 Phase-1-Checkpoint: Kurze Bestaetigung der Antworten ausgeben.
 

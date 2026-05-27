@@ -6,7 +6,7 @@ description: |
   to closing table including post-implement validation. Use when the operator says "go",
   wants to implement a story, or runs "/implement". Also used by the automation daemon
   (no human in the loop).
-version: 2.11.0
+version: 2.11.1
 language: en
 metadata:
   hermes:
@@ -30,7 +30,8 @@ Systematically implement a user story from the Linear backlog. 8 steps + governa
 4. Before any tool invocation, check `tools_available.<tool>` (e.g. `tools_available.eslint`, `tools_available.semgrep`, `tools_available.tests`). If `false` or missing, the skill skips the call and notes it in the output.
 5. Read `SECURITY.md` if present. If missing, warn and add a TODO to the result table for every security-relevant change.
 6. Read `DEVELOPER_ONBOARDING.md` if present. If missing, warn: "Note: Developer Onboarding is missing — the project is harder to hand over to unfamiliar teams or other tools."
-7. Missing-file fallback: assume the schema defaults (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`, `DEVELOPER_ONBOARDING.md`) and add a note to the output: "Note: `.claude/environment.json` is missing — defaults active. Recommendation: re-run `/bootstrap` or create the file manually."
+7. **Read `llm_proxy_url` (BOO-71, optional):** if `.claude/environment.json` contains the field `llm_proxy_url` with a non-`null` value, record the value in `meta.json.llm_routing.proxy_url` and set `meta.json.llm_routing.proxy_active = true`. **Read-only**: the framework does NOT perform any actual proxy routing — the value is an audit trail for operator-run sovereignty/anonymisation proxies. Implementing the routing is the operator's job (wrapper script, hook, dedicated proxy server). When `null` or missing: `meta.json.llm_routing.proxy_active = false`. Details: HANDBUCH Appendix Q.
+8. Missing-file fallback: assume the schema defaults (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`, `DEVELOPER_ONBOARDING.md`) and add a note to the output: "Note: `.claude/environment.json` is missing — defaults active. Recommendation: re-run `/bootstrap` or create the file manually."
 
 ### Step 0b: Token-window pre-flight (BOO-40, soft)
 

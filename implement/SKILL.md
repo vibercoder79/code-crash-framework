@@ -6,7 +6,7 @@ description: |
   bis Ergebnis-Tabelle inkl. Post-Implement Validation. Verwenden wenn der Operator "los" sagt,
   eine Story umsetzen will, oder "/implement" ausfuehrt. Wird auch vom Automation Daemon genutzt
   (ohne Human-in-the-Loop).
-version: 2.11.0
+version: 2.11.1
 metadata:
   hermes:
     category: coding
@@ -29,7 +29,8 @@ User Story aus dem Linear-Backlog systematisch umsetzen. 8 Schritte + Governance
 4. Bei Tool-Aufruf pruefen: ist Tool in `tools_available.<tool>` aktiv (z.B. `tools_available.eslint`, `tools_available.semgrep`, `tools_available.tests`)? Bei `false` oder fehlendem Eintrag: Skill ueberspringt den Aufruf und gibt einen Hinweis im Output.
 5. Lese `SECURITY.md` falls vorhanden. Bei fehlender Datei Warnung ausgeben und fuer jede Security-relevante Aenderung ein TODO in der Ergebnis-Tabelle notieren.
 6. Lese `DEVELOPER_ONBOARDING.md` falls vorhanden. Bei fehlender Datei Warnung ausgeben: "Hinweis: Developer Onboarding fehlt — Projekt ist schwerer an fremde Teams oder andere Tools uebergabefaehig."
-7. Fallback bei fehlender Datei: Standard-Pfade aus dem Schema annehmen (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`, `DEVELOPER_ONBOARDING.md`) und im Output vermerken: "Hinweis: `.claude/environment.json` fehlt — Defaults aktiv. Empfehlung: `/bootstrap` re-rennen oder die Datei manuell anlegen."
+7. **`llm_proxy_url` lesen (BOO-71, optional):** Wenn `.claude/environment.json` das Feld `llm_proxy_url` mit einem Wert ungleich `null` enthaelt, den Wert in `meta.json.llm_routing.proxy_url` und `meta.json.llm_routing.proxy_active = true` festhalten. **Read-only**: das Framework setzt KEIN tatsaechliches Proxy-Routing um — der Wert ist eine Audit-Spur fuer Operator-betriebene Souveraenitaets-/Anonymisierungs-Proxys. Implementation des Routings ist Operator-Aufgabe (Wrapper-Skript, Hook, eigener Proxy-Server). Bei `null` oder fehlendem Feld: `meta.json.llm_routing.proxy_active = false`. Details: HANDBUCH Anhang Q.
+8. Fallback bei fehlender Datei: Standard-Pfade aus dem Schema annehmen (`journal/`, `journal/reports/local/`, `specs/`, `ARCHITECTURE_DESIGN.md`, `CONVENTIONS.md`, `SECURITY.md`, `DEVELOPER_ONBOARDING.md`) und im Output vermerken: "Hinweis: `.claude/environment.json` fehlt — Defaults aktiv. Empfehlung: `/bootstrap` re-rennen oder die Datei manuell anlegen."
 
 ### Schritt 0b: Token-Window-Pre-Flight (BOO-40, weich)
 

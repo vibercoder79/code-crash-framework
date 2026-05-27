@@ -1408,7 +1408,8 @@ fi
     "created_at": "2026-05-06T14:30:00Z",
     "bootstrap_version": "3.3.0",
     "stack": "node-typescript"
-  }
+  },
+  "llm_proxy_url": null
 }
 ```
 
@@ -1431,6 +1432,7 @@ fi
 | `metadata.created_at` | string | ISO-8601 UTC, set on first generator run. |
 | `metadata.bootstrap_version` | string | Active bootstrap version at generator time. |
 | `metadata.stack` | string | `node-typescript` / `node-javascript` / `python` / `mixed` / `unknown` — analogous to BOO-3 stack detection. |
+| `llm_proxy_url` | string\|null | **Optional (BOO-71).** Default `null` = direct LLM call. When set: HTTP(S) endpoint of an operator-side proxy server (anonymisation, logging, sovereignty routing). The framework does NOT perform the routing itself — the value is only read and recorded in `meta.json.llm_routing` as an audit trail. Details: HANDBUCH Appendix Q (Sovereignty Stack + LLM Proxy Hook). |
 
 **Order of `environment` detection matters:** CI check FIRST, then mac, then VPS — a CI runner can be Linux **or** mac. If the skill checked for Darwin first, a mac CI job would be incorrectly flagged as `mac`.
 

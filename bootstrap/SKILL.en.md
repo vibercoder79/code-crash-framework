@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.27.0
+version: 3.28.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -40,7 +40,7 @@ Inform the operator first, then start:
 ```
 Bootstrap v3.0 — I'll walk you through 4 blocks:
 
-  Block A — Project core          (9 questions, ~4 min)
+  Block A — Project core          (10 questions, ~4 min)
   Block B — Existing infra        (6 questions, ~4 min)
   Block C — Docs architecture     (proposal + review)
   Block D — Optional components   (targeted yes/no questions at the end)
@@ -203,6 +203,30 @@ Rules:
 - If `GOVERNANCE_MODE = heavy`, default `EXECUTION_ISOLATION = git-worktree`.
 - `agentic` execution is only allowed when `EXECUTION_ISOLATION = git-worktree`.
 - `none` is not a governance mode; it is only an execution-isolation value without parallel-agent protection.
+
+### A.7 Deployment scenario (BOO-70)
+
+```
+10. Deployment scenario?
+    a) Solo-Mac (default — ~80% of operators)
+    b) other → see HANDBUCH Appendix P (Solo-VPS / Multi-User VPS coding factory / Team-with-coding-server)
+```
+
+**Remember:** `DEPLOYMENT_SCENARIO = solo-mac | other`
+
+- On `a)` the existing bootstrap path continues unchanged — Solo-Mac is the default, no extra setup logic.
+- On `b)` bootstrap only prints a hint block and does not fork the interview:
+
+  ```
+  You picked "other". Code-Crash itself does not ship scenario-specific
+  setup automation — read HANDBUCH Appendix P, pick your scenario
+  (Solo-VPS / Multi-User-VPS / Team-server) and walk through the steps
+  described there once. After that, bootstrap continues unchanged.
+  ```
+
+- Consequence for phases 4 / 5: none, except that `DEPLOYMENT_SCENARIO` is recorded in `metadata.deployment_scenario` inside `.claude/environment.json` (informational, no skill behaviour depends on it).
+
+> **Issue reference:** BOO-70. Source: HANDBUCH Appendix P (Deployment Scenarios). Migration for existing projects: `references/migration-checklist-v1-to-v2.en.md` §BOO-70.
 
 Phase 1 checkpoint: print a short confirmation of the answers.
 

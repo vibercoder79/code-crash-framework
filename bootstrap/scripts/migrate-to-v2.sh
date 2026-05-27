@@ -3127,6 +3127,64 @@ with open(p, 'w') as f:
 }
 
 # -----------------------------------------------------------------------------
+# BOO-70 — HANDBUCH Anhang P (Deployment-Szenarien) — Wave K
+# -----------------------------------------------------------------------------
+
+migrate_boo_70() {
+    log_info "BOO-70: Deployment-Szenarien — HANDBUCH Anhang P (Solo-Mac / Solo-VPS / Multi-User-VPS / Team-Server)"
+    log_info "BOO-70: Deployment scenarios — HANDBUCH Appendix P (Solo-Mac / Solo-VPS / Multi-User VPS / Team server)"
+
+    # Reines Doku-Issue: keine File-Operationen, nur Hinweis an den Operator.
+    # Pure documentation issue: no file operations, operator hint only.
+    log_info "BOO-70: HANDBUCH Anhang P / Appendix P ist jetzt im Framework verfuegbar."
+    log_info "BOO-70: Operator-Schritte:"
+    log_info "  1. HANDBUCH Anhang P (DE) bzw. Appendix P (EN) lesen — Decision-Matrix + 4 Szenarien."
+    log_info "  2. Aktuelles Deployment-Szenario in 'migration-status.md' unter §BOO-70 vermerken."
+    log_info "  3. Bei Szenarienwechsel (z.B. Solo-Mac -> Solo-VPS) die dort beschriebenen Setup-Schritte einmalig abarbeiten."
+    log_info "BOO-70 done. Doku-only, keine Repository-Aenderung noetig."
+}
+
+# -----------------------------------------------------------------------------
+# BOO-71 — Souveraenitaets-Stack + LLM-Proxy-Hook — Wave K
+# -----------------------------------------------------------------------------
+
+migrate_boo_71() {
+    log_info "BOO-71: Souveraenitaets-Stack-Guide + llm_proxy_url-Hook"
+    log_info "BOO-71: Sovereignty stack guide + llm_proxy_url hook"
+
+    # environment.json um optionales Feld llm_proxy_url ergaenzen (Default null).
+    # Idempotent: nur wenn Datei existiert und Feld noch fehlt.
+    if [[ -f ".claude/environment.json" ]]; then
+        if ! grep -q "llm_proxy_url" .claude/environment.json; then
+            if [[ "$DRY_RUN" == "true" ]]; then
+                log_info "[dry-run] .claude/environment.json um llm_proxy_url (Default null) erweitern"
+            else
+                python3 -c "
+import json
+p = '.claude/environment.json'
+with open(p) as f:
+    cfg = json.load(f)
+cfg['llm_proxy_url'] = None
+with open(p, 'w') as f:
+    json.dump(cfg, f, indent=2)
+" && log_info ".claude/environment.json um llm_proxy_url (Default null) ergaenzt."
+            fi
+        else
+            log_info "BOO-71: llm_proxy_url bereits in environment.json."
+        fi
+    else
+        log_warn "BOO-71: .claude/environment.json fehlt. Operator-Aktion: 'bash .claude/generate-environment-json.sh' ausfuehren (Bootstrap Phase 4.4e), danach migrate_boo_71 wiederholen."
+    fi
+
+    log_info "BOO-71: HANDBUCH Anhang Q / Appendix Q ist jetzt im Framework verfuegbar."
+    log_info "BOO-71: Operator-Schritte:"
+    log_info "  1. HANDBUCH Anhang Q (DE) bzw. Appendix Q (EN) lesen — Decision-Matrix + EU-Alternativen-Tabelle + LLM-Proxy-Hook."
+    log_info "  2. Falls Souveraenitaets-Switch geplant: pro Komponente (Code-Hosting / Vault-Sync / LLM / Issue-Tracker / CI) Migrations-Anleitung in Anhang Q lesen und durchfuehren."
+    log_info "  3. Optional: 'llm_proxy_url' in .claude/environment.json auf einen Operator-betriebenen Proxy-Endpunkt setzen (Default bleibt null = direkter LLM-Call)."
+    log_info "BOO-71 done. Audit-Spur ueber 'meta.json.llm_routing' (siehe implement-Skill Schritt 0)."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3141,6 +3199,7 @@ ALL_ISSUES=(
     BOO-31 BOO-32 BOO-33
     BOO-84
     BOO-69
+    BOO-70 BOO-71
 )
 
 print_help() {
