@@ -2971,7 +2971,194 @@ Data sovereignty (US-vs-EU cloud providers) and privacy-by-design are **orthogon
 
 Source: BOO-71 spec. Operator feedback Martin 2026-05-27.
 
+## Appendix R: Multi-Operator Coordination — 5 to 20+ operators (BOO-72)
+
+Appendix P (BOO-70) describes four deployment scenarios, with scenario 4 covering **2-5 operators** on a shared coding server. But what happens when a consulting engagement with ten people adopts Code-Crash? When an in-house team of twenty developers works in parallel on the same repo? This appendix is the **inspiration layer** for operator teams beyond the solo and small-team setups. It adds **no** new skill, **no** new bootstrap question, and **no** framework convention — it only shows how the existing gates from Wave A-K play out in a larger team.
+
+![Multi-Operator Coordination — 3-layer model](docs/assets/boo-72-multi-operator-3-layer.png)
+
+### The operator question behind Appendix R
+
+> When 20 developers work concurrently on the same GitHub repo and pull docs from Obsidian (or Jira/Confluence/Notion) — does the framework still work? Does the framework guarantee that multiple people can work in parallel, or does the operator have to solve that themselves?
+
+The honest answer: **partly covered, partly operator discipline.** Appendix R splits the question into three layers and answers per layer "what scales natively", "what does not", "which options the operator has".
+
+### The 3-layer model
+
+#### Layer 1 — Code layer (Git/GitHub)
+
+**What scales natively:** Git is built for multi-user concurrency. Branches, PRs, merge-conflict resolution, branch protection (BOO-29) and spec-gate (BOO-4 + BOO-27) are team-ready without framework additions. Conceptually the code layer makes **no** difference between solo operator and a 20-person team — only the conflict frequency changes.
+
+**What does not:** if operators push directly to `main`, bypass the spec-gate or merge PRs without review, governance collapses. Those are not framework gaps but team-discipline issues.
+
+**Pattern options (branch strategy):**
+
+| Strategy | When it fits | Trade-off |
+|---|---|---|
+| **Trunk-Based Development** | small stories (max 1-2 days per branch), high release frequency, feature flags for "not yet finished" code | Discipline required: branches must NOT live long, otherwise merge hell |
+| **Feature branches with PR review** | standard today, robust for 5-15 operators, one branch per story | Branches can live long → merge conflicts with `main` rise |
+| **GitFlow** | release-driven branches (`develop`, `release/*`, `hotfix/*` next to `main`), audit-mandated regulated domains | Complex, more branches to manage, slower release cycle |
+
+**Recommendation per team size:**
+
+- 5-10 operators: feature branches are enough.
+- 10-20: trunk-based if release frequency is high, otherwise feature branches with a mandatory PR-reviewer pool.
+- 20+: GitFlow if audit-mandated, otherwise trunk-based with CODEOWNERS discipline.
+
+**CODEOWNERS pattern (example):** mandatory from 10 operators, strongly recommended from 5. File `.github/CODEOWNERS` with file-pattern → sub-team mapping. GitHub then enforces that every PR has at least 1 reviewer from the responsible sub-team (in combination with branch protection):
+
+```text
+# Critical governance documents require architect approval
+/SECURITY.md            @owlist/sec-leads
+/PRIVACY.md             @owlist/legal-leads
+/ARCHITECTURE_DESIGN.md @owlist/arch-leads
+/CONVENTIONS.md         @owlist/arch-leads
+
+# Domain-specific code areas
+/src/api/**             @owlist/backend
+/src/ui/**              @owlist/frontend
+/src/auth/**            @owlist/sec-leads @owlist/backend
+/infra/**               @owlist/devops
+
+# Docs in the repo
+/docs/api/**            @owlist/backend
+/docs/ui/**             @owlist/frontend
+```
+
+Important: CODEOWNERS does not replace the spec-gate — both work in parallel.
+
+#### Layer 2 — Coordination layer (who does what?)
+
+**What scales natively:** Linear / Jira / GitHub Issues / Azure DevOps / MS Planner ship workflow states (`Backlog → In Progress → In Review → Done`). Bootstrap question B.4 covers the backlog-adapter choice (BOO-54). "In Progress" per issue signals "this story is taken" — the same mechanic that sub-agents enforce in BOO-52 (execution isolation) on the machine level, here on the operator level.
+
+**What does not:** the issue tracker itself does not solve "who decides conflicts on `SECURITY.md`?". "Which operator works on which module?" is also team organisation, not a tool concern.
+
+**Pattern options (team topologies):**
+
+| Topology | When it fits | Trade-off |
+|---|---|---|
+| **Pool model** | every operator pulls the next issue from a shared backlog, no fixed module owner | High flexibility, low specialisation — at 15+ people "who knows this area?" becomes the bottleneck |
+| **Squad model** | 3-5 operators per module/domain, squad lead decides cross-story matters | Clearly distributed responsibility, risk of squad silos — cross-squad topics need coordination |
+| **Hybrid** | pool for small stories (bug fixes, refactorings), squad for critical paths (SECURITY/PRIVACY/ARCHITECTURE_DESIGN) | Best fit to real operator capabilities, higher setup effort |
+
+**Recommendation per team size:**
+
+- 5-10: pool is enough. Cross-story matters get sorted out in the daily standup.
+- 10-20: hybrid with a squad owner per critical path (SECURITY, PRIVACY, ARCHITECTURE_DESIGN, optionally performance + observability).
+- 20+: squad model with a lead-architect role. The lead architect works cross-squad topics through with the squad leads and has a veto on architectural changes.
+
+**Concrete example — 15-person team with hybrid topology:**
+
+- 1 lead architect (cross-squad)
+- 3 squads of 4-5 operators: Backend / Frontend / DevOps
+- 1 sec-lead (cross-squad, owns `SECURITY.md` + `sensitive-paths.json`)
+- 1 legal-lead (cross-squad, owns `PRIVACY.md` + `personal-data-paths.json` + DPO skill audits)
+- Daily standup per squad (15 min), weekly cross-squad sync (30 min)
+- Backlog in Linear, all stories have `team` filled as a custom field
+
+#### Layer 3 — Documentation layer (Single Source of Truth)
+
+This layer is the real drift point in a team. Code conflicts are solved by Git, issue conflicts are solved by the workflow state — but doc conflicts are semantic and require human judgement. That is exactly why bootstrap question B.3 asks for the documentation SSoT — the choice is team-critical.
+
+**Documentation SSoT decision matrix per team size:**
+
+| SSoT | Solo (1) | Small (2-5) | Medium (5-10) | Large (10-20+) | Main reason |
+|---|---|---|---|---|---|
+| **Obsidian vault (local)** | yes | caution | no | no | Solo tool, no semantic multi-user lock |
+| **Obsidian + Git sync on the vault** | yes | caution | no | no | Sync conflicts become manual — too expensive at 5+ people; the Obsidian sync tool is meant for binary files, not for semantic merge |
+| **Obsidian Sync (paid, official)** | yes | yes | caution | no | Solves technical sync conflicts, not semantic ones ("two people edit the same note at the same time") |
+| **`docs/project/` in the repo (Markdown)** | yes | yes | yes | yes | Same Git mechanics as code: PR review for docs, branch protection, CODEOWNERS pattern |
+| **Confluence** | caution | yes | yes | yes | External tool with its own multi-user permissions, no Git link, good for enterprises with an existing Confluence licence |
+| **Notion** | caution | yes | yes | yes | External tool, own multi-user logic, version history per page |
+| **SharePoint** | caution | caution | yes | yes | External tool, good for regulated enterprises with an Office-365 footprint, fine-grained permissions |
+
+**Recommendation:**
+
+- 1 operator: Obsidian (personal vault + index)
+- 2-5: Obsidian Sync or repo docs — depending on the operator profile. If all operators are technical: repo docs. If mixed: Obsidian Sync.
+- 5+: repo docs (`docs/project/`) **or** an external DMS (Confluence/Notion/SharePoint). Obsidian then becomes the **personal** brainstorming tool, not the team SSoT.
+
+**Important:** bootstrap question B.3 sets `DOCUMENTATION_SSOT.path` once per project. Migrating the SSoT mid-flight is expensive (link drift, history loss) — the choice should be made before the first real content lands.
+
+### Four-eyes convention for sensitive paths and personal-data paths
+
+In the solo setup the operator sets `review-ok` (sensitive-paths gate, BOO-18) or `privacy-ok` (personal-data-paths gate, BOO-69) themselves — self-approval is acceptable because there is nobody else. **In a team, self-approval is an audit risk.** Appendix R recommends the **four-eyes convention:**
+
+- The operator who changes a sensitive or personal-data path must **not** be the same one who sets `review-ok` or `privacy-ok`.
+- In the PR review, a **different** operator (sec-lead, legal-lead, or an explicitly named reviewer) sets the gate token.
+- The audit trail runs through `git log` and `git blame` — whoever set the gate is visible in the commit author.
+
+Example audit trail:
+
+```bash
+$ git log --oneline -5 -- src/auth/jwt.go
+a3f1d22 review-ok: jwt rotation reviewed by @sec-lead (closes BOO-XYZ)
+e8b227a feat: rotate jwt signing key every 24h (BOO-XYZ)
+$ git log --format='%H %an' a3f1d22 e8b227a
+a3f1d22 Sec Lead          # review-ok set by a different person
+e8b227a Backend Operator  # actual change
+```
+
+**Important:** the framework does **not** enforce the four-eyes convention today — it would be theoretically checkable in the sensitive-paths gate (author of the gate commit != author of the change), but would raise framework complexity and duplicate audit tooling like `git blame`. Appendix R documents the convention as operator discipline; BOO-72 explicitly excludes enforcement.
+
+### Skill-pool governance in the team
+
+Appendix P scenario 3 (multi-user VPS) already had two skill-pool options: global under `/opt/claude/skills/` (read-only for users) or per user in `~/.claude/skills/` (own copy). At 10-20 operators that is not enough — a **maintenance-owner role** is required:
+
+- **Maintenance owner** (1 person, often the lead architect or DevOps): looks after the global skill pool. Updates via `git pull` as root or via a dedicated service account. Per skill version bump: changelog entry, short operator mail or Slack note.
+- **User view:** operators call skills via `~/.claude/skills/` symlinks to `/opt/claude/skills/`. On drift (a local operator has their own skill state): the maintenance owner runs periodic audits via `jq` against the users' `~/.claude/settings.json`.
+- **Skill quarantine:** new skills from external sources are reviewed by the maintenance owner via `security-architect --mode SKILL-SCAN` before they land in `/opt/claude/skills/`.
+
+For a hybrid pool (some skills global, some per user) the choice must be documented in `CONVENTIONS.md`, otherwise nobody remembers which variant applies.
+
+### Conflict escalation on critical governance paths
+
+What happens when two operators want to merge contradictory changes into `SECURITY.md`, `PRIVACY.md` or `ARCHITECTURE_DESIGN.md`? Appendix R recommends **three escalation steps:**
+
+1. **CODEOWNERS owner decides** — whoever is listed in CODEOWNERS for the path has the final say. In most cases that is enough.
+2. **Squad-lead mediation** — when two CODEOWNERS people disagree (e.g. sec-lead vs. backend lead on `src/auth/`), the squad lead of the affected module mediates.
+3. **Lead-architect veto** — cross-squad topics or architecture changes with system-level impact get escalated by the squad lead to the lead architect. The lead architect has a veto and records the decision in `Decisions/ADR-XX.md`.
+
+Important: escalation is a convention, not a framework mechanism. It only works if the team actively lives it. Appendix R is inspiration — how the team fills the roles is a team matter.
+
+### How do you set up Code-Crash for a 20-person team?
+
+Concrete 10-step guide that extends Appendix P scenario 3 (multi-user VPS coding factory):
+
+1. **VPS setup** (Appendix P scenario 3): VPS with 1 system user per operator, skill pool global under `/opt/claude/skills/` (read-only), repository worktrees per user under `~/projects/<project>/`, maintenance-owner role assigned.
+2. **Bootstrap run once by the lead architect:** Question B.3 = `docs/project/` in the repo **or** Confluence/Notion. Question B.4 = Linear or Jira. Question A.5 = `heavy` governance. Question A.7 = `b) other` with a pointer to this scenario.
+3. **Maintain the CODEOWNERS file** (example above). On first setup, work it out together with the lead architect and the squad leads.
+4. **Extended branch protection:** required-reviewer pool from CODEOWNERS, required status checks (spec-gate, lint-gate, coverage-gate, optional security scan, optional DPO audit hook), `Dismiss stale reviews when new commits are pushed`, `Require linear history`.
+5. **Four-eyes convention for gates:** `privacy-ok` / `review-ok` must NOT be set by the same operator who made the change. Operator discipline, traceable in the audit log via `git blame`.
+6. **Squad model with 3-5 operators per module** + 1 lead architect + 1 sec-lead + 1 legal-lead. Squad leads own their module in CODEOWNERS; sec/legal-leads own the governance paths.
+7. **Document conflict escalation explicitly** — add an "Escalation path" section to `CONVENTIONS.md` with the three steps above. Without written form the team forgets it in the heat of a conflict.
+8. **Daily standup per squad (15 min)** + weekly cross-squad sync (30 min). Backlog grooming happens every second standup wave, not ad-hoc.
+9. **Live the maintenance-owner role actively:** write skill-pool updates down, run drift audits regularly (e.g. monthly), skill quarantine for external skills.
+10. **Onboarding documentation** under `DEVELOPER_ONBOARDING.md` — reference Appendix R explicitly so new operators understand the 3-layer model before they file their first PR.
+
+### What Appendix R does not do
+
+Clear delimitation against the Code-Crash philosophy "lightweight + pragmatic":
+
+- **No new skill.** Appendix R is pure documentation.
+- **No new bootstrap question.** Bootstrap already asks for the documentation SSoT (B.3) and backlog adapter (B.4) — that is enough.
+- **No framework convention for "who is lead architect"** — that is team organisation.
+- **No four-eyes enforcement in the sensitive-paths gate.** Theoretically possible (author comparison), deliberately NOT implemented — operator discipline stays operator discipline.
+- **No "best practice" verdict.** Pattern options are trade-off tables, not recommendations dressed up as rules.
+- **No provider recommendation for Confluence/Notion/SharePoint** — the operator picks.
+
+### Related appendices
+
+- **Appendix P (Deployment scenarios, BOO-70):** Scenario 3 (multi-user VPS coding factory) and scenario 4 (team with coding server) are the infrastructural basis for Appendix R. Anyone serving 20 operators needs the VPS setup from scenario 3.
+- **Appendix Q (Sovereignty stack, BOO-71):** orthogonal — a 20-person team can run on the default stack or on the EU stack. Sovereignty is an industry question, not a team-size question.
+- **Appendix O (Privacy by Design, BOO-69):** particularly important in a team setup — DPO skill audits via `/sprint-review` step 7c gain value as the operator count grows because more code changes pass through per sprint.
+- **Appendix N (Token efficiency, BOO-84):** at 20 operators with several stories per day, token cost becomes a FinOps topic. Model routing + prompt caching are no longer nice-to-have but cost levers.
+- **HANDBUCH §8d (coding environments):** technical Mac/VPS/CI distinction, prerequisite for Appendix P scenarios 2-4.
+
+Spec: BOO-72. Operator question Tobias 2026-05-27 after the Wave K release. Sketch: [docs/assets/boo-72-multi-operator-3-layer.png](docs/assets/boo-72-multi-operator-3-layer.png).
+
+
 
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-27 (Appendix P Deployment Scenarios + Appendix Q Sovereignty Stack added — BOO-70 + BOO-71, Wave K)*
+*Last updated: 2026-05-27 (Appendix R Multi-Operator Coordination added — BOO-72, Wave L)*

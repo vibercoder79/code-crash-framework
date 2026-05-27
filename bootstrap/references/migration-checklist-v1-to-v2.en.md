@@ -1046,6 +1046,36 @@ Mirror of the master checklist in `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-72 — Multi-Operator Coordination (HANDBUCH Appendix R) — Wave L
+
+**Status:** ✓ included in the v2 bundle — pure documentation issue, no repository change in existing projects.
+**Effort:** small (~15 min reading + team conventions documentation).
+**Linear:** <https://linear.app/owlist/issue/BOO-72>
+**Auto step:** yes (`migrate_boo_72` in `migrate-to-v2.sh`) — prints a hint block only.
+
+**Auto steps:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-72` — lists Appendix R and operator steps, no file operation.
+
+**Operator steps (manual, after auto-run):**
+
+- [ ] Read HANDBUCH Appendix R — 3-layer model (Code / Coordination / Documentation) + decision matrix per team size + 10-step setup guide.
+- [ ] Record current team size + pattern choice in `migration-status.md` under §BOO-72 (e.g. "10 operators, hybrid topology, docs/project/ as SSoT").
+- [ ] **From 5 operators on:** create `.github/CODEOWNERS` with file-pattern → sub-team mapping (example in Appendix R).
+- [ ] **From 10 operators on:** document the four-eyes convention for `review-ok` / `privacy-ok` explicitly in `CONVENTIONS.md`.
+- [ ] **From 10 operators on:** document the conflict escalation path in `CONVENTIONS.md` (3 steps: CODEOWNERS → squad lead → lead architect veto).
+- [ ] **From 10 operators on:** name a maintenance owner for the skill pool (analogous to Appendix P scenario 3).
+
+**When to skip:** solo operator or team smaller than 5 — entry with status `✗ — team size below Appendix R threshold`.
+
+**Test:** `grep "Anhang R\|Appendix R" HANDBUCH*.md` → 2 matches (DE + EN).
+
+**Rollback:** no repository change — rollback only on optionally added files (`CODEOWNERS`, `CONVENTIONS.md` sections); operator removes manually.
+
+**References:** HANDBUCH Appendix R, Appendix P (scenarios 3+4 as prerequisite), BOO-29 (branch protection), BOO-18 (sensitive-paths gate), BOO-69 (personal-data-paths gate).
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.

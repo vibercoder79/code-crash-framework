@@ -3185,6 +3185,26 @@ with open(p, 'w') as f:
 }
 
 # -----------------------------------------------------------------------------
+# BOO-72 — HANDBUCH Anhang R Multi-Operator-Koordination — Wave L
+# -----------------------------------------------------------------------------
+
+migrate_boo_72() {
+    log_info "BOO-72: Multi-Operator-Koordination — HANDBUCH Anhang R (3-Layer-Modell fuer 5-20+ Operatoren)"
+    log_info "BOO-72: Multi-operator coordination — HANDBUCH Appendix R (3-layer model for 5-20+ operators)"
+
+    # Reines Doku-Issue: keine File-Operationen, nur Hinweis an den Operator.
+    # Pure documentation issue: no file operations, operator hint only.
+    log_info "BOO-72: HANDBUCH Anhang R / Appendix R ist jetzt im Framework verfuegbar."
+    log_info "BOO-72: Operator-Schritte:"
+    log_info "  1. HANDBUCH Anhang R (DE) bzw. Appendix R (EN) lesen — 3-Layer-Modell + Decision-Matrix pro Team-Groesse + 10-Schritte-Setup-Anleitung."
+    log_info "  2. Aktuelle Team-Groesse + Pattern-Wahl (Branch-Strategie / Team-Topologie / Doku-SSoT) in 'migration-status.md' unter §BOO-72 vermerken."
+    log_info "  3. Ab 5 Operatoren: '.github/CODEOWNERS' anlegen (Beispiel im Anhang R)."
+    log_info "  4. Ab 10 Operatoren: Vier-Augen-Konvention fuer 'review-ok' und 'privacy-ok' in CONVENTIONS.md dokumentieren."
+    log_info "  5. Ab 10 Operatoren: Konflikt-Eskalations-Pfad in CONVENTIONS.md (3 Stufen aus Anhang R)."
+    log_info "BOO-72 done. Doku-only, keine Repository-Aenderung noetig."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3200,6 +3220,7 @@ ALL_ISSUES=(
     BOO-84
     BOO-69
     BOO-70 BOO-71
+    BOO-72
 )
 
 print_help() {

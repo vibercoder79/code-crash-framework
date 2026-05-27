@@ -1061,6 +1061,36 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-72 — Multi-Operator-Koordination (HANDBUCH Anhang R) — Wave L
+
+**Status:** ✓ in v2-Bundle enthalten — reines Doku-Issue, keine Repository-Aenderung in Bestands-Projekten.
+**Aufwand:** klein (~15 Min Lesen + Team-Konvention dokumentieren).
+**Linear:** <https://linear.app/owlist/issue/BOO-72>
+**Auto-Schritt:** ja (`migrate_boo_72` in `migrate-to-v2.sh`) — gibt nur Hinweis-Block aus.
+
+**Auto-Schritte:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-72` — listet Anhang R und Operator-Schritte, keine File-Operation.
+
+**Operator-Schritte (manuell, nach Auto-Run):**
+
+- [ ] HANDBUCH Anhang R (DE) bzw. Appendix R (EN) lesen — 3-Layer-Modell (Code / Koordination / Doku) + Decision-Matrix pro Team-Groesse + 10-Schritte-Setup-Anleitung.
+- [ ] Aktuelle Team-Groesse + Pattern-Wahl in `migration-status.md` unter §BOO-72 vermerken (z.B. "10 Operatoren, Hybrid-Topologie, docs/project/ als SSoT").
+- [ ] **Ab 5 Operatoren:** `.github/CODEOWNERS` anlegen mit Datei-Pattern → Sub-Team-Mapping (Beispiel im Anhang R).
+- [ ] **Ab 10 Operatoren:** Vier-Augen-Konvention fuer `review-ok` / `privacy-ok` in `CONVENTIONS.md` explizit dokumentieren.
+- [ ] **Ab 10 Operatoren:** Konflikt-Eskalations-Pfad in `CONVENTIONS.md` (3 Stufen: CODEOWNERS → Squad-Lead → Lead-Architekt-Veto).
+- [ ] **Ab 10 Operatoren:** Wartungs-Owner-Rolle fuer den Skill-Pool benennen (analog Anhang P Szenario 3).
+
+**Wann ueberspringen:** Solo-Operator oder Team mit weniger als 5 Personen — Eintrag mit Status `✗ — Team-Groesse unterhalb Anhang-R-Schwelle`.
+
+**Test:** `grep "Anhang R\|Appendix R" HANDBUCH*.md` → 2 Treffer (DE+EN).
+
+**Rollback:** keine Repository-Aenderung — Rollback nur bei optional ergaenzten Dateien (`CODEOWNERS`, `CONVENTIONS.md`-Sektionen), Operator entfernt manuell.
+
+**Verweise:** HANDBUCH Anhang R, Anhang P (Szenario 3+4 als Voraussetzung), BOO-29 (Branch-Protection), BOO-18 (Sensitive-Paths-Gate), BOO-69 (Personal-Data-Paths-Gate).
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

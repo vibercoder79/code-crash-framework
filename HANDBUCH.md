@@ -3488,7 +3488,194 @@ Datensouveraenitaet (US-vs-EU-Cloud-Anbieter) und Privacy-by-Design sind **ortho
 
 Spec: BOO-71. Operator-Feedback Martin 2026-05-27.
 
+## Anhang R: Multi-Operator-Koordination — 5 bis 20+ Operatoren (BOO-72)
+
+Anhang P (BOO-70) beschreibt vier Deployment-Szenarien, davon Szenario 4 fuer **2-5 Operatoren** mit gemeinsamem Coding-Server. Aber was passiert, wenn ein Beratungsmandat mit zehn Personen Code-Crash adoptiert? Wenn ein Inhouse-Team mit zwanzig Entwicklern parallel im selben Repo arbeitet? Dieser Anhang ist die **Inspirations-Schicht** fuer Operator-Teams jenseits der Solo- und Kleinteam-Setups. Er fuegt **keinen** neuen Skill hinzu, **keine** neue Bootstrap-Frage und **keine** Framework-Konvention — er zeigt nur, wie die bestehenden Gates aus Wave A-K im groesseren Team gelebt werden.
+
+![Multi-Operator-Koordination — 3-Layer-Modell](docs/assets/boo-72-multi-operator-3-layer.png)
+
+### Die Operator-Frage hinter Anhang R
+
+> Wenn 20 Entwickler gleichzeitig im selben GitHub-Repo arbeiten und sich Doku aus Obsidian (oder Jira/Confluence/Notion) holen — funktioniert das Framework dann noch? Stellt das Framework sicher, dass mehrere Leute parallel arbeiten koennen, oder muss der Operator das selbst loesen?
+
+Die ehrliche Antwort: **teilweise gedeckt, teilweise Operator-Disziplin.** Anhang R trennt die Frage in drei Layer und beantwortet pro Layer "was skaliert nativ", "was nicht", "welche Optionen hat der Operator".
+
+### Das 3-Layer-Modell
+
+#### Layer 1 — Code-Layer (Git/GitHub)
+
+**Was skaliert nativ:** Git ist fuer Multi-User-Concurrency gebaut. Branches, PRs, Merge-Konflikt-Resolution, Branch-Protection (BOO-29) und Spec-Gate (BOO-4 + BOO-27) sind team-tauglich ohne Framework-Ergaenzung. Der Code-Layer macht zwischen Solo-Operator und 20-Personen-Team konzeptionell **keinen** Unterschied — nur die Frequenz der Konflikte aendert sich.
+
+**Was nicht:** wenn Operatoren direkt auf `main` pushen, Spec-Gate umgehen oder PRs ohne Review mergen, kollabiert die Governance. Das sind aber keine Framework-Luecken, sondern Team-Disziplin-Themen.
+
+**Pattern-Optionen (Branch-Strategie):**
+
+| Strategie | Wann sinnvoll | Tradeoff |
+|---|---|---|
+| **Trunk-Based Development** | kleine Stories (max 1-2 Tage pro Branch), hohe Release-Frequenz, Feature-Flags fuer "noch nicht fertig"-Code | Disziplin-Pflicht: Branches duerfen NICHT lange leben, sonst Merge-Hoelle |
+| **Feature-Branches mit PR-Review** | Standard heute, robust fuer 5-15 Operatoren, jede Story ein Branch | Branches koennen lange leben → Merge-Konflikte mit `main` steigen |
+| **GitFlow** | Releases-getriebene Branchen (`develop`, `release/*`, `hotfix/*` neben `main`), audit-pflichtige Regulatorik | Komplex, mehr Branches zu verwalten, langsamer Release-Zyklus |
+
+**Empfehlung pro Team-Groesse:**
+
+- 5-10 Operatoren: Feature-Branches reichen.
+- 10-20: Trunk-Based wenn schnelle Release-Frequenz, sonst Feature-Branches mit verbindlichem PR-Reviewer-Pool.
+- 20+: GitFlow wenn Audit-Pflicht, sonst Trunk-Based mit CODEOWNERS-Disziplin.
+
+**CODEOWNERS-Pattern (Beispiel):** Pflicht ab 10 Operatoren, sehr empfohlen ab 5. Datei `.github/CODEOWNERS` mit Datei-Pattern → Sub-Team-Mapping. GitHub erzwingt dann, dass jeder PR mindestens 1 Reviewer aus dem zustaendigen Sub-Team hat (in Kombination mit Branch-Protection):
+
+```text
+# Kritische Governance-Dokumente brauchen Architekt-Approval
+/SECURITY.md            @owlist/sec-leads
+/PRIVACY.md             @owlist/legal-leads
+/ARCHITECTURE_DESIGN.md @owlist/arch-leads
+/CONVENTIONS.md         @owlist/arch-leads
+
+# Domain-spezifische Code-Bereiche
+/src/api/**             @owlist/backend
+/src/ui/**              @owlist/frontend
+/src/auth/**            @owlist/sec-leads @owlist/backend
+/infra/**               @owlist/devops
+
+# Doku im Repo
+/docs/api/**            @owlist/backend
+/docs/ui/**             @owlist/frontend
+```
+
+Wichtig: CODEOWNERS ersetzt nicht das Spec-Gate — beide wirken parallel.
+
+#### Layer 2 — Koordinations-Layer (Wer macht was?)
+
+**Was skaliert nativ:** Linear / Jira / GitHub Issues / Azure DevOps / MS Planner haben Workflow-States (`Backlog → In Progress → In Review → Done`). Bootstrap-Frage B.4 deckt die Backlog-Adapter-Wahl ab (BOO-54). "In Progress" pro Issue signalisiert "diese Story ist belegt" — genau die Mechanik, die Sub-Agents in BOO-52 (Execution-Isolation) auf Maschinen-Ebene macht, hier auf Operator-Ebene.
+
+**Was nicht:** das Issue-Tracker-Tool selbst loest nicht "wer entscheidet bei Konflikten an `SECURITY.md`?". Auch "welcher Operator arbeitet an welchem Modul?" ist Team-Organisation, nicht Tool-Sache.
+
+**Pattern-Optionen (Team-Topologien):**
+
+| Topologie | Wann sinnvoll | Tradeoff |
+|---|---|---|
+| **Pool-Modell** | jeder Operator zieht naechstes Issue aus gemeinsamem Backlog, kein fester Modul-Owner | Hohe Flexibilitaet, niedrige Spezialisierung — bei 15+ Personen wird "wer kennt sich hier aus?" zum Engpass |
+| **Squad-Modell** | 3-5 Operatoren pro Modul/Domaene, Squad-Lead entscheidet Cross-Story-Themen | Klar verteilte Verantwortung, Risiko der Squad-Silos — Cross-Squad-Themen brauchen Koordination |
+| **Hybrid** | Pool fuer kleine Stories (Bug-Fixes, Refactorings), Squad fuer kritische Pfade (SECURITY/PRIVACY/ARCHITECTURE_DESIGN) | Beste Anpassung an reale Operator-Faehigkeiten, Setup-Aufwand hoeher |
+
+**Empfehlung pro Team-Groesse:**
+
+- 5-10: Pool reicht. Cross-Story-Themen klaert man im Daily-Standup.
+- 10-20: Hybrid mit Squad-Owner pro kritischem Pfad (SECURITY, PRIVACY, ARCHITECTURE_DESIGN, ggf. Performance + Observability).
+- 20+: Squad-Modell mit Lead-Architekt-Rolle. Lead-Architekt arbeitet Cross-Squad-Themen mit den Squad-Leads aus, hat Veto-Recht bei Architektur-Aenderungen.
+
+**Konkretes Beispiel — 15-Personen-Team mit Hybrid-Topologie:**
+
+- 1 Lead-Architekt (Cross-Squad)
+- 3 Squads à 4-5 Operatoren: Backend / Frontend / DevOps
+- 1 Sec-Lead (Cross-Squad, owned `SECURITY.md` + `sensitive-paths.json`)
+- 1 Legal-Lead (Cross-Squad, owned `PRIVACY.md` + `personal-data-paths.json` + DPO-Skill-Audits)
+- Daily-Standup pro Squad (15 Min), Weekly Cross-Squad-Sync (30 Min)
+- Backlog in Linear, alle Stories haben `team` als Custom-Field gefuellt
+
+#### Layer 3 — Doku-Layer (Single Source of Truth)
+
+Dieser Layer ist der eigentliche Drift-Punkt im Team. Code-Konflikte loest Git, Issue-Konflikte loest der Workflow-State — aber Doku-Konflikte sind semantisch und brauchen menschliche Entscheidung. Genau dafuer fragt Bootstrap-Frage B.3 die Doku-SSoT ab — die Wahl ist team-kritisch.
+
+**Doku-SSoT-Wahl-Matrix pro Team-Groesse:**
+
+| SSoT | Solo (1) | Klein (2-5) | Mittel (5-10) | Gross (10-20+) | Hauptgrund |
+|---|---|---|---|---|---|
+| **Obsidian Vault (lokal)** | ✅ | ⚠ | ❌ | ❌ | Solo-Tool, kein semantischer Multi-User-Lock |
+| **Obsidian + Git-Sync auf den Vault** | ✅ | ⚠ | ❌ | ❌ | Sync-Konflikte werden manuell — bei 5+ Personen zu teuer; Obsidian-Sync-Tool fuer Binaer-Dateien nicht fuer semantischen Merge geeignet |
+| **Obsidian Sync (kostenpflichtig, official)** | ✅ | ✅ | ⚠ | ❌ | Loest technische Sync-Konflikte, nicht semantische ("zwei Personen aendern dieselbe Notiz gleichzeitig") |
+| **`docs/project/` im Repo (Markdown)** | ✅ | ✅ | ✅ | ✅ | Selbe Git-Mechanik wie Code: PR-Review fuer Doku, Branch-Protection, CODEOWNERS-Pattern |
+| **Confluence** | ⚠ | ✅ | ✅ | ✅ | Externes Tool mit eigenen Multi-User-Permissions, kein Git-Bezug, gut fuer Enterprise mit existierender Confluence-Lizenz |
+| **Notion** | ⚠ | ✅ | ✅ | ✅ | Externes Tool, eigene Multi-User-Logik, Versions-Historie pro Page |
+| **SharePoint** | ⚠ | ⚠ | ✅ | ✅ | Externes Tool, gut fuer regulierte Enterprises mit Office-365-Footprint, Permission-Granularitaet hoch |
+
+**Empfehlung:**
+
+- 1 Operator: Obsidian (persoenliches Vault + Index)
+- 2-5: Obsidian Sync oder Repo-Docs — abhaengig vom Operator-Profil. Wenn alle Operatoren technisch sind: Repo-Docs. Wenn gemischt: Obsidian Sync.
+- 5+: Repo-Docs (`docs/project/`) **oder** externes DMS (Confluence/Notion/SharePoint). Obsidian wird zum **persoenlichen** Brainstorming-Tool, nicht zur Team-SSoT.
+
+**Wichtig:** Bootstrap-Frage B.3 setzt `DOCUMENTATION_SSOT.path` einmalig pro Projekt. Eine Migration der SSoT mid-flight ist teuer (Verlinkungs-Drift, History-Verlust) — die Wahl sollte vor dem ersten echten Inhalt getroffen werden.
+
+### Vier-Augen-Konvention fuer Sensitive-Paths und Personal-Data-Paths
+
+Im Solo-Setup setzt der Operator `review-ok` (Sensitive-Paths-Gate, BOO-18) oder `privacy-ok` (Personal-Data-Paths-Gate, BOO-69) selbst — Self-Approval ist akzeptabel, weil es niemanden anderen gibt. **Im Team ist Self-Approval ein Audit-Risiko.** Anhang R empfiehlt die **Vier-Augen-Konvention:**
+
+- Der Operator, der die Aenderung an einem sensitiven oder personal-data-Pfad macht, darf **nicht** der gleiche sein, der `review-ok` oder `privacy-ok` setzt.
+- Im PR-Review setzt ein **anderer** Operator (Sec-Lead, Legal-Lead, oder explizit benannter Reviewer) das Gate-Token.
+- Der Audit-Trail laeuft ueber `git log` und `git blame` — wer das Gate gesetzt hat, ist im Commit-Author sichtbar.
+
+Beispiel-Audit-Spur:
+
+```bash
+$ git log --oneline -5 -- src/auth/jwt.go
+a3f1d22 review-ok: jwt rotation reviewed by @sec-lead (closes BOO-XYZ)
+e8b227a feat: rotate jwt signing key every 24h (BOO-XYZ)
+$ git log --format='%H %an' a3f1d22 e8b227a
+a3f1d22 Sec Lead          # review-ok von anderer Person
+e8b227a Backend Operator  # eigentliche Aenderung
+```
+
+**Wichtig:** Das Framework **erzwingt** die Vier-Augen-Konvention heute nicht — es waere theoretisch im Sensitive-Paths-Gate prueffbar (Author des Gate-Commits != Author der Aenderung), wuerde aber Framework-Komplexitaet erhoehen und Audit-Werkzeuge wie `git blame` parallel bedienen. Anhang R dokumentiert die Konvention als Operator-Disziplin, BOO-72 schliesst Enforcement explizit aus.
+
+### Skill-Pool-Governance im Team
+
+Anhang P Szenario 3 (Multi-User-VPS) hatte schon zwei Skill-Pool-Optionen: global unter `/opt/claude/skills/` (read-only fuer User) oder pro User in `~/.claude/skills/` (eigene Kopie). Bei 10-20 Operatoren reicht das nicht — es braucht eine **Wartungs-Owner-Rolle**:
+
+- **Wartungs-Owner** (1 Person, ggf. Lead-Architekt oder DevOps): pflegt den globalen Skill-Pool. Updates via `git pull` als root oder via dediziertem Service-Account. Pro Skill-Version-Bump: Changelog-Eintrag, kurze Operator-Mail/Slack.
+- **User-Sicht:** Operatoren rufen Skills via `~/.claude/skills/`-Symlinks auf `/opt/claude/skills/` auf. Bei Drift (lokaler Operator hat eigenen Skill-Stand): Wartungs-Owner setzt regelmaessig Audit per `jq` auf `~/.claude/settings.json` der User.
+- **Skill-Quarantaene:** neue Skills aus externen Quellen werden vom Wartungs-Owner via `security-architect --mode SKILL-SCAN` geprueft, bevor sie in `/opt/claude/skills/` landen.
+
+Bei Hybrid-Pool (mancher Skill global, mancher pro User): die Entscheidung muss in `CONVENTIONS.md` dokumentiert sein, sonst weiss niemand mehr, welche Variante gilt.
+
+### Konflikt-Eskalation bei kritischen Governance-Pfaden
+
+Was passiert, wenn zwei Operatoren widerspruechliche Aenderungen an `SECURITY.md`, `PRIVACY.md` oder `ARCHITECTURE_DESIGN.md` mergen wollen? Anhang R empfiehlt **drei Eskalations-Stufen:**
+
+1. **CODEOWNERS-Owner entscheidet** — wer in der CODEOWNERS-Datei fuer den Pfad eingetragen ist, hat das letzte Wort. In den meisten Faellen reicht das.
+2. **Squad-Lead-Vermittlung** — wenn zwei CODEOWNERS-Personen uneinig sind (z.B. Sec-Lead vs. Backend-Lead bei `src/auth/`), vermittelt der Squad-Lead des betroffenen Moduls.
+3. **Lead-Architekt-Veto** — Cross-Squad-Themen oder Architektur-Aenderungen mit System-Impact eskaliert der Squad-Lead an den Lead-Architekten. Lead-Architekt hat Veto, dokumentiert die Entscheidung in `Decisions/ADR-XX.md`.
+
+Wichtig: Eskalation ist eine Konvention, kein Framework-Mechanismus. Sie funktioniert nur, wenn das Team sie aktiv lebt. Anhang R ist Inspiration — wie das Team die Rollen besetzt, ist Team-Sache.
+
+### Wie setzt man Code-Crash in einem 20-koepfigen Team auf?
+
+Konkrete 10-Schritte-Anleitung, die Anhang P Szenario 3 (Multi-User-VPS-Coding-Factory) erweitert:
+
+1. **VPS-Setup** (Anhang P Szenario 3): VPS mit 1 System-User pro Operator, Skill-Pool global unter `/opt/claude/skills/` (read-only), Repository-Worktrees pro User in `~/projects/<projekt>/`, Wartungs-Owner-Rolle benannt.
+2. **Bootstrap einmalig durch Lead-Architekt:** Frage B.3 = `docs/project/` im Repo **oder** Confluence/Notion. Frage B.4 = Linear oder Jira. Frage A.5 = `heavy` Governance. Frage A.7 = `b) anders` mit Verweis auf dieses Szenario.
+3. **CODEOWNERS-Datei pflegen** (Beispiel siehe oben). Beim ersten Setup mit Lead-Architekt + Squad-Leads gemeinsam erarbeiten.
+4. **Branch-Protection erweitert:** Required-Reviewer-Pool aus CODEOWNERS, Required-Status-Checks (Spec-Gate, Lint-Gate, Coverage-Gate, ggf. Security-Scan, ggf. DPO-Audit-Hook), `Dismiss stale reviews when new commits are pushed`, `Require linear history`.
+5. **Vier-Augen-Konvention fuer Gates:** `privacy-ok` / `review-ok` darf NICHT der gleiche Operator setzen, der die Aenderung gemacht hat. Operator-Disziplin, im Audit-Log via `git blame` nachvollziehbar.
+6. **Squad-Modell mit 3-5 Operatoren pro Modul** + 1 Lead-Architekt + 1 Sec-Lead + 1 Legal-Lead. Squad-Leads owned ihr Modul in CODEOWNERS, Sec/Legal-Leads owned die Governance-Pfade.
+7. **Konflikt-Eskalation explizit dokumentieren** — in `CONVENTIONS.md` einen Abschnitt "Eskalations-Pfad" mit den drei Stufen oben. Ohne Schrift-Form vergisst das Team es bei Konflikten.
+8. **Daily-Standup pro Squad (15 Min)** + Weekly Cross-Squad-Sync (30 Min). Backlog-Pflege wird mit jeder zweiten Standup-Welle gemacht, nicht ad-hoc.
+9. **Wartungs-Owner-Rolle aktiv leben:** Skill-Pool-Updates aufschreiben, Drift-Audits regelmaessig (z.B. monatlich), Skill-Quarantaene bei externen Skills.
+10. **Onboarding-Dokumentation** unter `DEVELOPER_ONBOARDING.md` pflegen — Anhang R explizit referenzieren, damit neue Operatoren das 3-Layer-Modell verstehen, bevor sie ihren ersten PR machen.
+
+### Was Anhang R nicht macht
+
+Klare Abgrenzung zur Code-Crash-Philosophie "leichtgewichtig + pragmatisch":
+
+- **Kein neuer Skill.** Anhang R ist reine Doku.
+- **Keine neue Bootstrap-Frage.** Bootstrap fragt Doku-SSoT (B.3) und Backlog-Adapter (B.4) schon ab — das reicht.
+- **Keine Framework-Konvention "wer ist Lead-Architekt"** — das ist Team-Organisation.
+- **Kein Vier-Augen-Enforcement im Sensitive-Paths-Gate.** Theoretisch moeglich (Author-Vergleich), bewusst NICHT umgesetzt — Operator-Disziplin bleibt Operator-Disziplin.
+- **Keine "Best Practice"-Festlegung.** Pattern-Optionen sind Tradeoff-Tabellen, nicht Empfehlungs-Urteile.
+- **Keine Provider-Empfehlung bei Confluence/Notion/SharePoint** — Operator waehlt aus.
+
+### Verwandte Anhaenge
+
+- **Anhang P (Deployment-Szenarien, BOO-70):** Szenario 3 (Multi-User-VPS-Coding-Factory) und Szenario 4 (Team-mit-Coding-Server) sind die infrastrukturelle Basis fuer Anhang R. Wer 20 Operatoren bedient, braucht VPS-Setup aus Szenario 3.
+- **Anhang Q (Souveraenitaets-Stack, BOO-71):** orthogonal — ein 20-Personen-Team kann mit Default-Stack laufen oder mit EU-Stack. Souveraenitaets-Entscheidung ist Branchen-Frage, nicht Team-Groesse-Frage.
+- **Anhang O (Privacy by Design, BOO-69):** im Team-Setup besonders wichtig — DPO-Skill-Audits via `/sprint-review` Schritt 7c werden mit zunehmender Operator-Anzahl wertvoller, weil mehr Code-Aenderungen pro Sprint durchlaufen.
+- **Anhang N (Token-Effizienz, BOO-84):** bei 20 Operatoren mit je mehreren Stories pro Tag werden Token-Kosten zum FinOps-Thema. Model-Routing + Prompt-Caching sind dann nicht mehr Nice-to-have, sondern Cost-Hebel.
+- **HANDBUCH §8d (Coding-Umgebungen):** technische Mac/VPS/CI-Unterscheidung, Voraussetzung fuer Anhang P Szenarien 2-4.
+
+Spec: BOO-72. Operator-Frage Tobias 2026-05-27 nach Wave-K-Release. Sketch: [docs/assets/boo-72-multi-operator-3-layer.png](docs/assets/boo-72-multi-operator-3-layer.png).
+
+---
 
 *Dieses Handbuch ist Teil des Code-Crash Frameworks.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Letzte Aktualisierung: 2026-05-27 (Anhang P Deployment-Szenarien + Anhang Q Souveraenitaets-Stack ergaenzt — BOO-70 + BOO-71, Wave K)*
+*Letzte Aktualisierung: 2026-05-27 (Anhang R Multi-Operator-Koordination ergaenzt — BOO-72, Wave L)*
