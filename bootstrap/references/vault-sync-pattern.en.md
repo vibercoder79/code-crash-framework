@@ -1,4 +1,4 @@
-# Vault-Harvest Pattern — Config Scaffold + framework-native engine (BOO-75/77)
+# Vault-Harvest Pattern — Config Scaffold + framework-native engine (BOO-75/77/82)
 
 Repo docs + personal vault harvest for multi-person teams with Obsidian users. This document describes the data contract and the mechanism. The **sync engine is framework-native since BOO-77** — it lives under `bootstrap/references/vault-sync/` (`vault-sync.py`, `install-vault-sync.sh`, `post-merge.sh`, `tracked-paths.json`) and is copied into the project by bootstrap option `[e]`. No external code, no dependencies (Python stdlib + Bash). Stefan's `project-template` was the pattern impulse but is **not** the source of the engine.
 
@@ -14,20 +14,24 @@ A team works on the same GitHub repo (docs live in `docs/`), **and** individual 
 
 ## Building block 1 — team contract `.vault-sync/tracked-paths.json` (versioned)
 
-Defines which repo paths are harvestable and which `type:` frontmatter is added when mirrored into the vault. Four defaults (from the reference implementation):
+Defines which repo paths are harvestable, which `type:` frontmatter is added when mirrored, **and where the file lands in the vault by default** (`default_vault_subdir`, BOO-82). Four defaults (from the reference implementation):
 
 ```json
 {
+  "version": 1,
   "tracked_paths": [
-    { "glob": "docs/components/*.md",        "type": "component" },
-    { "glob": "docs/decisions/*.md",         "type": "decision" },
-    { "glob": "docs/architecture-guidelines.md", "type": "architecture" },
-    { "glob": "journal/sprint-*.md",         "type": "sprint-retro" }
+    { "glob": "docs/components/*.md",            "type": "component",    "default_vault_subdir": "02 Projekte/{project_slug}/Components/" },
+    { "glob": "docs/decisions/*.md",             "type": "decision",     "default_vault_subdir": "02 Projekte/{project_slug}/Decisions/" },
+    { "glob": "docs/architecture-guidelines.md", "type": "architecture", "default_vault_subdir": "02 Projekte/{project_slug}/" },
+    { "glob": "journal/sprint-*.md",             "type": "sprint-retro", "default_vault_subdir": "04 Ressourcen/{project_slug}/sprints/" }
   ]
 }
 ```
 
-`type:` is only set when the source file does not have one yet (sprint retros bring their own `type:`). This file is **versioned** (committed) — it is the team contract everyone agrees on.
+- `type:` is only set when the source file does not have one yet (sprint retros bring their own `type:`).
+- `default_vault_subdir` (BOO-82) carries the **default vault layout in the team contract** — so each operator no longer has to repeat the same paths in their `local.json`. The placeholders `{project_slug}` and `{slug}` are both replaced with the slug from `local.json`. Only the file name lands in the default subfolder.
+
+This file is **versioned** (committed) — it is the team contract everyone agrees on.
 
 ## Building block 2 — personal config `.vault-sync/local.json` (gitignored)
 
@@ -37,17 +41,14 @@ Per operator, **never commit** (belongs in `.gitignore`). Schema:
 {
   "vault_path": "/Users/<operator>/Obsidian/<vault>",
   "project_slug": "<project-slug>",
-  "path_mappings": {
-    "docs/components": "02 Projekte/{slug}/Components",
-    "journal": "04 Ressourcen/{slug}/sprints"
-  },
+  "path_mappings": {},
   "last_sync_commit": "<sha>",
   "enabled": true,
   "mode": "auto"
 }
 ```
 
-- `path_mappings` PARA-conform: `02 Projekte/{slug}/...` for components/decisions, `04 Ressourcen/{slug}/sprints/` for sprint retros.
+- `path_mappings` is, since BOO-82, an **optional override**, no longer a required field. Leave it empty (`{}`) = the vault target comes from the team contract's `default_vault_subdir`. Only operators who want to deviate add a prefix mapping here, e.g. `{ "docs/components": "My Folder/{slug}/Components" }`. On multiple matches the longest prefix wins; a matching `path_mappings` always beats the contract default.
 - `mode`: `auto` (mirror silently) | `dry-run` (show only) | `ask` (ask per file).
 - `enabled: false` disables the harvest for this operator without uninstalling.
 
@@ -59,6 +60,20 @@ The engine lives in the framework under `bootstrap/references/vault-sync/` and i
 - `scripts/vault-sync.py` — sync engine (Python stdlib only, frontmatter merge with the `vault_sync_*` namespace, path-containment check, modes `auto`/`dry-run`/`ask`, reads the commit SHA directly from `.git/HEAD`).
 - `.claude/hooks/post-merge.sh` — wrapper, symlinked into `.git/hooks/post-merge`, fires after each `git pull`. `exit 0` when there is no `local.json`.
 - `.vault-sync/tracked-paths.json` — versioned team contract (see building block 1).
+
+### Target resolution (BOO-82)
+
+For each tracked file the engine determines the vault target in this order:
+
+1. **`path_mappings` from `local.json`** — if a prefix matches (longest wins), per-operator override.
+2. **`default_vault_subdir` from the team contract** — otherwise the team default; only the file name lands in it.
+3. **no match** → the file is skipped (`SKIP`).
+
+So the harvest works out of the box with an empty `path_mappings` but stays overridable per person.
+
+### Incremental sync `--since <sha>` (BOO-82)
+
+`python3 scripts/vault-sync.py --since <sha>` syncs only files changed since `<sha>` up to `HEAD` (`git diff --name-only <sha>..HEAD`). Faster than a full sync for large repos. If git is unavailable or the SHA is invalid, the engine falls back to a full sync with a warning (no silent data loss). The post-merge hook still uses the full sync — `--since` is for manual/optimized runs.
 
 ## Core rules
 
@@ -76,6 +91,7 @@ Bootstrap question B.3, option `[e] Repo docs + personal vault harvest`. Bootstr
 
 - **Phase 1 (BOO-75):** documentation + config scaffold + the bootstrap option as a documented choice.
 - **Phase 2 (BOO-77, done):** **framework-native engine** under `bootstrap/references/vault-sync/` — bootstrap option `[e]` sets up the vault harvest fully. No external code needed. Smoke-tested (dry-run / real / path containment / disabled / no local.json).
+- **Phase 3 (BOO-82, done):** convenience + scaling. `default_vault_subdir` in the team contract (default layout central instead of repeated per operator), `local.json path_mappings` as an optional override, incremental `--since <sha>` sync. Smoke-tested (default layout / override precedence / `--since` / containment / fallback on invalid SHA).
 
 ## Security
 
@@ -86,4 +102,4 @@ Bootstrap question B.3, option `[e] Repo docs + personal vault harvest`. Bootstr
 
 ## Source
 
-Pattern impulse: operator feedback Stefan, 2026-05-27 (`StefanWeimarPRODOC/project-template`). Framework-native engine: BOO-77, operator decision Tobias 2026-05-28 (Stefan's code not needed).
+Pattern impulse: operator feedback Stefan, 2026-05-27 (`StefanWeimarPRODOC/project-template`). Framework-native engine: BOO-77, operator decision Tobias 2026-05-28 (Stefan's code not needed). `default_vault_subdir` + incremental `--since` sync (BOO-82): two ideas adopted from Stefan's template, rebuilt framework-natively (operator decision 2026-05-28).

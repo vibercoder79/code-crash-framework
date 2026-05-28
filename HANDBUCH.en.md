@@ -3102,13 +3102,13 @@ Whoever works in a team but also keeps a personal knowledge vault across several
 
 **Properties (from Stefan's `project-template` reference implementation):**
 
-- **Versioned team contract** (`.vault-sync/tracked-paths.json`): defines which repo paths are harvestable and which `type:` frontmatter is added on mirror (e.g. `docs/components/*.md` → `type: component`, `journal/sprint-*.md` → `type: sprint-retro`).
-- **Per-operator personal config** (`.vault-sync/local.json`, **gitignored**): vault path, `project_slug`, path mappings, `enabled`. It is in `.gitignore` → not committed, so the private vault path does not leak to the team.
+- **Versioned team contract** (`.vault-sync/tracked-paths.json`): defines which repo paths are harvestable, which `type:` frontmatter is added on mirror (e.g. `docs/components/*.md` → `type: component`, `journal/sprint-*.md` → `type: sprint-retro`) **and where the file lands in the vault by default** (`default_vault_subdir` with `{project_slug}` placeholder, BOO-82) — so each operator no longer repeats the same paths in their `local.json`.
+- **Per-operator personal config** (`.vault-sync/local.json`, **gitignored**): vault path, `project_slug`, optional path override (`path_mappings`, empty = contract default applies), `enabled`. It is in `.gitignore` → not committed, so the private vault path does not leak to the team.
 - **Zero friction for non-participants:** an operator without `local.json` (no Obsidian, no harvest wanted) → the hook exits silently (`exit 0`), no error, no nagging.
 - **The vault is never modified manually:** annotations go into `.notes.md` sidecar files that the sync never touches. Frontmatter namespace `vault_sync_*` (collision-free, filterable in Bases).
 - **Delineation from DocSync (Block D.2):** our DocSync is solo + bidirectional (vault ↔ repo). Vault harvest is team + one-way (repo → vault). In team mode therefore set **DocSync = no** — otherwise the two mechanisms overlap.
 
-**Activation:** bootstrap question B.3 offers the option *"Repo docs + personal vault harvest"* (see Bootstrap Block B.3). Since **BOO-77** the sync engine is **framework-native** — bootstrap copies `scripts/vault-sync.py`, `scripts/install-vault-sync.sh`, `.claude/hooks/post-merge.sh` and `.vault-sync/tracked-paths.json` directly into the project (Python stdlib + Bash, no dependencies, no external code). Each operator optionally enables the harvest with `bash scripts/install-vault-sync.sh` (default mode `dry-run`). **Security:** one-way (writes only into the vault), path-containment check (no writing outside `vault_path`), `exit 0` without `local.json`. Data contract + schema: `bootstrap/references/vault-sync-pattern.md`.
+**Activation:** bootstrap question B.3 offers the option *"Repo docs + personal vault harvest"* (see Bootstrap Block B.3). Since **BOO-77** the sync engine is **framework-native** — bootstrap copies `scripts/vault-sync.py`, `scripts/install-vault-sync.sh`, `.claude/hooks/post-merge.sh` and `.vault-sync/tracked-paths.json` directly into the project (Python stdlib + Bash, no dependencies, no external code). Each operator optionally enables the harvest with `bash scripts/install-vault-sync.sh` (default mode `dry-run`) — `path_mappings` stays empty, the vault target comes from the team contract's `default_vault_subdir` (BOO-82). **Incremental sync (BOO-82):** `python3 scripts/vault-sync.py --since <sha>` mirrors only files changed since `<sha>` (falls back to a full sync on an invalid SHA) — for large repos. **Security:** one-way (writes only into the vault), path-containment check (no writing outside `vault_path`), `exit 0` without `local.json`. Data contract + schema: `bootstrap/references/vault-sync-pattern.md`.
 
 ### Four-eyes convention for sensitive paths and personal-data paths
 
@@ -3383,4 +3383,4 @@ Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per
 
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-28 (Appendix U Multi-project operation added — BOO-80; Appendix T Post-install verification — BOO-79; Appendix S Skill Installation Strategy — BOO-76)*
+*Last updated: 2026-05-28 (Appendix R vault harvest extended — `default_vault_subdir` + incremental `--since` sync, BOO-82; Appendix U Multi-project operation — BOO-80; Appendix T Post-install verification — BOO-79)*

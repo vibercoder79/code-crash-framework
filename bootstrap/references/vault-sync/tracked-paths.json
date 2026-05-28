@@ -1,8 +1,10 @@
 {
+  "version": 1,
+  "_comment": "Team-Vertrag des Vault-Harvest (BOO-77/82). Definiert WAS harvest-bar ist, WELCHES type-Frontmatter ergaenzt wird und das Default-Vault-Ziel (default_vault_subdir, {project_slug}/{slug} wird ersetzt). local.json path_mappings koennen das pro Mitarbeiter ueberschreiben.",
   "tracked_paths": [
-    { "glob": "docs/components/*.md", "type": "component" },
-    { "glob": "docs/decisions/*.md", "type": "decision" },
-    { "glob": "docs/architecture-guidelines.md", "type": "architecture" },
-    { "glob": "journal/sprint-*.md", "type": "sprint-retro" }
+    { "glob": "docs/components/*.md", "type": "component", "default_vault_subdir": "02 Projekte/{project_slug}/Components/" },
+    { "glob": "docs/decisions/*.md", "type": "decision", "default_vault_subdir": "02 Projekte/{project_slug}/Decisions/" },
+    { "glob": "docs/architecture-guidelines.md", "type": "architecture", "default_vault_subdir": "02 Projekte/{project_slug}/" },
+    { "glob": "journal/sprint-*.md", "type": "sprint-retro", "default_vault_subdir": "04 Ressourcen/{project_slug}/sprints/" }
   ]
 }

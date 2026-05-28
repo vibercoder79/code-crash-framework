@@ -1,4 +1,4 @@
-# Vault-Harvest-Pattern — Config-Scaffold + framework-native Engine (BOO-75/77)
+# Vault-Harvest-Pattern — Config-Scaffold + framework-native Engine (BOO-75/77/82)
 
 Repo-Docs + persoenlicher Vault-Harvest fuer Multi-Person-Teams mit Obsidian-Nutzern. Dieses Dokument beschreibt den Daten-Vertrag und die Mechanik. Die **Sync-Engine ist seit BOO-77 framework-nativ** — sie liegt unter `bootstrap/references/vault-sync/` (`vault-sync.py`, `install-vault-sync.sh`, `post-merge.sh`, `tracked-paths.json`) und wird von Bootstrap-Option `[e]` direkt ins Projekt kopiert. Kein externer Code, keine Dependencies (Python-Stdlib + Bash). Stefans `project-template` war der Pattern-Impuls, ist aber **nicht** die Quelle der Engine.
 
@@ -14,20 +14,24 @@ Ein Team arbeitet am selben GitHub-Repo (Doku lebt in `docs/`), **und** einzelne
 
 ## Baustein 1 — Team-Vertrag `.vault-sync/tracked-paths.json` (versioniert)
 
-Definiert, welche Repo-Pfade harvest-bar sind und welches `type:`-Frontmatter beim Mirror in den Vault ergaenzt wird. Vier Defaults (aus der Referenz-Implementierung):
+Definiert, welche Repo-Pfade harvest-bar sind, welches `type:`-Frontmatter beim Mirror ergaenzt wird **und wohin die Datei im Vault standardmaessig wandert** (`default_vault_subdir`, BOO-82). Vier Defaults (aus der Referenz-Implementierung):
 
 ```json
 {
+  "version": 1,
   "tracked_paths": [
-    { "glob": "docs/components/*.md",        "type": "component" },
-    { "glob": "docs/decisions/*.md",         "type": "decision" },
-    { "glob": "docs/architecture-guidelines.md", "type": "architecture" },
-    { "glob": "journal/sprint-*.md",         "type": "sprint-retro" }
+    { "glob": "docs/components/*.md",            "type": "component",    "default_vault_subdir": "02 Projekte/{project_slug}/Components/" },
+    { "glob": "docs/decisions/*.md",             "type": "decision",     "default_vault_subdir": "02 Projekte/{project_slug}/Decisions/" },
+    { "glob": "docs/architecture-guidelines.md", "type": "architecture", "default_vault_subdir": "02 Projekte/{project_slug}/" },
+    { "glob": "journal/sprint-*.md",             "type": "sprint-retro", "default_vault_subdir": "04 Ressourcen/{project_slug}/sprints/" }
   ]
 }
 ```
 
-`type:` wird nur gesetzt, wenn die Quelldatei noch keinen hat (Sprint-Retros bringen ihren eigenen `type:` mit). Diese Datei ist **versioniert** (committed) — sie ist der Team-Vertrag, worauf sich alle einigen.
+- `type:` wird nur gesetzt, wenn die Quelldatei noch keinen hat (Sprint-Retros bringen ihren eigenen `type:` mit).
+- `default_vault_subdir` (BOO-82) traegt das **Default-Vault-Layout im Team-Vertrag** — so muss nicht jeder Mitarbeiter dieselben Pfade in seiner `local.json` wiederholen. Platzhalter `{project_slug}` und `{slug}` werden beide durch den Slug aus `local.json` ersetzt. Nur der Dateiname landet im Default-Unterordner.
+
+Diese Datei ist **versioniert** (committed) — sie ist der Team-Vertrag, worauf sich alle einigen.
 
 ## Baustein 2 — Persoenliche Konfig `.vault-sync/local.json` (gitignored)
 
@@ -37,17 +41,14 @@ Pro Mitarbeiter, **niemals committen** (gehoert in `.gitignore`). Schema:
 {
   "vault_path": "/Users/<operator>/Obsidian/<vault>",
   "project_slug": "<projekt-slug>",
-  "path_mappings": {
-    "docs/components": "02 Projekte/{slug}/Components",
-    "journal": "04 Ressourcen/{slug}/sprints"
-  },
+  "path_mappings": {},
   "last_sync_commit": "<sha>",
   "enabled": true,
   "mode": "auto"
 }
 ```
 
-- `path_mappings` PARA-konform: `02 Projekte/{slug}/...` fuer Komponenten/Decisions, `04 Ressourcen/{slug}/sprints/` fuer Sprint-Retros.
+- `path_mappings` ist seit BOO-82 eine **optionale Ueberschreibung**, kein Pflicht-Feld mehr. Leer (`{}`) lassen = Vault-Ziel kommt aus dem `default_vault_subdir` des Team-Vertrags. Nur wer fuer sich abweichen will, traegt hier ein Praefix-Mapping ein, z.B. `{ "docs/components": "Eigener Ordner/{slug}/Komponenten" }`. Bei mehreren Treffern gewinnt das laengste Praefix; ein passendes `path_mappings` schlaegt immer den Vertrags-Default.
 - `mode`: `auto` (still mirroren) | `dry-run` (nur anzeigen) | `ask` (pro Datei fragen).
 - `enabled: false` deaktiviert den Harvest fuer diesen Operator ohne Deinstallation.
 
@@ -59,6 +60,20 @@ Die Engine liegt im Framework unter `bootstrap/references/vault-sync/` und wird 
 - `scripts/vault-sync.py` — Sync-Engine (Python-Stdlib-only, Frontmatter-Merge mit `vault_sync_*`-Namespace, Pfad-Containment-Check, Modi `auto`/`dry-run`/`ask`, liest Commit-SHA direkt aus `.git/HEAD`).
 - `.claude/hooks/post-merge.sh` — Wrapper, via Symlink in `.git/hooks/post-merge`, feuert nach jedem `git pull`. `exit 0` wenn keine `local.json`.
 - `.vault-sync/tracked-paths.json` — versionierter Team-Vertrag (siehe Baustein 1).
+
+### Ziel-Aufloesung (BOO-82)
+
+Pro getrackter Datei bestimmt die Engine das Vault-Ziel in dieser Reihenfolge:
+
+1. **`path_mappings` aus `local.json`** — falls ein Praefix passt (laengstes gewinnt), Ueberschreibung pro Mitarbeiter.
+2. **`default_vault_subdir` aus dem Team-Vertrag** — sonst der Team-Default; nur der Dateiname landet darin.
+3. **kein Treffer** → Datei wird uebersprungen (`SKIP`).
+
+So funktioniert der Harvest out-of-the-box mit leerem `path_mappings`, bleibt aber pro Person uebersteuerbar.
+
+### Inkrementeller Sync `--since <sha>` (BOO-82)
+
+`python3 scripts/vault-sync.py --since <sha>` synct nur Dateien, die seit `<sha>` bis `HEAD` geaendert wurden (`git diff --name-only <sha>..HEAD`). Fuer grosse Repos schneller als der Voll-Sync. Ist git nicht verfuegbar oder der SHA ungueltig, faellt die Engine mit einer Warnung auf den Voll-Sync zurueck (kein stiller Datenverlust). Der post-merge-Hook nutzt weiterhin den Voll-Sync — `--since` ist fuer manuelle/optimierte Laeufe.
 
 ## Kernregeln
 
@@ -76,6 +91,7 @@ Bootstrap-Frage B.3, Option `[e] Repo-Docs + persoenlicher Vault-Harvest`. Boots
 
 - **Phase 1 (BOO-75):** Dokumentation + Config-Scaffold + Bootstrap-Option als dokumentierte Wahl.
 - **Phase 2 (BOO-77, done):** **framework-native Engine** unter `bootstrap/references/vault-sync/` — Bootstrap-Option `[e]` richtet das Vault-Harvest vollstaendig ein. Kein externer Code noetig. Smoke-getestet (dry-run / real / Pfad-Containment / disabled / keine local.json).
+- **Phase 3 (BOO-82, done):** Komfort + Skalierung. `default_vault_subdir` im Team-Vertrag (Default-Layout zentral statt pro Mitarbeiter wiederholt), `local.json path_mappings` als optionale Ueberschreibung, inkrementeller `--since <sha>`-Sync. Smoke-getestet (Default-Layout / Override-Vorrang / `--since` / Containment / Fallback bei ungueltigem SHA).
 
 ## Sicherheit
 
@@ -86,4 +102,4 @@ Bootstrap-Frage B.3, Option `[e] Repo-Docs + persoenlicher Vault-Harvest`. Boots
 
 ## Quelle
 
-Pattern-Impuls: Operator-Feedback Stefan, 2026-05-27 (`StefanWeimarPRODOC/project-template`). Framework-native Engine: BOO-77, Operator-Entscheidung Tobias 2026-05-28 (Stefans Code nicht benoetigt).
+Pattern-Impuls: Operator-Feedback Stefan, 2026-05-27 (`StefanWeimarPRODOC/project-template`). Framework-native Engine: BOO-77, Operator-Entscheidung Tobias 2026-05-28 (Stefans Code nicht benoetigt). `default_vault_subdir` + inkrementeller `--since`-Sync (BOO-82): zwei uebernommene Ideen aus Stefans Template, framework-nativ nachgebaut (Operator-Entscheidung 2026-05-28).

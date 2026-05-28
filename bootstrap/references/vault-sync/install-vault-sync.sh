@@ -56,20 +56,16 @@ else
   MODE="${MODE:-dry-run}"
   cat > "$LOCAL_JSON" <<JSON
 {
+  "_comment": "Persoenliche Vault-Harvest-Konfig (BOO-77/82). Das Vault-Ziel kommt standardmaessig aus tracked-paths.json (default_vault_subdir). path_mappings ist eine OPTIONALE Ueberschreibung: leer lassen = Team-Default verwenden; Eintraege wie 'docs/components': '02 Projekte/{project_slug}/Components' setzen nur, wenn du fuer dich abweichen willst.",
   "vault_path": "${VAULT_PATH}",
   "project_slug": "${PROJECT_SLUG}",
-  "path_mappings": {
-    "docs/components": "02 Projekte/{slug}/Components",
-    "docs/decisions": "02 Projekte/{slug}/Decisions",
-    "docs/architecture-guidelines.md": "02 Projekte/{slug}",
-    "journal": "04 Ressourcen/{slug}/sprints"
-  },
+  "path_mappings": {},
   "last_sync_commit": "",
   "enabled": true,
   "mode": "${MODE}"
 }
 JSON
-  echo "[install] ${LOCAL_JSON} angelegt (mode=${MODE}, enabled=true)."
+  echo "[install] ${LOCAL_JSON} angelegt (mode=${MODE}, enabled=true, Vault-Ziel via Team-Vertrag)."
 fi
 
 # --- post-merge-Hook als Symlink installieren ---
