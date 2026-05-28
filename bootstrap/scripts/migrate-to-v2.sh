@@ -3332,6 +3332,39 @@ migrate_boo_77() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-79 — verify-setup.sh in Bestands-Projekt nachziehen (Post-Install-Verifikation)
+# -----------------------------------------------------------------------------
+
+migrate_boo_79() {
+    log_info "BOO-79: Post-Install-Verifikation — verify-setup.sh ins Projekt kopieren"
+    log_info "BOO-79: post-install verification — copy verify-setup.sh into the project"
+
+    local script_dir framework_root src
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    framework_root="$(cd "${script_dir}/../.." && pwd)"
+    src="${framework_root}/bootstrap/references/verify-setup.sh"
+
+    if [[ ! -f "$src" ]]; then
+        log_warn "BOO-79: ${src} nicht gefunden — Repo-Stand pruefen."
+        return 1
+    fi
+
+    local dst="scripts/verify-setup.sh"
+    if [[ -f "$dst" ]]; then
+        log_info "BOO-79: ${dst} existiert bereits — keine Aenderung."
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_info "[dry-run] ${src} -> ${dst} kopieren + chmod +x"
+    else
+        mkdir -p scripts
+        cp "$src" "$dst" && chmod +x "$dst" && log_info "BOO-79: ${dst} angelegt (ausfuehrbar)."
+    fi
+
+    log_info "BOO-79: Operator-Schritt: 'bash scripts/verify-setup.sh' ausfuehren — PASS/WARN/FAIL-Report."
+    log_info "BOO-79: Manuelle Checkliste: HANDBUCH Anhang T. Check 5 (Skill schreibt Artefakte) bleibt manueller /implement-Probelauf."
+    log_info "BOO-79 done."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3350,6 +3383,7 @@ ALL_ISSUES=(
     BOO-72
     BOO-74
     BOO-75 BOO-76 BOO-77
+    BOO-79
 )
 
 print_help() {

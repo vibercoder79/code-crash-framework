@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+# verify-setup.sh — Post-Install-Verifikation fuer ein Code-Crash-Projekt (BOO-79).
+#
+# Beantwortet die Frage "Framework installiert — funktioniert auch alles?".
+# Prueft Governance-Geruest + Toolchain + Hooks + Artefakte und gibt pro Check
+# PASS / WARN / FAIL aus. Read-only — aendert nichts.
+#
+# Nutzung (im Projekt-Root):
+#   bash scripts/verify-setup.sh           # Report, Exit 1 bei FAIL
+#   bash scripts/verify-setup.sh --strict  # WARN zaehlt auch als FAIL
+#   bash scripts/verify-setup.sh --quiet    # nur Summary + Exit-Code
+#
+# BSD- und Linux-kompatibel, keine Abhaengigkeiten ausser bash/grep/sed/command.
+set -uo pipefail
+
+STRICT=0
+QUIET=0
+for arg in "$@"; do
+  case "$arg" in
+    --strict) STRICT=1 ;;
+    --quiet) QUIET=1 ;;
+    -h|--help) grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+  esac
+done
+
+PASS=0; WARN=0; FAIL=0
+ENV_FILE=".claude/environment.json"
+
+c_pass() { PASS=$((PASS+1)); [[ $QUIET -eq 1 ]] || printf '  \033[32mPASS\033[0m  %s\n' "$1"; }
+c_warn() { WARN=$((WARN+1)); [[ $QUIET -eq 1 ]] || printf '  \033[33mWARN\033[0m  %s\n' "$1"; }
+c_fail() { FAIL=$((FAIL+1)); [[ $QUIET -eq 1 ]] || printf '  \033[31mFAIL\033[0m  %s\n' "$1"; }
+section() { [[ $QUIET -eq 1 ]] || printf '\n\033[1m%s\033[0m\n' "$1"; }
+
+# Liest einen flachen Wert aus environment.json ohne jq (grep/sed).
+env_val() { grep -o "\"$1\"[[:space:]]*:[[:space:]]*[^,}]*" "$ENV_FILE" 2>/dev/null | head -1 | sed -E 's/.*:[[:space:]]*//; s/[[:space:]]*$//; s/^"//; s/"$//'; }
+env_tool_true() { grep -o "\"$1\"[[:space:]]*:[[:space:]]*true" "$ENV_FILE" >/dev/null 2>&1; }
+
+[[ $QUIET -eq 1 ]] || printf '\033[1mCode-Crash Post-Install-Verifikation\033[0m (BOO-79)\n'
+
+# --- 1. environment.json ---------------------------------------------------
+section "1. Environment-Manifest"
+if [[ -f "$ENV_FILE" ]]; then
+  if grep -q '"environment"' "$ENV_FILE"; then
+    c_pass "$ENV_FILE vorhanden + lesbar (environment=$(env_val environment))"
+  else
+    c_fail "$ENV_FILE existiert, aber Feld 'environment' fehlt — generate-environment-json.sh neu laufen lassen"
+  fi
+else
+  c_fail "$ENV_FILE fehlt — 'bash .claude/generate-environment-json.sh' ausfuehren"
+fi
+
+# --- 2. Toolchain erreichbar ----------------------------------------------
+section "2. Toolchain (Tools, die environment.json als verfuegbar fuehrt)"
+if [[ -f "$ENV_FILE" ]]; then
+  for tool in eslint semgrep; do
+    if env_tool_true "$tool"; then
+      if command -v "$tool" >/dev/null 2>&1; then
+        c_pass "$tool als verfuegbar gefuehrt UND im PATH erreichbar"
+      elif [[ "$tool" == "eslint" && -f "package.json" ]] && command -v npx >/dev/null 2>&1 && npx --no-install eslint --version >/dev/null 2>&1; then
+        c_pass "eslint lokal in node_modules erreichbar (npx)"
+      else
+        c_warn "$tool ist in environment.json als true gefuehrt, aber NICHT im PATH — installieren oder Manifest korrigieren"
+      fi
+    fi
+  done
+  tests=$(env_val tests)
+  if [[ -n "$tests" && "$tests" != "null" ]]; then
+    c_pass "Test-Framework konfiguriert: $tests"
+  else
+    c_warn "Kein Test-Framework in environment.json — Coverage-Gate inaktiv"
+  fi
+else
+  c_warn "Toolchain-Check uebersprungen (kein environment.json)"
+fi
+
+# --- 3. Git-Hooks ----------------------------------------------------------
+section "3. Git-Hooks (pro Repo — .git/hooks/ wird nicht geklont!)"
+HOOKS_PATH="$(git config --get core.hooksPath 2>/dev/null || echo ".git/hooks")"
+if [[ -f "$HOOKS_PATH/pre-commit" ]]; then
+  c_pass "pre-commit-Hook installiert ($HOOKS_PATH/pre-commit)"
+  if grep -q "spec-gate" "$HOOKS_PATH/pre-commit" 2>/dev/null || [[ -f ".claude/hooks/spec-gate.sh" ]]; then
+    c_pass "spec-gate verdrahtet (kein Commit ohne Spec)"
+  else
+    c_warn "spec-gate im pre-commit nicht gefunden"
+  fi
+else
+  c_fail "pre-commit-Hook fehlt unter $HOOKS_PATH — Hooks sind PRO REPO; nach 'git clone' neu installieren (Bootstrap/Setup-Skript)"
+fi
+if [[ -f ".claude/hooks/doc-version-sync.sh" ]]; then
+  c_pass "doc-version-sync.sh vorhanden"
+else
+  c_warn "doc-version-sync.sh nicht gefunden (Doc-Sync-Gate inaktiv)"
+fi
+
+# --- 4. Kern-Artefakte -----------------------------------------------------
+section "4. Kern-Artefakte (Governance-Geruest)"
+for f in CONVENTIONS.md ARCHITECTURE_DESIGN.md; do
+  if [[ -f "$f" ]]; then c_pass "$f vorhanden"; else c_fail "$f fehlt — Bootstrap unvollstaendig"; fi
+done
+for d in specs journal; do
+  if [[ -d "$d" ]]; then c_pass "$d/ vorhanden"; else c_warn "$d/ fehlt (wird beim ersten /ideation bzw. /implement angelegt)"; fi
+done
+if [[ -f "DEVELOPER_ONBOARDING.md" ]]; then c_pass "DEVELOPER_ONBOARDING.md vorhanden"; else c_warn "DEVELOPER_ONBOARDING.md fehlt — Uebergabe an fremde Teams erschwert"; fi
+
+# --- 5. Privacy-Add-on (nur falls aktiv) -----------------------------------
+section "5. Privacy-Add-on (nur falls aktiviert)"
+if [[ -f "PRIVACY.md" || -f ".claude/personal-data-paths.json" || -f ".codex/personal-data-paths.json" ]]; then
+  if [[ -f "PRIVACY.md" ]]; then c_pass "PRIVACY.md vorhanden"; else c_fail "personal-data-paths.json da, aber PRIVACY.md fehlt"; fi
+  if [[ -f ".claude/personal-data-paths.json" || -f ".codex/personal-data-paths.json" ]]; then
+    c_pass "personal-data-paths.json vorhanden"
+  else
+    c_warn "PRIVACY.md da, aber personal-data-paths.json fehlt — Gate inaktiv"
+  fi
+else
+  [[ $QUIET -eq 1 ]] || printf '  ----  Privacy-Add-on nicht aktiv — uebersprungen\n'
+fi
+
+# --- 6. Backlog-Adapter ----------------------------------------------------
+section "6. Backlog-Adapter"
+if [[ -f ".claude/ISSUE_WRITING_GUIDELINES.md" ]] || grep -q "backlog" "$ENV_FILE" 2>/dev/null; then
+  c_pass "Backlog-Konvention konfiguriert"
+else
+  c_warn "Keine Backlog-Adapter-Konfig gefunden (Markdown-only-Backlog?)"
+fi
+
+# --- Summary ---------------------------------------------------------------
+printf '\n\033[1mErgebnis:\033[0m %d PASS, %d WARN, %d FAIL\n' "$PASS" "$WARN" "$FAIL"
+if [[ $FAIL -gt 0 ]]; then
+  printf '\033[31m=> Setup unvollstaendig. FAIL-Punkte oben beheben.\033[0m\n'
+  exit 1
+fi
+if [[ $WARN -gt 0 && $STRICT -eq 1 ]]; then
+  printf '\033[33m=> --strict: WARN als FAIL gewertet.\033[0m\n'
+  exit 1
+fi
+if [[ $WARN -gt 0 ]]; then
+  printf '\033[33m=> Setup funktionsfaehig, WARN-Punkte pruefen.\033[0m\n'
+else
+  printf '\033[32m=> Setup vollstaendig verifiziert.\033[0m\n'
+fi
+exit 0

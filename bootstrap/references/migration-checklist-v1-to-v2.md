@@ -1189,6 +1189,28 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-79 — Post-Install-Verifikation (verify-setup.sh + Anhang T) — Wave Q
+
+**Status:** ✓ in v2-Bundle — additives Skript + Checkliste, nicht-destruktiv. Loest geparktes BOO-48 (E2E-Smoke-Test).
+**Aufwand:** klein (~5 Min).
+**Linear:** <https://linear.app/owlist/issue/BOO-79>
+**Auto-Schritt:** ja (`migrate_boo_79` kopiert `scripts/verify-setup.sh`).
+
+**Auto-Schritte:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-79` — kopiert `scripts/verify-setup.sh` ins Projekt (nur falls nicht vorhanden, ausfuehrbar).
+
+**Operator-Schritte:**
+
+- [ ] `bash scripts/verify-setup.sh` ausfuehren — Report PASS/WARN/FAIL. FAIL-Punkte beheben.
+- [ ] Check 5 manuell: ein `/implement`- (oder `/ideation`-)Probelauf gegen eine Wegwerf-Story → schreibt er `specs/<ISSUE>.md` + `meta.json`? (End-to-End-Beweis, den das Skript nicht liefert.)
+- [ ] **Nach jedem `git clone`** auf neuer Maschine erneut laufen (Hooks + environment.json sind pro Repo/Maschine).
+- [ ] Optional: in CI als Gate (`bash scripts/verify-setup.sh --strict`).
+
+**Verweise:** `bootstrap/references/verify-setup.sh`, HANDBUCH Anhang T, Bootstrap Phase 7.3b, `specs/BOO-79.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

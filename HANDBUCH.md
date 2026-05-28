@@ -3776,8 +3776,50 @@ Die Skill-Frage ist nur ein Teil. Operatoren mit mehreren Projekten auf einer VP
 
 Quelle: wiederkehrende Operator-Frage Tobias 2026-05-28. Konsolidiert Bootstrap Phase 5 + Anhang P Szenario 3 + Anhang R.
 
+## Anhang T: Post-Install-Verifikation — "Framework installiert, funktioniert auch alles?" (BOO-79)
+
+Bootstrap ist durch — aber woher weisst du, dass das Geruest **funktioniert**? Linter erreichbar, Hooks feuern, Skills schreiben Artefakte, Artefakte existieren? Dieser Anhang gibt die **Checkliste fuer den Proof** — manuell durchgehbar, oder automatisiert ueber `scripts/verify-setup.sh` (BOO-79), das Bootstrap in Phase 7.3b selbst aufruft.
+
+### Automatisiert: `scripts/verify-setup.sh`
+
+```bash
+bash scripts/verify-setup.sh            # Report, Exit 1 bei FAIL
+bash scripts/verify-setup.sh --strict   # WARN zaehlt auch als FAIL (CI)
+bash scripts/verify-setup.sh --quiet    # nur Summary + Exit-Code
+```
+
+Read-only, keine Aenderung. Gibt pro Check `PASS` / `WARN` / `FAIL` + eine Summary. Exit-Code 1 bei FAIL → CI-tauglich (z.B. als Gate im Onboarding-Workflow). Quelle: `bootstrap/references/verify-setup.sh`.
+
+### Manuell: die Checkliste Punkt fuer Punkt
+
+| # | Pruefung | Wie pruefen | PASS bedeutet |
+|---|----------|-------------|---------------|
+| 1 | **Environment-Manifest** | `.claude/environment.json` existiert + Feld `environment` gesetzt | Skills wissen, ob mac/vps/ci + welche Tools verfuegbar sind |
+| 2 | **Toolchain erreichbar** | Pro `tools_available: true` ein `command -v <tool>` (eslint via `npx --no-install` ok) | Was das Manifest verspricht, ist auch installiert |
+| 3 | **Git-Hooks** | `.git/hooks/pre-commit` existiert + ausfuehrbar; spec-gate + doc-version-sync verdrahtet | Kein Commit ohne Spec, kein Push mit veralteter Doku. **Achtung: Hooks sind pro Repo** — nach `git clone` neu setzen (siehe Anhang S) |
+| 4 | **Kern-Artefakte** | `CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md` vorhanden; `specs/`, `journal/` als Verzeichnis | Das Governance-Geruest steht; Skills finden ihre SSoT |
+| 5 | **Skill schreibt Artefakte** | Einen Mini-`/implement`-Probelauf (oder `/ideation`) starten → erzeugt er `specs/<ISSUE>.md` + `meta.json`? | Die Skills greifen wirklich ineinander (nicht nur installiert, sondern funktionsfaehig) |
+| 6 | **Privacy-Add-on** (falls aktiv) | `PRIVACY.md` + `personal-data-paths.json` vorhanden | Personal-Data-Paths-Gate ist scharf |
+| 7 | **Backlog-Adapter** | `.claude/ISSUE_WRITING_GUIDELINES.md` bzw. Backlog-Konfig vorhanden | Stories landen im richtigen Tool mit DoD-Pflichtfeldern |
+
+Checks 1-4, 6-7 deckt `verify-setup.sh` automatisch ab. **Check 5 (Skill schreibt Artefakte) bleibt ein bewusster manueller Schritt** — ein echter `/implement`-Probelauf gegen eine Wegwerf-Story zeigt den End-to-End-Beweis, den ein Shell-Skript nicht liefern kann (das ist der Kern des frueheren E2E-Smoke-Test-Gedankens, BOO-48).
+
+### Wann ausfuehren?
+
+- **Direkt nach Bootstrap** (Phase 7.3b macht das automatisch).
+- **Nach jedem `git clone`** eines Bestands-Projekts auf einer neuen Maschine — denn Hooks + `environment.json` sind pro Repo/Maschine, nicht im Repo-Inhalt (Anhang S).
+- **In CI** als Gate (`--strict`), damit ein Pull-Request mit kaputtem Governance-Geruest auffaellt.
+
+### Verwandte Anhaenge
+
+- **Anhang S (Skill-Installations-Strategie):** erklaert, *was einmal vs. pro Projekt* installiert wird — die Verifikation prueft, ob das pro-Projekt-Teil (Hooks, environment.json, Artefakte) wirklich da ist.
+- **Anhang A (Pre-Bootstrap-Checkliste):** das Gegenstueck *vor* dem Bootstrap.
+- **`/integration-test`-Skill:** prueft Code-*Aenderungen* nach jedem Implement — Anhang T prueft das *Setup* einmalig.
+
+Quelle: Operator-Frage Tobias 2026-05-28 ("ich brauche den Proof"). Loest den geparkten E2E-Smoke-Test-Gedanken (BOO-48). Skript: `bootstrap/references/verify-setup.sh`.
+
 ---
 
 *Dieses Handbuch ist Teil des Code-Crash Frameworks.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Letzte Aktualisierung: 2026-05-28 (Anhang S Skill-Installations-Strategie ergaenzt — BOO-76; Anhang R Layer-3 Vault-Harvest — BOO-75; alle Wave-J-M-Anhaenge visualisiert)*
+*Letzte Aktualisierung: 2026-05-28 (Anhang T Post-Install-Verifikation ergaenzt — BOO-79; Anhang S Skill-Installations-Strategie — BOO-76; Anhang R Vault-Harvest — BOO-75)*

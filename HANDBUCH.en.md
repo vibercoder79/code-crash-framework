@@ -3264,6 +3264,50 @@ Source: recurring operator question Tobias 2026-05-28. Consolidates bootstrap Ph
 
 ---
 
+## Appendix T: Post-install verification — "framework installed, does it actually work?" (BOO-79)
+
+Bootstrap is done — but how do you know the scaffold actually **works**? Linters reachable, hooks firing, skills writing artifacts, artifacts present? This appendix gives the **proof checklist** — walk it manually, or automate it via `scripts/verify-setup.sh` (BOO-79), which bootstrap calls itself in Phase 7.3b.
+
+### Automated: `scripts/verify-setup.sh`
+
+```bash
+bash scripts/verify-setup.sh            # report, exit 1 on FAIL
+bash scripts/verify-setup.sh --strict   # WARN also counts as FAIL (CI)
+bash scripts/verify-setup.sh --quiet    # summary + exit code only
+```
+
+Read-only, changes nothing. Prints `PASS` / `WARN` / `FAIL` per check plus a summary. Exit code 1 on FAIL → CI-capable (e.g. as a gate in the onboarding workflow). Source: `bootstrap/references/verify-setup.sh`.
+
+### Manual: the checklist point by point
+
+| # | Check | How to check | PASS means |
+|---|-------|--------------|------------|
+| 1 | **Environment manifest** | `.claude/environment.json` exists + `environment` field set | skills know mac/vps/ci + which tools are available |
+| 2 | **Toolchain reachable** | per `tools_available: true` a `command -v <tool>` (eslint via `npx --no-install` ok) | what the manifest promises is actually installed |
+| 3 | **Git hooks** | `.git/hooks/pre-commit` exists + executable; spec-gate + doc-version-sync wired | no commit without spec, no push with stale docs. **Note: hooks are per repo** — re-set after `git clone` (see Appendix S) |
+| 4 | **Core artifacts** | `CONVENTIONS.md`, `ARCHITECTURE_DESIGN.md` present; `specs/`, `journal/` as directories | the governance scaffold stands; skills find their SSoT |
+| 5 | **Skill writes artifacts** | run a mini `/implement` trial (or `/ideation`) → does it create `specs/<ISSUE>.md` + `meta.json`? | the skills genuinely interlock (not just installed, but functional) |
+| 6 | **Privacy add-on** (if active) | `PRIVACY.md` + `personal-data-paths.json` present | the personal-data-paths gate is armed |
+| 7 | **Backlog adapter** | `.claude/ISSUE_WRITING_GUIDELINES.md` resp. backlog config present | stories land in the right tool with DoD mandatory fields |
+
+Checks 1-4, 6-7 are covered automatically by `verify-setup.sh`. **Check 5 (skill writes artifacts) stays a deliberate manual step** — a real `/implement` trial against a throwaway story shows the end-to-end proof a shell script cannot (this is the core of the earlier E2E smoke-test idea, BOO-48).
+
+### When to run?
+
+- **Right after bootstrap** (Phase 7.3b does this automatically).
+- **After every `git clone`** of an existing project on a new machine — because hooks + `environment.json` are per repo/machine, not part of the repo content (Appendix S).
+- **In CI** as a gate (`--strict`), so a pull request with a broken governance scaffold stands out.
+
+### Related appendices
+
+- **Appendix S (Skill installation strategy):** explains *what is installed once vs. per project* — verification checks whether the per-project part (hooks, environment.json, artifacts) is actually there.
+- **Appendix A (Pre-bootstrap checklist):** the counterpart *before* bootstrap.
+- **`/integration-test` skill:** checks code *changes* after each implement — Appendix T checks the *setup* once.
+
+Source: operator question Tobias 2026-05-28 ("I need the proof"). Resolves the parked E2E smoke-test idea (BOO-48). Script: `bootstrap/references/verify-setup.sh`.
+
+---
+
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-28 (Appendix S Skill Installation Strategy added — BOO-76; Appendix R Layer 3 vault harvest — BOO-75; all Wave J-M appendices visualised)*
+*Last updated: 2026-05-28 (Appendix T Post-install verification added — BOO-79; Appendix S Skill Installation Strategy — BOO-76; Appendix R vault harvest — BOO-75)*

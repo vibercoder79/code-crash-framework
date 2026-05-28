@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.31.0
+version: 3.32.0
 description: Setzt ein neues Projekt mit Governance-Framework auf — interaktiver Block-Interview-Flow in 4 Schritten, Doku-Architektur mit Hub-Auto-Verlinkung, optionaler Learning-Loop L1/L2/L3. Verwenden wenn der Operator ein neues Projekt aufsetzen will oder "/bootstrap" sagt.
 tools: [Read, Write, Edit, Bash, Glob, Grep]
 metadata:
@@ -1293,6 +1293,18 @@ Standard-Artefakte erzeugen oder verlinken:
 Wenn der Operator in `~/.claude/CLAUDE.md` eine Projekt-Tabelle hat:
 - Projekt-Zeile ergaenzen (Name, Pfad, GitHub, Obsidian-Pfad, Sprint-Review-Frequenz)
 - Skill listet Operator die Zeile vor, der bestaetigt den Einfuegepunkt
+
+### 7.3b Setup-Verifikation (BOO-79)
+
+Vor dem finalen Commit den **Proof** liefern, dass das Geruest komplett + funktionsfaehig ist:
+
+1. `references/verify-setup.sh` nach `{PROJECT_PATH}/scripts/verify-setup.sh` kopieren (falls in Phase 4 noch nicht geschehen).
+2. Im Projekt-Root ausfuehren: `bash scripts/verify-setup.sh`.
+3. Das Skript prueft read-only: environment.json, Toolchain-Erreichbarkeit, Git-Hooks (pro Repo!), Kern-Artefakte (CONVENTIONS.md, ARCHITECTURE_DESIGN.md, specs/, journal/), Privacy-Add-on (falls aktiv), Backlog-Adapter. Ausgabe PASS/WARN/FAIL + Exit-Code (1 bei FAIL).
+4. **FAIL-Punkte vor dem Abschluss beheben.** WARN-Punkte dem Operator vorlegen (oft bewusst, z.B. kein Test-Framework in einem Doku-Projekt).
+5. Ergebnis fliesst in die Abschluss-Tabelle (7.5).
+
+Manuelle Variante / Hintergrund: HANDBUCH Anhang T "Post-Install-Verifikation" (Checkliste Punkt fuer Punkt).
 
 ### 7.4 Finaler Commit
 

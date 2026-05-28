@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.31.0
+version: 3.32.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -1293,6 +1293,18 @@ Create or link standard artifacts:
 If the operator has a project table in `~/.claude/CLAUDE.md`:
 - Add the project row (name, path, GitHub, Obsidian path, sprint-review frequency)
 - The skill presents the row; the operator confirms the insertion point
+
+### 7.3b Setup verification (BOO-79)
+
+Before the final commit, deliver the **proof** that the scaffold is complete and functional:
+
+1. Copy `references/verify-setup.sh` to `{PROJECT_PATH}/scripts/verify-setup.sh` (if not already done in Phase 4).
+2. Run it in the project root: `bash scripts/verify-setup.sh`.
+3. The script checks read-only: environment.json, toolchain reachability, git hooks (per repo!), core artifacts (CONVENTIONS.md, ARCHITECTURE_DESIGN.md, specs/, journal/), privacy add-on (if active), backlog adapter. Output PASS/WARN/FAIL + exit code (1 on FAIL).
+4. **Fix FAIL items before finishing.** Present WARN items to the operator (often intentional, e.g. no test framework in a docs project).
+5. The result feeds the closing table (7.5).
+
+Manual variant / background: HANDBUCH Appendix T "Post-install verification" (point-by-point checklist).
 
 ### 7.4 Final commit
 
