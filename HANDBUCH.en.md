@@ -3069,6 +3069,10 @@ Important: CODEOWNERS does not replace the spec-gate — both work in parallel.
 
 This layer is the real drift point in a team. Code conflicts are solved by Git, issue conflicts are solved by the workflow state — but doc conflicts are semantic and require human judgement. That is exactly why bootstrap question B.3 asks for the documentation SSoT — the choice is team-critical.
 
+> **Principle (sharply put): Obsidian is a solo tool, not an enterprise tool.** An Obsidian vault lives in the file system / iCloud of **one single person** — there is no shared vault location a team can access. For the solo entrepreneur the vault is ideal as the documentation SSoT. As soon as several people work on the same project, **the living documentation cannot live in the vault** — it belongs in the GitHub repo under `docs/`. In a team setup the vault shifts from SSoT to a **personal reading view** (see the vault-harvest pattern below).
+
+![Documentation SSoT — solo vs. team: Obsidian as solo SSoT (left) vs. the GitHub repo as team SSoT + a one-way per-person vault harvest (right)](docs/assets/vault-harvest-solo-vs-team.png)
+
 **Documentation SSoT decision matrix per team size:**
 
 | SSoT | Solo (1) | Small (2-5) | Medium (5-10) | Large (10-20+) | Main reason |
@@ -3088,6 +3092,23 @@ This layer is the real drift point in a team. Code conflicts are solved by Git, 
 - 5+: repo docs (`docs/project/`) **or** an external DMS (Confluence/Notion/SharePoint). Obsidian then becomes the **personal** brainstorming tool, not the team SSoT.
 
 **Important:** bootstrap question B.3 sets `DOCUMENTATION_SSOT.path` once per project. Migrating the SSoT mid-flight is expensive (link drift, history loss) — the choice should be made before the first real content lands.
+
+##### Vault-harvest pattern: repo docs **and** a personal vault (two flows)
+
+Whoever works in a team but also keeps a personal knowledge vault across several projects (cross-project insights: auth patterns across all projects, sprint-retro trends) does not have to choose between repo and vault. The **vault-harvest pattern** combines both via **two clearly separated flows** — visualised in the diagram above:
+
+- **Flow 1 — plain Git (all operators, bidirectional):** the documentation lives in the GitHub repo under `docs/`. Everyone develops locally, `git push` / `git pull` like code. The GitHub repo is the **team SSoT** (the truth). Conflicts are resolved by the normal PR review.
+- **Flow 2 — vault harvest (per person, one-way repo → vault):** after each `git pull` a **`git post-merge` hook** copies selected `docs/` files into the operator's **personal** Obsidian vault — and **never back**. The vault is a private read-only reading view, not a sync target. No cron job, no webhook — the git hook fires automatically on pull.
+
+**Properties (from Stefan's `project-template` reference implementation):**
+
+- **Versioned team contract** (`.vault-sync/tracked-paths.json`): defines which repo paths are harvestable and which `type:` frontmatter is added on mirror (e.g. `docs/components/*.md` → `type: component`, `journal/sprint-*.md` → `type: sprint-retro`).
+- **Per-operator personal config** (`.vault-sync/local.json`, **gitignored**): vault path, `project_slug`, path mappings, `enabled`. It is in `.gitignore` → not committed, so the private vault path does not leak to the team.
+- **Zero friction for non-participants:** an operator without `local.json` (no Obsidian, no harvest wanted) → the hook exits silently (`exit 0`), no error, no nagging.
+- **The vault is never modified manually:** annotations go into `.notes.md` sidecar files that the sync never touches. Frontmatter namespace `vault_sync_*` (collision-free, filterable in Bases).
+- **Delineation from DocSync (Block D.2):** our DocSync is solo + bidirectional (vault ↔ repo). Vault harvest is team + one-way (repo → vault). In team mode therefore set **DocSync = no** — otherwise the two mechanisms overlap.
+
+**Activation:** bootstrap question B.3 offers the option *"Repo docs + personal vault harvest"* (see Bootstrap Block B.3). The reference implementation (sync engine, install script, hook wrapper, full spec `docs/vault-sync.md`) lives in `StefanWeimarPRODOC/project-template`. The config scaffold (team contract + local.json schema) is documented in the framework under `bootstrap/references/vault-sync-pattern.md`.
 
 ### Four-eyes convention for sensitive paths and personal-data paths
 

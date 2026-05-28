@@ -3585,6 +3585,10 @@ Wichtig: CODEOWNERS ersetzt nicht das Spec-Gate — beide wirken parallel.
 
 Dieser Layer ist der eigentliche Drift-Punkt im Team. Code-Konflikte loest Git, Issue-Konflikte loest der Workflow-State — aber Doku-Konflikte sind semantisch und brauchen menschliche Entscheidung. Genau dafuer fragt Bootstrap-Frage B.3 die Doku-SSoT ab — die Wahl ist team-kritisch.
 
+> **Grundsatz (scharf formuliert): Obsidian ist ein Solo-Werkzeug, kein Enterprise-Werkzeug.** Ein Obsidian-Vault liegt im Dateisystem/iCloud **einer einzelnen Person** — es gibt keinen geteilten Vault-Ort, auf den ein Team zugreift. Fuer den Solo-Entrepreneur ist der Vault als Doku-SSoT ideal. Sobald mehrere Personen am selben Projekt arbeiten, **kann die lebende Doku nicht im Vault wohnen** — sie gehoert ins GitHub-Repo unter `docs/`. Der Vault wird im Team-Setup vom SSoT zur **persoenlichen Leseansicht** (siehe Vault-Harvest-Pattern unten).
+
+![Doku-SSoT — Solo vs. Team: Obsidian als Solo-SSoT (links) vs. GitHub-Repo als Team-SSoT + einseitiger Vault-Harvest pro Person (rechts)](docs/assets/vault-harvest-solo-vs-team.png)
+
 **Doku-SSoT-Wahl-Matrix pro Team-Groesse:**
 
 | SSoT | Solo (1) | Klein (2-5) | Mittel (5-10) | Gross (10-20+) | Hauptgrund |
@@ -3604,6 +3608,23 @@ Dieser Layer ist der eigentliche Drift-Punkt im Team. Code-Konflikte loest Git, 
 - 5+: Repo-Docs (`docs/project/`) **oder** externes DMS (Confluence/Notion/SharePoint). Obsidian wird zum **persoenlichen** Brainstorming-Tool, nicht zur Team-SSoT.
 
 **Wichtig:** Bootstrap-Frage B.3 setzt `DOCUMENTATION_SSOT.path` einmalig pro Projekt. Eine Migration der SSoT mid-flight ist teuer (Verlinkungs-Drift, History-Verlust) — die Wahl sollte vor dem ersten echten Inhalt getroffen werden.
+
+##### Vault-Harvest-Pattern: Repo-Docs **und** persoenlicher Vault (zwei Fluesse)
+
+Wer im Team arbeitet, aber parallel ueber mehrere Projekte hinweg einen persoenlichen Wissens-Vault pflegt (Cross-Project-Insights: Auth-Patterns ueber alle Projekte, Sprint-Retro-Trends), muss sich nicht zwischen Repo und Vault entscheiden. Das **Vault-Harvest-Pattern** kombiniert beides ueber **zwei klar getrennte Fluesse** — visualisiert im Diagramm oben:
+
+- **Fluss 1 — normales Git (alle Operatoren, bidirektional):** Doku lebt im GitHub-Repo unter `docs/`. Jeder entwickelt lokal, `git push` / `git pull` wie bei Code. Das GitHub-Repo ist die **Team-SSoT** (die Wahrheit). Konflikte loest der normale PR-Review.
+- **Fluss 2 — Vault-Harvest (pro Person, einseitig Repo → Vault):** Nach jedem `git pull` kopiert ein **`git post-merge`-Hook** ausgewaehlte `docs/`-Dateien in den **persoenlichen** Obsidian-Vault des Operators — und **nie zurueck**. Der Vault ist eine private read-only Leseansicht, kein Sync-Ziel. Kein Cronjob, kein Webhook — der git-Hook feuert automatisch beim Pull.
+
+**Eigenschaften (aus Stefans `project-template`-Referenz-Implementierung):**
+
+- **Versionierter Team-Vertrag** (`.vault-sync/tracked-paths.json`): definiert, welche Repo-Pfade harvest-bar sind und welches `type:`-Frontmatter beim Mirror ergaenzt wird (z.B. `docs/components/*.md` → `type: component`, `journal/sprint-*.md` → `type: sprint-retro`).
+- **Persoenliche Konfig pro Mitarbeiter** (`.vault-sync/local.json`, **gitignored**): Vault-Pfad, `project_slug`, Pfad-Mappings, `enabled`. Liegt in `.gitignore` → wird nicht ins Repo geladen, der private Vault-Pfad leakt nicht ins Team.
+- **Null Reibung fuer Nicht-Teilnehmer:** Mitarbeiter ohne `local.json` (kein Obsidian, kein Harvest gewuenscht) → der Hook beendet sich stillschweigend (`exit 0`), keine Fehlermeldung, kein Zwang.
+- **Vault wird nie manuell veraendert:** Annotationen laufen ueber `.notes.md`-Schwesterdateien, die der Sync nicht anfasst. Frontmatter-Namespace `vault_sync_*` (kollisionsfrei, in Bases filterbar).
+- **Abgrenzung zu DocSync (Block D.2):** unser DocSync ist solo + bidirektional (Vault ↔ Repo). Vault-Harvest ist team + einseitig (Repo → Vault). Im Team-Modus daher **DocSync = nein** setzen — die beiden Mechanismen wuerden sich sonst ueberschneiden.
+
+**Aktivierung:** Bootstrap-Frage B.3 bietet die Option *"Repo-Docs + persoenlicher Vault-Harvest"* (siehe Bootstrap Block B.3). Die Referenz-Implementierung (Sync-Engine, Install-Skript, Hook-Wrapper, vollstaendige Spec `docs/vault-sync.md`) liegt in `StefanWeimarPRODOC/project-template`. Das Config-Scaffold (Team-Vertrag + local.json-Schema) ist im Framework unter `bootstrap/references/vault-sync-pattern.md` dokumentiert.
 
 ### Vier-Augen-Konvention fuer Sensitive-Paths und Personal-Data-Paths
 

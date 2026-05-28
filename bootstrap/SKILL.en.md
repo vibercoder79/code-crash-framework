@@ -1,7 +1,7 @@
 ---
 name: bootstrap
 recommended_model: sonnet  # BOO-84 — tier mapping in bootstrap/references/model-tiers.json
-version: 3.29.0
+version: 3.30.0
 language: en
 description: Sets up a new project with a governance framework — interactive 4-block interview flow, docs architecture with automatic hub linking, optional learning loop L1/L2/L3. Use when the operator wants to set up a new project or says "/bootstrap".
 tools: [Read, Write, Edit, Bash, Glob, Grep]
@@ -255,6 +255,17 @@ Do you already have the following? (answer each individually)
    [b] Repo docs — project docs under docs/project/
    [c] External DMS — Notion / Confluence / SharePoint / other + URL/path
    [d] Undecided — repo fallback docs/project/ + TODO
+   [e] Repo docs + personal vault harvest (team with Obsidian users) — BOO-75
+
+   > Note — Obsidian is a solo tool, not an enterprise tool:
+   > - Solo / 1 person → [a] Obsidian vault as SSoT is ideal.
+   > - Team / multiple people → [b] repo docs (or [c] external DMS). An Obsidian
+   >   vault is personal; there is no shared vault for the team.
+   > - Team WITH Obsidian users who want cross-project insights in their own vault
+   >   → [e] repo docs + personal vault harvest (Stefan's Git scenario: docs live
+   >   in the repo, a git post-merge hook mirrors selected docs/ one-way into each
+   >   operator's personal vault). Details: HANDBUCH Appendix R Layer 3
+   >   (vault-harvest pattern).
 
 4. Backlog system / adapter?
    [a] Linear + team slug
@@ -282,7 +293,15 @@ Warning: {PROJECT_PATH} already contains files.
   [c] Abort
 ```
 
-**Remember:** `EXISTING_INFRA = {...}` and `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` for the following phases.
+**Remember:** `EXISTING_INFRA = {...}` and `DOCUMENTATION_SSOT = {type, path_or_url, project_path, fallback, status}` for the following phases. On choice `[e]`, `type = repo-docs-plus-vault-harvest`.
+
+> **Choice [e] Repo docs + personal vault harvest (BOO-75, Phase 1 = documented choice):**
+> In Phase 1 bootstrap generates **no** sync-engine code, but:
+> 1. sets the documentation SSoT to `docs/project/` (like `[b]`),
+> 2. prints a hint block: "Vault-harvest reference implementation lives in `StefanWeimarPRODOC/project-template` (`docs/vault-sync.md`). Config scaffold (team contract + local.json schema): `bootstrap/references/vault-sync-pattern.md`.",
+> 3. sets **Block D DocSync = no** (vault harvest and DocSync would otherwise overlap — DocSync is solo/bidirectional, harvest is team/one-way),
+> 4. adds a setup step to `DEVELOPER_ONBOARDING.md`: "optionally initialise the vault harvest per operator (`.vault-sync/local.json`)".
+> Actually vendoring the sync engine into the framework is Phase 2 (follow-up story, once the engine is shared and checked via `security-architect --mode SKILL-SCAN`). Details: HANDBUCH Appendix R Layer 3.
 
 Phase 2 checkpoint: print a summary.
 
