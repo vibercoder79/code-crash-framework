@@ -3284,6 +3284,8 @@ Source: recurring operator question Tobias 2026-05-28. Consolidates bootstrap Ph
 
 Bootstrap is done — but how do you know the scaffold actually **works**? Linters reachable, hooks firing, skills writing artifacts, artifacts present? This appendix gives the **proof checklist** — walk it manually, or automate it via `scripts/verify-setup.sh` (BOO-79), which bootstrap calls itself in Phase 7.3b.
 
+![Post-install verification — 6 automated checks (verify-setup.sh) + manual check 5 (/implement trial) as the end-to-end proof](docs/assets/post-install-verification.png)
+
 ### Automated: `scripts/verify-setup.sh`
 
 ```bash

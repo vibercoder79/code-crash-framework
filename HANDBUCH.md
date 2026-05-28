@@ -3796,6 +3796,8 @@ Quelle: wiederkehrende Operator-Frage Tobias 2026-05-28. Konsolidiert Bootstrap 
 
 Bootstrap ist durch — aber woher weisst du, dass das Geruest **funktioniert**? Linter erreichbar, Hooks feuern, Skills schreiben Artefakte, Artefakte existieren? Dieser Anhang gibt die **Checkliste fuer den Proof** — manuell durchgehbar, oder automatisiert ueber `scripts/verify-setup.sh` (BOO-79), das Bootstrap in Phase 7.3b selbst aufruft.
 
+![Post-Install-Verifikation — 6 automatisierte Checks (verify-setup.sh) + manueller Check 5 (/implement-Probelauf) als End-to-End-Beweis](docs/assets/post-install-verification.png)
+
 ### Automatisiert: `scripts/verify-setup.sh`
 
 ```bash
