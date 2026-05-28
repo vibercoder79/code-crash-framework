@@ -1387,20 +1387,169 @@ So yes: a second project does not require installing the VS Code plugins again. 
 
 ### Stack-specific plugins
 
-Depending on what you're developing:
+Depending on what you're building, these get added:
 
 **Node.js / JavaScript backend:**
-→ REST Client (test API endpoints from VS Code) — https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+
+→ REST Client (test API endpoints directly from VS Code)
+  https://marketplace.visualstudio.com/items?itemName=humao.rest-client
 
 **Frontend (React, Vue, Vanilla JS):**
-→ Prettier (auto-format on save)
-→ Auto Rename Tag
-→ CSS Peek
+
+→ Prettier — auto-format on save
+  https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+
+→ Auto Rename Tag — rename HTML tags automatically
+  https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag
+
+→ CSS Peek — jump to CSS classes straight from HTML
+  https://marketplace.visualstudio.com/items?itemName=pranaygp.vscode-css-peek
+
+**Full-Stack:**
+
+→ Prettier — auto-format on save
+  https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
 
 **Python:**
-→ Python (required) · Black Formatter · Ruff · Error Lens · SonarLint · Pylance · Jupyter (optional)
 
-> **Tip:** Bootstrap gives you the appropriate links at the end of setup — just click and install.
+→ Python (required — the basis for everything)
+  https://marketplace.visualstudio.com/items?itemName=ms-python.python
+
+→ Black Formatter — auto-formatting
+  https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter
+
+→ Ruff — linter (modern replacement for Flake8)
+  https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff
+
+→ Error Lens
+  https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens
+
+→ SonarLint
+  https://marketplace.visualstudio.com/items?itemName=SonarSource.sonarlint-vscode
+
+→ Pylance — better autocomplete (optional)
+  https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance
+
+→ Jupyter — for data science / ML notebooks (optional)
+  https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter
+
+> **Tip:** Bootstrap gives you the appropriate links for your stack at the end of setup — just click and install. No searching needed.
+
+**How it plays together:**
+```
+You type code
+  → Error Lens shows ESLint + SonarLint findings inline (instantly)
+  → you fix as you write
+
+/implement runs
+  → ESLint CLI runs automatically: npx eslint --max-warnings=0
+  → 0 errors = gate passed → continue
+  → errors present = gate blocked → fix first
+```
+
+**The rule file: `eslint.config.mjs`**
+
+Bootstrap creates this file **automatically in the project root** — you don't have to do anything manually.
+The VS Code ESLint plugin detects it the moment you open the project and activates all rules.
+
+It contains:
+- Error prevention: `no-undef`, `no-unreachable`, `use-isnan`
+- Security rules: `no-eval`, `no-implied-eval`, `no-new-func`
+- Quality rules: `eqeqeq`, `no-unused-vars`, `prefer-const`
+- Async rules: `no-async-promise-executor`, `no-await-in-loop`
+- Readability: `max-len` (120 chars), `max-depth` (5 levels)
+
+To adjust: open `eslint.config.mjs` in the project root and add/remove rules as needed.
+
+### ESLint for a new project
+
+**Scenario:** you start a new project in Claude Code — the `eslint.config.mjs` doesn't exist yet.
+
+**With Bootstrap (recommended):**
+```
+/bootstrap
+```
+Bootstrap creates the `eslint.config.mjs` automatically in phase 1 — you don't have to do anything else.
+The VS Code ESLint plugin then picks it up immediately.
+
+**Without Bootstrap (manual):**
+1. Copy the `eslint.config.mjs` from an existing project into the root of the new project
+2. All rules are generic — no adjustment needed for Node.js projects
+3. The VS Code ESLint plugin activates automatically the next time you open the file
+
+**Where does the file live?**
+```
+my-project/             ← project root (where you start claude)
+├── eslint.config.mjs   ← HERE — directly in the root, not in a subfolder
+├── lib/
+├── agents/
+└── ...
+```
+
+> **Important:** ESLint v9+ uses the new format (`eslint.config.mjs`). The old format
+> (`.eslintrc.js`) is deprecated. Bootstrap always creates the new format.
+
+### Recommended VS Code settings for governance
+
+Create `.vscode/settings.json` in your project:
+
+```json
+{
+  // Auto-format on save
+  "editor.formatOnSave": true,
+
+  // Show git blame in the status bar (GitLens)
+  "gitlens.statusBar.enabled": true,
+  "gitlens.currentLine.enabled": true,
+
+  // Remove trailing whitespace
+  "files.trimTrailingWhitespace": true,
+
+  // Add a final newline
+  "files.insertFinalNewline": true,
+
+  // Terminal: project directory as default
+  "terminal.integrated.cwd": "${workspaceFolder}",
+
+  // Files to ignore
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/.env": true
+  },
+
+  // .env files NEVER in source control
+  "git.ignoredRepositories": [],
+  "dotenv.enableAutocloaking": true
+}
+```
+
+### Recommended VS Code coding rules (`.editorconfig`)
+
+Create `.editorconfig` in the project root:
+
+```ini
+# EditorConfig helps developers write consistent code
+# https://editorconfig.org
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
+```
+
+This file is **respected automatically by VS Code** (no plugin needed) and ensures
+code formatting is consistent — no matter who works on the project.
 
 ---
 
@@ -1419,6 +1568,12 @@ The bundle-level `code-crash-framework/CONVENTIONS.md` is the framework specific
 | Do we need Git worktrees? | `git-worktree` in the isolation strategy |
 | Which gates are active? | gate table |
 | Is this framework autonomous? | no: it is a sequential engineering pipeline with quality gates |
+
+### Backlog record and tool adapter
+
+The framework deliberately talks about a **backlog record**, not necessarily a Linear issue. A backlog record is the neutral story contract: ID/prefix, intent, context, acceptance criteria, definition of done, `execution_mode`, `execution_isolation`, `write_scopes`, risks, and references to specs or ADRs. Linear is the recommended adapter because its workflow, labels, GitHub integration, and API fit well. GitHub Issues, Microsoft Planner, or a Markdown backlog can carry the same record just as well, as long as the mandatory fields and gates are preserved.
+
+The adapter rule: the tool may look different, the record may not. When an adapter doesn't natively know a field, it goes into the body, frontmatter, or a linked spec. Skills read the neutral record first and only then translate into Linear-, GitHub-, or Markdown-specific actions. That's why "no Linear" is not a framework break; "no backlog record" is.
 
 ### Governance modes: lite, standard, heavy
 
@@ -1538,6 +1693,46 @@ module.exports = {
 
 **Most important rule:** When you bump `VERSION`, all `DOC_FILES` must be updated to the new
 version. The doc-version-sync hook enforces this automatically.
+
+### Customizing CLAUDE.md — getting to know Claude
+
+The `CLAUDE.md` is the core. Here you tell Claude who they are:
+
+```markdown
+# My Project — Context File
+
+## Who are you?
+
+You are the lead developer for MyShop — an e-commerce site for handmade products.
+[Describe your project in 3-5 sentences]
+
+## Your task
+
+1. [Main task 1]
+2. [Main task 2]
+3. Always keep documentation up to date
+
+## The system
+
+[Describe the architecture in broad strokes]
+
+## Rules
+
+- NEVER change code without a backlog record or adapter story
+- NEVER forget the spec file
+- [Your own rules]
+```
+
+**The better you fill this in, the better Claude knows your project.**
+
+### Customizing the issue prefix
+
+Bootstrap creates everything with your chosen prefix. Examples:
+
+- E-commerce shop: `SHOP-`
+- Mobile app: `APP-`
+- API service: `API-`
+- Marketing tool: `MKT-`
 
 ### Custom skills
 
@@ -1735,6 +1930,29 @@ cd /tmp && rm -rf ki-skills
 # In Claude Code: bootstrap can update existing skills
 /bootstrap --update
 ```
+
+### Upgrade path for existing projects
+
+Existing projects are not overwritten blindly. A framework upgrade follows three stages:
+
+1. **inspect:** read the current project contract (`CONVENTIONS.md`, `CLAUDE.md`/`AGENTS.md`,
+   `.claude/environment.json`, specs, hooks, workflows, backlog adapter) and output the deltas to
+   the new framework state as a diff or checklist.
+2. **apply-safe:** apply only additive, idempotent changes automatically — e.g. new optional
+   templates, missing documentation sections, new ignored report folders, or backlog fields,
+   without changing existing content.
+3. **apply-with-confirmation:** anything that changes existing rules, hooks, CI, issue templates,
+   branch protection, governance mode, adapter config, or skill versions needs explicit operator
+   confirmation.
+
+The principle: framework versions may make a project harder or clearer, but not silently
+reinterpret it. When an existing project deliberately deviates from the new recommendation, the
+deviation is documented instead of overwritten.
+
+The operational flow is described in `bootstrap/references/framework-upgrade.md`. Before the upgrade
+the release notes in `docs/releases/` are read; the report documents old/new version, updated
+skills, newly created files, deliberately not-overwritten files, manual TODOs, and provider
+postflight.
 
 ---
 
@@ -2518,75 +2736,235 @@ Bootstrap v3.23.0 adds `paths.pitches: "pitch/"` (and `paths.intents: "intents/"
 
 ## Appendix M: Schrader Decoder — We Built the Operating System for Code Crash
 
-This appendix is a map from Matthias Schrader's book "Code Crash" (2026) into this bundle. For each chapter we show what Schrader argues, the hero sketch from the book, and how the bundle operationalises it — with concrete BOO IDs, skills, and HANDBUCH cross-references. If you haven't read Schrader, that's fine: the decoder is not a re-read, it's a translation layer from theory into running code.
+This appendix is the map from the book into the bundle. Schrader's "Code Crash" (2026) provides the theory of the AI-software era; this bundle provides the executable practice for it. If you haven't read the book, that's no problem — the decoder is not a re-read but a translation: one concept per Schrader chapter, a hero sketch, a handful of detail sketches with the book's central arguments, and a concrete place in the bundle where the concept lives as a skill, BOO, or governance rule.
 
 ![Operating System Overview](docs/schrader-sketches/operating-system-overview.png)
 
 *The full bundle at a glance — skills, 4P pipeline, governance layer.*
 
-The bundle is Tobias' operating system for Code-Crash engineering. Schrader describes what changes when AI takes over the act of writing code. This bundle is the operational answer to that shift: 11 skills, a 4P pipeline, and a governance layer that turn the book's theses into something you can actually run.
+The bundle is Tobias' operating system for Code-Crash engineering. Schrader describes what changes when AI takes over the act of writing code. This bundle is the operational answer: 11 skills, the 4P pipeline, and a governance layer that turn the theory into daily practice.
 
 ### Chapter 1 — Second-Order Effects
 
-![Chapter 1](docs/schrader-sketches/chapter-01-hero.png)
+![Chapter 1 — the ChatGPT moment](docs/schrader-sketches/chapter-01-hero.png)
+
+*The ChatGPT moment of November 2022 — the crack in reality the book opens with.*
 
 **Schrader says:** Writing code is no longer the bottleneck — Intent is. The second-order effects (Jevons paradox: cheaper code means more code, not less) are bigger than the obvious efficiency win. He introduces the Soul-System-Speed triad and lays out the 4P pipeline (Perceive, Prompt, Produce, Pitch) as the new operating shape.
 
-**How we solve it:** The whole bundle is Tobias' answer to Jevons. The 4P pipeline isn't a slogan here — it's anchored architecturally across the skills, with one skill per stage. See Appendix L for the explicit 4P pipeline mapping.
+**Deepening in the book:**
+
+![Silent revolution — who wins, who loses](docs/schrader-sketches/chapter-02-hero.png)
+
+*The silent revolution: agentic AI tools turn LLMs into productivity monsters; the coordination class loses, small autonomous teams win.*
+
+![The new paradox](docs/schrader-sketches/chapter-02-detail-1.png)
+
+*Software development gets simultaneously easier and harder in new ways — when everyone can build, the spark decides, not the syntax.*
+
+![Two paradigm shifts](docs/schrader-sketches/chapter-02-detail-2.png)
+
+*Two parallel breaks: agile in crisis + intent becomes productive. When output costs nothing, input becomes the scarce resource.*
+
+**How we solve it:** The whole bundle is the answer to Jevons — when code gets cheaper, intent gets more expensive, so intent gets its own skill at the start of the pipeline. The 4P structure isn't decoration; it's anchored in the skill architecture: every skill belongs to exactly one P. See Appendix L (4P pipeline mapping).
 
 ### Chapter 2 — The Agile Illusion
 
-![Chapter 2](docs/schrader-sketches/chapter-02-hero.png)
+![Chapter 2 — Cargo Cult Agile](docs/schrader-sketches/chapter-03-hero.png)
+
+*Cargo cult: rituals without the core. Standups without obstacle talk, story points as a performance metric, sprints with top-down scope — mini-waterfall in agile disguise.*
 
 **Schrader says:** Cargo-cult agile keeps the rituals and loses the core. Output has crowded out Outcome. SAFe solves the wrong problem at industrial scale. The new smallest unit is Individual+AI — teams only exist when they actually accelerate the work.
 
-**How we solve it:** Velocity is dead in this bundle. No burndown, no story-points-per-sprint statistic. Sprint = 80% of the context window — a token box, not a time box. Outcome is tracked via Intent fulfillment instead of SP burndown. See HANDBUCH Appendix G for sprint-sizing mechanics, plus BOO-38, BOO-39, and BOO-40.
+**Deepening in the book:**
+
+![SAFe — anatomy of failure](docs/schrader-sketches/chapter-03-detail-1.png)
+
+*Agile Release Trains of 50-125 people, role inflation, artifact explosion, ceremony flood — SAFe doesn't scale agility, it scales the illusion of agility.*
+
+![Who profits from SAFe](docs/schrader-sketches/chapter-03-detail-2.png)
+
+*The business model behind clinging on: certification industry, consulting complexity, middle-management control, organized irresponsibility.*
+
+**How we solve it:** Velocity is dead — no burndown, no story-points-per-sprint statistic. A sprint in the bundle is 80% of the used model's context window — a token box, not a time box. Outcome is measured via Intent fulfillment, not story-point consumption. See HANDBUCH Appendix G (sprint-sizing mechanics), BOO-38, BOO-39, BOO-40.
 
 ### Chapter 3 — The AI Revolution in Software Development
 
-![Chapter 3](docs/schrader-sketches/chapter-03-hero.png)
+![Chapter 3 — four generations of AI coding](docs/schrader-sketches/chapter-04-hero.png)
+
+*From autocomplete through chat and terminal-first to agentic IDEs — with Opus 4.5, AI turns from assistant into production partner.*
 
 **Schrader says:** Four generations of AI coding (autocomplete, chat, terminal-first, agentic IDEs). With Opus 4.5, AI flipped from assistant to production partner. Vibe coding grows up into agentic engineering — and production readiness is the bar you have to clear.
 
-**How we solve it:** A three-layer quality-gate architecture (IDE → pre-commit → CI) turns vibe coding into production-ready agentic engineering. ESLint, Semgrep, coverage gate, performance baseline, SonarQube — all wired in. See HANDBUCH §6 and §8d, plus BOO-2 (ESLint), BOO-4 (Semgrep), BOO-15 (coverage), BOO-16 (performance), BOO-5 (SonarQube), and BOO-24 (AI architecture principles).
+**Deepening in the book:**
+
+![Vibe coding vs agentic engineering](docs/schrader-sketches/chapter-04-detail-1.png)
+
+*The difference is in the stance: vibe coders hope it works. Agentic engineers make sure it works — structured, with tests, with security boundaries.*
+
+![Senior vs junior + skill atrophy](docs/schrader-sketches/chapter-04-detail-2.png)
+
+*Fastly study (July 2025): senior developers use AI code 2.5x as often as juniors and benefit more. Beginners need friction to develop judgment — otherwise the next generation conducts AI without understanding its work.*
+
+**How we solve it:** A three-layer quality-gate architecture turns vibe coding into production-ready agentic engineering — layer 1 in the IDE, layer 2 as a pre-commit hook, layer 3 in CI. ESLint, Semgrep, coverage gate, performance baseline, and SonarQube interlock so nothing slips past the gates into main. See HANDBUCH §6 and §8d, plus BOO-2 (ESLint), BOO-4 (Semgrep), BOO-15 (coverage), BOO-16 (performance), BOO-5 (SonarQube), BOO-24 (AI architecture principles).
 
 ### Chapter 4 — Intent is the New Code (core chapter)
 
-![Chapter 4](docs/schrader-sketches/chapter-04-hero.png)
+![Chapter 4 — intent as the scarcest resource](docs/schrader-sketches/chapter-05-hero.png)
+
+*Intent as the starting point of value creation: the Soul-System-Speed triad replaces the old chain Vision → Objective → Outcome → Tech Requirement.*
 
 **Schrader says:** Intent is the new scarce resource. The Soul-System-Speed triad is what turns Intent into reality. Agency — judgment, cultural fluency, meaning-setting — is the human capability AI cannot replace. He catalogues the top 5 intent failures and proposes a template: "[user group] should [measurable outcome] without [friction]. Success = [metric]".
+
+**Deepening in the book:**
+
+![Feed the soul — agency](docs/schrader-sketches/chapter-05-detail-1.png)
+
+*Soul has two dimensions — the human one (agency: capacity to decide, responsibility, inner anchoring) and the product one (what differentiates).*
+
+![Intent before prompt — the right order](docs/schrader-sketches/chapter-05-detail-2.png)
+
+*First intent (technology-agnostic), then have options generated, then evaluate against the intent, and only at the end write prompts. Start with prompts and you build the wrong thing fast.*
+
+![Intent session — the 6-step workshop](docs/schrader-sketches/chapter-05-detail-3.png)
+
+*A good intent emerges in a team of product, design, engineering plus a domain wildcard: hear stories, quantify the status quo, brainstorm, sharpen, validate, write it down.*
 
 **How we solve it:** The `/intent` skill is the direct answer to this core chapter. It runs before `/ideation`, with an anti-pattern self-check covering 3 soul-killers and the 5 failure modes from Schrader. Intent then propagates through every downstream skill — gating ideation, weighting the backlog, closing the implement measure loop. See BOO-1 (intent skill), BOO-10 (intent propagation), `intent/SKILL.md`, and `intent/references/intent-anti-patterns.md`.
 
 ### Chapter 5 — The Intent-to-Production Pipeline
 
-![Chapter 5](docs/schrader-sketches/chapter-05-hero.png)
+![Chapter 5 — 4P pipeline](docs/schrader-sketches/chapter-06-hero.png)
+
+*Four boxes, one process: Perceive → Prompt → Produce → Pitch. The classic stage-gate approval process is replaced by a pipeline that ships in weeks instead of quarters.*
 
 **Schrader says:** The 4P pipeline (Perceive → Prompt → Produce → Pitch) replaces the classical approval process. Prototypes are dead — the new pitch form is a live demo with before/after metrics. The Two-Document Rule splits the work cleanly: Intent Document for the what, Execution Plan for the how.
+
+**Deepening in the book:**
+
+![Four phases flow into each other](docs/schrader-sketches/chapter-06-detail-3.png)
+
+*Perceive → Prompt → Produce → Pitch in detail: each phase hours to days instead of weeks. Full cycle 1-4 weeks for clearly defined features, 8-12 weeks for regulated environments.*
+
+![Quality gates instead of human control](docs/schrader-sketches/chapter-06-detail-2.png)
+
+*Old vs new model: instead of tech lead, architect, and security officer as approvers, there are automated gates on every commit. The autonomy paradox: autonomous teams need harder, automated guardrails because there's no time for human intervention.*
+
+![Multi-agent orchestration](docs/schrader-sketches/chapter-06-detail-5.png)
+
+*Writer agent, editor agent, code agent — each with its own SOUL.md for personality and decision principles. The product engineer becomes orchestrator: define the mission, coordinate specialists, instead of implementing personally.*
+
+![Pitch as the moment of truth](docs/schrader-sketches/chapter-06-detail-4.png)
+
+*Bad ideas get built and fail visibly. Good ideas prove themselves. No one can hide behind concepts anymore — the pitch decides whether more funding flows.*
+
+![Feature flag strategy](docs/schrader-sketches/chapter-06-detail-1.png)
+
+*Instead of big-bang releases: gradual rollout via feature flags. The 4P pipeline ships continuously; risk is managed through gradual roll-out rather than ever-longer testing.*
 
 **How we solve it:** The full skill chain is 4P: `/intent` (Perceive), `/ideation` plus `/backlog` (Prompt), `/implement` plus `/architecture-review` plus `/sprint-review` (Produce), `/pitch` (Pitch). The pitch stage shipped as a hybrid in BOO-37 — the skill gathers the evidence, the human runs the live demo. See HANDBUCH Appendix L for the 4P pipeline mapping and BOO-37 for the pitch skill.
 
 ### Chapter 6 — Product Teams (core chapter)
 
-![Chapter 6](docs/schrader-sketches/chapter-06-hero.png)
+![Chapter 6 — classic team vs product team](docs/schrader-sketches/chapter-07-hero.png)
+
+*Four heads, one outcome ("checkout abandonment from 12% to 8%"), own architecture, multiple deploys per day — no more approvals. That's what a real product team looks like.*
 
 **Schrader says:** Individual+AI is the new smallest unit. The 3-to-5-heads rule sizes Product Teams. The Product Engineer carries 5 core skills: intent clarity, technical judgment, systems thinking, user empathy, ownership. Add the Alliance Model, Communities of Profession, and Outcome Governance across three pillars.
+
+**Deepening in the book — building the team:**
+
+![No-team test](docs/schrader-sketches/chapter-07-detail-4.png)
+
+*Before forming any team, the honest check: do you really need a team, or is Individual+AI faster? Four questions — all "no" means no team needed.*
+
+![3-to-5-heads rule](docs/schrader-sketches/chapter-07-detail-2.png)
+
+*Product engineer + design + software engineer as the core, plus a wildcard and a junior. More than 5 heads is a warning sign: split rather than bloat — communication paths grow quadratically.*
+
+![Ownership architecture](docs/schrader-sketches/chapter-07-detail-1.png)
+
+*Who owns what: Soul (vision, meaning) belongs to product engineer and design, System (architecture, security) to the engineers, Speed (pipeline, go/no-go) to the whole team.*
+
+![Shared speed ownership](docs/schrader-sketches/chapter-07-detail-3.png)
+
+*Shared responsibility for speed is not a compromise but the core: each member personally owns velocity — not a non-committal group task.*
+
+**Deepening in the book — new roles:**
+
+![Chapter 6 — product engineer](docs/schrader-sketches/chapter-08-hero.png)
+
+*The old separations between PM, developer, and designer dissolve. What emerges is new: the product engineer works with AI end to end from intent to outcome — without handoffs.*
+
+![Software engineer — skill atrophy](docs/schrader-sketches/chapter-08-detail-1.png)
+
+*The software developer becomes a software engineer again: less implementation, more technical intent, more control. Antidote to atrophying coding muscles: keep doing manual coding exercises.*
+
+![Designer — select rather than create](docs/schrader-sketches/chapter-08-detail-2.png)
+
+*AI delivers best practice, not brand identity. The designer picks the right one of ten AI variants, not the prettiest. Selecting requires judgment, not craft.*
+
+**Deepening in the book — scaling & leadership:**
+
+![Chapter 6 — alignment model](docs/schrader-sketches/chapter-09-hero.png)
+
+*The 2x2 matrix: high autonomy combined with high alignment yields empowered teams. Chaos, bureaucracy, and command-and-control are the other quadrants.*
+
+![Human in the lead vs human in the loop](docs/schrader-sketches/chapter-09-detail-3.png)
+
+*Loop is dangerously insufficient: AI works, human intervenes occasionally. Lead is the needed stance: human leads, AI supports — proactively, with clear responsibility.*
+
+![Alliance model — guardrails](docs/schrader-sketches/chapter-09-detail-1.png)
+
+*Instead of SAFe trains, alliances: 4-10 teams (15-40 people), carried by mission and transparent information, not hierarchy. Guardrails reduce autonomy — so set them sparingly.*
+
+![Who decides what](docs/schrader-sketches/chapter-09-detail-4.png)
+
+*Decision architecture: 90% local in the team, bilateral between two teams, alliance-wide only what truly affects everyone. Escalation levels: bilateral → mediation → alliance decision.*
+
+![Alliance vs SAFe train](docs/schrader-sketches/chapter-09-detail-2.png)
+
+*The fundamental difference: SAFe coordinates dependencies, alliances eliminate them. Vertical slices ("team checkout"), API contracts, sparing shared services, sometimes deliberate duplication.*
+
+![J-curve of team transformation](docs/schrader-sketches/chapter-09-detail-5.png)
+
+*Three to six months of a productivity valley in the learning phase — the J-curve is part of the investment calculation, not a bug. Direct costs + indirect costs + risks must be clear before the start.*
 
 **How we solve it:** Issue-writing guidelines with a 3-tier execution mode (agentic / sub-agent / linear). Story points pull double duty — token estimate AND execution-mode selector. Every sub-agent gets a mini-briefing: role, context, concrete task. See BOO-11 (issue guidelines v3.0), BOO-38 (SP dual function), HANDBUCH §8g (Linear setup), and `.claude/ISSUE_WRITING_GUIDELINES.md`.
 
 ### Chapter 7 — Risks and Anti-Patterns
 
-![Chapter 7](docs/schrader-sketches/chapter-07-hero.png)
+![Chapter 7 — three categories of pathologies](docs/schrader-sketches/chapter-10-hero.png)
+
+*Every new way of working breeds its own pathologies. Three categories — process, quality, culture — plus an early-warning system and kill criteria. Knowing the risks means anticipating them.*
 
 **Schrader says:** 11 anti-patterns in 3 categories — 3 process, 3 quality, 5 culture pathologies. He gives you an early-warning system and kill criteria for projects and skills. Slopware is the failure mode that matters most: AI mediocrity that quietly drops the quality bar across the whole org.
+
+**Deepening in the book:**
+
+![Slopware instead of software](docs/schrader-sketches/chapter-10-detail-1.png)
+
+*AI makes production cheap — so more gets produced. More code, more features, more mediocrity. Without strict quality gates the codebase drowns in the same flood that swamps GitHub, Substack, and ArXiv from 2026 on.*
+
+![Early warning system](docs/schrader-sketches/chapter-10-detail-2.png)
+
+*Two levels — organization and team — with concrete signals: old meetings return, reporting overhead rises, autonomy gets curtailed, security gaps pile up, no one uses AI tools. One meaning-and-action entry per signal.*
 
 **How we solve it:** `/sprint-review` carries an explicit step (step 7) for anti-pattern self-diagnosis. It walks the catalogue at `sprint-review/references/anti-pattern-katalog.md`. AI-architecture anti-patterns get their own pass inside `/architecture-review`. See BOO-26 (anti-pattern catalogue), BOO-24 and BOO-7 (AI architecture), and HANDBUCH §8b (cultural anti-patterns).
 
 ### Chapter 8 — Still Day One (epilogue)
 
-![Chapter 8](docs/schrader-sketches/chapter-08-hero.png)
+![Chapter 8 — Still Day One](docs/schrader-sketches/chapter-11-hero.png)
+
+*February 2026, Schrader manuscript: the motivation stays the same, the HOW changes radically. What remains when everything changes: people problems. Teams fail at communication, not at technology.*
 
 **Schrader says:** Europe has an opening via deep domain knowledge plus leapfrogging — lag as an advantage. "Human in the Lead" is a leadership mode, not passive loop-watching. Trusted AI becomes a competitive advantage through regulatory fast lanes the US won't have.
+
+**Deepening in the book:**
+
+![Five years, three fields of action](docs/schrader-sketches/chapter-11-detail-1.png)
+
+*Companies build product engineering teams (example mechanical engineer 2028: three teams, new configurator, predictive maintenance, embedded AI — a platform company by 2030). Society benefits from 10x cheaper software in schools, administration, healthcare. Startups get the biggest window in tech history.*
 
 **How we solve it:** The bundle is tool-agnostic. It runs with Claude Code (primary), Codex, Cursor, Aider, or local LLMs — the operator stays in the driver's seat. Hermes sits on top as an optional compound layer for pattern recognition across projects. See HANDBUCH Appendix K (tool adapter, BOO-49), Appendices D-F (Hermes), and `CONVENTIONS.md` for the tool-neutral spec.
 
@@ -2594,7 +2972,9 @@ The bundle is Tobias' operating system for Code-Crash engineering. Schrader desc
 
 ![Book Overview](docs/schrader-sketches/chapter-overview.png)
 
-Schrader delivers the theory. This bundle delivers the practice — skill code, conventions, hooks, CI gates. Every concept in the book has an executable counterpart here. The decoder you just read is the skeleton for a follow-up book Tobias is planning: a hands-on companion that expands each chapter into concrete operating instructions and shows how to actually run a Schrader-style engineering org day to day.
+*From a theory book to an operational follow-up book: Schrader says what changes; the bundle shows what it concretely looks like.*
+
+Schrader delivers the theory, the bundle delivers the practice — skill code, conventions, hooks, CI gates. Every central concept in the book has an executable counterpart in a skill, a BOO, or a HANDBUCH section. This decoder is at the same time the skeleton for a planned follow-up book that deepens the translation of Schrader's theory into operational practice: not "what should change" but "this is how you do it concretely". Until then, this appendix is the shortest bridge version — one page of theory, several sketches with the book's central arguments, one page of bundle, per chapter.
 
 ## Appendix N: Token-Efficiency Policy (BOO-84) — Model Routing + Prompt Caching
 
