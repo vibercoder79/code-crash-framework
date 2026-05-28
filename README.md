@@ -18,9 +18,12 @@
 
 - **The orchestrator** (`bootstrap/`) interviews you about a new project and scaffolds the full governance framework: runtime instructions, documentation SSoT, Developer Onboarding, backlog adapter, Git hooks, skill selection, optional learning-loop.
 - **Sub-skills** (`ideation/`, `implement/`, etc.) cover the downstream delivery workflow — from idea to sprint review.
-- **Companion skills** (`../research/`, `../security-architect/`, etc.) are referenced by the governance flow but maintained as stand-alone skills at `claudecodeskills/` top level.
+- **Specialist bundle skills** (`security-architect/`, `dpo/`) live **inside the framework repo** (vendored, since BOO-74) so a single `git clone` is self-contained. Bootstrap installs them from here.
+- **Companion skills** (`../research/`, `../skill-creator/`, etc.) are referenced by the governance flow but maintained as stand-alone skills at `claudecodeskills/` top level.
 
-Full setup guide: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
+Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~190 KB) + **[HANDBUCH.en.md](HANDBUCH.en.md)** (English, ~165 KB) — appendices A–S cover Hermes, sprint sizing, tool adapters, token efficiency (N), privacy (O), deployment scenarios (P), sovereignty stack (Q), multi-operator coordination (R) and skill-installation strategy (S).
+
+**What's new (v0.2.0):** see **[docs/releases/v0.2.0-overview.md](docs/releases/v0.2.0-overview.md)** — privacy-by-design, deployment scenarios, sovereignty stack, multi-operator coordination, dpo + security-architect as bundle skills, vault-harvest engine.
 
 **Tool-neutral specification:** [CONVENTIONS.md](CONVENTIONS.md) — describes the framework conventions without binding to a specific AI tool. Read this first when adopting the framework with Codex, Cursor, or any other tool (see HANDBUCH Appendix K).
 
@@ -53,12 +56,20 @@ Full setup guide: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
 | **[cloud-system-engineer](cloud-system-engineer/)** | `/cloud-system-engineer` | VPS/Docker infrastructure: health checks, firewall, DNS, resources. |
 | **[visualize](visualize/)** | `/visualize` | Generate architecture diagrams in Miro from existing documentation. |
 
+### Specialist bundle skills (this folder, vendored — BOO-74)
+
+| Skill | Command | What it does |
+|-------|---------|-------------|
+| **[security-architect](security-architect/)** | `/security-architect` | STRIDE threat modeling, OWASP Top 10, ASVS 5.0 — 4 modes (Design/Review/Audit/Skill-Scan). Installed by bootstrap when the security dimension is active. |
+| **[dpo](dpo/)** | `/dpo` | Data Protection Officer — privacy by design (GDPR/BDSG/nDSG). 3 modes (Assess/Review/Audit). Installed by the bootstrap Privacy add-on (BOO-69). |
+
+*Master of these two stays in `claudecodeskills/` (via `publish_skill.py`); the framework repo holds a vendored mirror so a single clone is self-contained.*
+
 ### Top-level companion skills (parent folder)
 
 | Skill | Command | What it does |
 |-------|---------|-------------|
 | **[research](../research/)** | `/research` | 2-tier routing: Quick (WebSearch) or Deep (Perplexity + cross-check). |
-| **[security-architect](../security-architect/)** | `/security-architect` | STRIDE threat modeling, OWASP Top 10, ASVS 5.0 — 4 modes (Design/Review/Audit/Skill-Scan). |
 | **[skill-creator](../skill-creator/)** | `/skill-creator` | Create, package and register new skills into the global registry. |
 | **[design-md-generator](../design-md-generator/)** | `/design-md-generator` | Extract a website's visual design system into a machine-readable DESIGN.md. |
 | **[setup-checklist](../setup-checklist/)** | `/setup-checklist` | Claude Code best-practice audit — global and project settings. |
@@ -77,11 +88,16 @@ Full setup guide: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
                            └─ /pitch ──→ Evidence briefing for the stakeholder demo
 ```
 
-Governance hooks run automatically on every `git commit` / `git push`:
+Governance gates run automatically on `git commit` / `git push` (and `git pull`):
 - `spec-gate.sh` — blocks commits without a linked spec file
 - `doc-version-sync.sh` — blocks pushes when documentation is out of sync
+- `sensitive-paths` gate (BOO-18) — stops at security-sensitive paths until `review-ok`
+- `personal-data-paths` gate (BOO-69) — stops at personal-data paths until `privacy-ok`
+- `post-merge` vault-harvest hook (BOO-77, opt-in) — mirrors selected docs into a personal vault after `git pull`
 
 No spec, no commit. That's the difference between a prompt and a governance framework.
+
+> **Operating at scale:** running on a VPS, a team, or in a regulated industry? HANDBUCH appendices **P** (deployment scenarios), **R** (multi-operator coordination, 5–20+ operators), **S** (where do skills/tools/hooks belong) and **Q** (EU-sovereignty stack) cover the setup decisions; appendix **O** documents privacy-by-design.
 
 ---
 
@@ -124,9 +140,12 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 
 - **Der Orchestrator** (`bootstrap/`) führt das Interview zu einem neuen Projekt und legt das komplette Governance-Framework an: Runtime-Anweisungen, Dokumentations-SSoT, Developer Onboarding, Backlog-Adapter, Git-Hooks, Skill-Auswahl, optionaler Learning-Loop.
 - **Sub-Skills** (`ideation/`, `implement/`, etc.) decken den nachgelagerten Delivery-Workflow ab — von der Idee bis zum Sprint-Review.
-- **Companion-Skills** (`../research/`, `../security-architect/`, etc.) werden vom Governance-Flow referenziert, aber als eigenständige Skills auf Top-Level von `claudecodeskills/` gepflegt.
+- **Spezialisten-Bundle-Skills** (`security-architect/`, `dpo/`) liegen **im Framework-Repo selbst** (vendored, seit BOO-74) — ein einziges `git clone` ist self-contained. Bootstrap installiert sie von hier.
+- **Companion-Skills** (`../research/`, `../skill-creator/`, etc.) werden vom Governance-Flow referenziert, aber als eigenständige Skills auf Top-Level von `claudecodeskills/` gepflegt.
 
-Komplettes Setup-Handbuch: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
+Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~190 KB) + **[HANDBUCH.en.md](HANDBUCH.en.md)** (Englisch, ~165 KB) — Anhaenge A–S decken Hermes, Sprint-Sizing, Tool-Adapter, Token-Effizienz (N), Privacy (O), Deployment-Szenarien (P), Souveraenitaets-Stack (Q), Multi-Operator-Koordination (R) und Skill-Installations-Strategie (S) ab.
+
+**Was ist neu (v0.2.0):** siehe **[docs/releases/v0.2.0-overview.md](docs/releases/v0.2.0-overview.md)** — Privacy-by-Design, Deployment-Szenarien, Souveraenitaets-Stack, Multi-Operator-Koordination, dpo + security-architect als Bundle-Skills, Vault-Harvest-Engine.
 
 **Tool-neutrale Spezifikation:** [CONVENTIONS.md](CONVENTIONS.md) — beschreibt die Framework-Konventionen ohne Bindung an ein bestimmtes KI-Tool. Lies das zuerst, wenn du das Framework mit Codex, Cursor oder einem anderen Tool aufnimmst (siehe HANDBUCH Anhang K).
 
@@ -159,12 +178,20 @@ Komplettes Setup-Handbuch: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
 | **[cloud-system-engineer](cloud-system-engineer/)** | `/cloud-system-engineer` | VPS/Docker-Infrastruktur: Health-Check, Firewall, DNS, Ressourcen. |
 | **[visualize](visualize/)** | `/visualize` | Architektur-Diagramme in Miro aus bestehenden Doku-Dateien generieren. |
 
+### Spezialisten-Bundle-Skills (dieser Ordner, vendored — BOO-74)
+
+| Skill | Befehl | Was er tut |
+|-------|--------|------------|
+| **[security-architect](security-architect/)** | `/security-architect` | STRIDE Threat Modeling, OWASP Top 10, ASVS 5.0 — 4 Modi (Design/Review/Audit/Skill-Scan). Wird vom Bootstrap installiert, wenn die Security-Dimension aktiv ist. |
+| **[dpo](dpo/)** | `/dpo` | Data Protection Officer — Datenschutz by Design (DSGVO/BDSG/nDSG). 3 Modi (Assess/Review/Audit). Wird vom Privacy-Add-on des Bootstrap installiert (BOO-69). |
+
+*Master dieser zwei bleibt in `claudecodeskills/` (via `publish_skill.py`); das Framework-Repo haelt einen vendored Mirror, damit ein einziges Clone self-contained ist.*
+
 ### Top-Level Companion-Skills (Elternordner)
 
 | Skill | Befehl | Was er tut |
 |-------|--------|------------|
 | **[research](../research/)** | `/research` | 2-Tier-Routing: Quick (WebSearch) oder Deep (Perplexity + Gegencheck). |
-| **[security-architect](../security-architect/)** | `/security-architect` | STRIDE Threat Modeling, OWASP Top 10, ASVS 5.0 — 4 Modi (Design/Review/Audit/Skill-Scan). |
 | **[skill-creator](../skill-creator/)** | `/skill-creator` | Neue Skills erstellen, paketieren und in die globale Registry einbinden. |
 | **[design-md-generator](../design-md-generator/)** | `/design-md-generator` | Visuelles Design-System einer Website als maschinenlesbare DESIGN.md extrahieren. |
 | **[setup-checklist](../setup-checklist/)** | `/setup-checklist` | Claude Code Best-Practice-Audit — globale und projekt-Settings. |
@@ -183,11 +210,16 @@ Komplettes Setup-Handbuch: [HANDBUCH.md](HANDBUCH.md) (bilingual, ~95 KB).
                            └─ /pitch ──→ Evidenz-Briefing fuer den Stakeholder-Demo
 ```
 
-Governance-Hooks laufen automatisch bei jedem `git commit` / `git push`:
+Governance-Gates laufen automatisch bei `git commit` / `git push` (und `git pull`):
 - `spec-gate.sh` — blockiert Commits ohne verknüpftes Spec-File
 - `doc-version-sync.sh` — blockiert Pushes wenn Doku veraltet ist
+- `sensitive-paths`-Gate (BOO-18) — stoppt bei security-sensitiven Pfaden bis `review-ok`
+- `personal-data-paths`-Gate (BOO-69) — stoppt bei personenbezogenen Pfaden bis `privacy-ok`
+- `post-merge`-Vault-Harvest-Hook (BOO-77, opt-in) — spiegelt ausgewaehlte Docs nach `git pull` in einen persoenlichen Vault
 
 Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem Governance-Framework.
+
+> **Im Team / auf VPS / reguliert?** HANDBUCH-Anhaenge **P** (Deployment-Szenarien), **R** (Multi-Operator-Koordination, 5–20+ Operatoren), **S** (wo gehoeren Skills/Tools/Hooks hin) und **Q** (EU-Souveraenitaets-Stack) decken die Setup-Entscheidungen ab; Anhang **O** dokumentiert Privacy-by-Design.
 
 ---
 

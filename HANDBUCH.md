@@ -3753,6 +3753,20 @@ Die Install-Ebenen gelten sinngemaess auch fuer andere KI-Tools (siehe Anhang K 
 
 Bootstrap Phase 5 installiert je nach `RUNTIME_TARGET` nach `.claude/skills/` und/oder `.codex/skills/` (pro Projekt). Fuer den **globalen** Pool (Ebene 1/3) ist die Installation Operator-Sache (`git clone` ins `~/.claude/skills/` bzw. `/opt/claude/skills/`) — Bootstrap erzwingt keine Ebene, sondern dokumentiert die Wahl. Die DPO/security-architect-Bundle-Skills (BOO-74) kommen aus demselben Framework-Repo, egal welche Ebene.
 
+### Was einmal installieren, was pro Projekt?
+
+Die Skill-Frage ist nur ein Teil. Operatoren mit mehreren Projekten auf einer VPS/einem Mac fragen zu Recht: "Linter, Tools, Hooks — muss ich das pro Projekt machen oder einmal?" Die ehrliche Antwort hat eine wichtige Ausnahme bei den Hooks:
+
+| Komponente | Einmal (Maschine/User) | Pro Projekt | Warum |
+|------------|------------------------|-------------|-------|
+| **System-Linter/Tools** (Semgrep, Ruff, global installiertes ESLint, SonarScanner) | ✅ einmal pro Maschine | — | CLI-Tools liegen system- oder user-weit (`brew`, `pipx`, `npm -g`). Auf Multi-User-VPS system-weit fuer alle User. |
+| **Projekt-Dev-Deps** (ESLint/Prettier in `package.json`, pytest) | — | ✅ `npm install` / `pip install` pro Projekt | Versions-gepinnt im Projekt — das ist gewollt (reproduzierbarer Lint-Stand pro Repo). |
+| **Skills** (globaler Pool) | ✅ einmal (`~/.claude/skills/` bzw. `/opt/claude/skills/`) | nur bei Audit-Pinning | Siehe Decision-Matrix oben. |
+| **Git-Hooks** (spec-gate, doc-version-sync, post-merge) | ❌ **nicht einmal** | ✅ **pro Repo** | `.git/hooks/` wird **nicht** mit dem Repo geklont. Jedes frische `git clone` hat die Hooks noch nicht — Bootstrap installiert sie pro Projekt. **Ausnahme:** `git config --global core.hooksPath <dir>` zeigt alle Repos auf einen geteilten Hooks-Ordner (dann einmal, aber nicht die Default-Konvention). |
+| **`.claude/environment.json`** | — | ✅ pro Projekt | Manifest, das die einmal-installierten Tools pro Projekt **erkennt** (`tools_available`). Das Tool ist einmal da, das Manifest ist pro Projekt (BOO-34). |
+
+**Faustregel:** System-Tools + globaler Skill-Pool = einmal pro Maschine, dann egal wie viele Projekte. **Aber Git-Hooks und `environment.json` sind pro Projekt** — bei jedem neuen Repo/Clone neu aufsetzen (Bootstrap bzw. `generate-environment-json.sh` erledigen das). Wer Hooks wirklich einmal will, setzt `core.hooksPath` global.
+
 ### Verwandte Anhaenge
 
 - **Anhang P (Deployment-Szenarien):** definiert die vier Umgebungen, auf die sich die Decision-Matrix oben bezieht. Szenario 3 (Multi-User-VPS) ist der Haupt-Anwendungsfall fuer den System-Pool.

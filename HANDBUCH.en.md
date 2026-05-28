@@ -3239,6 +3239,20 @@ The install levels apply analogously to other AI tools (see Appendix K Tool-Adap
 
 Bootstrap Phase 5 installs into `.claude/skills/` and/or `.codex/skills/` (per project) depending on `RUNTIME_TARGET`. For the **global** pool (level 1/3), installation is the operator's job (`git clone` into `~/.claude/skills/` or `/opt/claude/skills/`) — bootstrap does not force a level, it documents the choice. The DPO/security-architect bundle skills (BOO-74) come from the same framework repo regardless of level.
 
+### What to install once, what per project?
+
+The skill question is only one part. Operators with several projects on one VPS/Mac rightly ask: "linters, tools, hooks — do I do this per project or once?" The honest answer has one important exception for hooks:
+
+| Component | Once (machine/user) | Per project | Why |
+|-----------|---------------------|-------------|-----|
+| **System linters/tools** (Semgrep, Ruff, globally installed ESLint, SonarScanner) | ✅ once per machine | — | CLI tools live system- or user-wide (`brew`, `pipx`, `npm -g`). On a multi-user VPS, system-wide for all users. |
+| **Project dev-deps** (ESLint/Prettier in `package.json`, pytest) | — | ✅ `npm install` / `pip install` per project | Version-pinned in the project — that is intended (reproducible lint revision per repo). |
+| **Skills** (global pool) | ✅ once (`~/.claude/skills/` or `/opt/claude/skills/`) | only for audit pinning | See the decision matrix above. |
+| **Git hooks** (spec-gate, doc-version-sync, post-merge) | ❌ **not once** | ✅ **per repo** | `.git/hooks/` is **not** cloned with the repo. Every fresh `git clone` has no hooks yet — bootstrap installs them per project. **Exception:** `git config --global core.hooksPath <dir>` points all repos at a shared hooks dir (then once, but not the default convention). |
+| **`.claude/environment.json`** | — | ✅ per project | Manifest that **detects** the once-installed tools per project (`tools_available`). The tool exists once, the manifest is per project (BOO-34). |
+
+**Rule of thumb:** system tools + global skill pool = once per machine, then it does not matter how many projects. **But git hooks and `environment.json` are per project** — re-set them for every new repo/clone (bootstrap resp. `generate-environment-json.sh` do this). To have hooks truly once, set `core.hooksPath` globally.
+
 ### Related appendices
 
 - **Appendix P (Deployment scenarios):** defines the four environments the decision matrix above refers to. Scenario 3 (multi-user VPS) is the main use case for the system pool.
