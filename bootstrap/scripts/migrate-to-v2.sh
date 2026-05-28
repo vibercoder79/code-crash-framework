@@ -3365,6 +3365,24 @@ migrate_boo_79() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-80 — Multi-Projekt-Betrieb (HANDBUCH Anhang U) — Wave R
+# -----------------------------------------------------------------------------
+
+migrate_boo_80() {
+    log_info "BOO-80: Multi-Projekt-Betrieb — HANDBUCH Anhang U (Projekt 2..N + bestehendes Projekt onboarden)"
+    log_info "BOO-80: Multi-project operation — HANDBUCH Appendix U (project 2..N + onboard existing project)"
+
+    # Reines Doku-Issue: keine File-Operationen, nur Hinweis.
+    log_info "BOO-80: HANDBUCH Anhang U / Appendix U ist jetzt verfuegbar."
+    log_info "BOO-80: Operator-Schritte:"
+    log_info "  1. Anhang U lesen — Maschinen-Ebene (einmal) vs Projekt-Ebene (jedes Mal) + 3 Onboarding-Wege."
+    log_info "  2. Projekt 2..N: Bootstrap-Schnellpfad (Block B erkennt Basis, Phase 5 Skip) — nur CLAUDE.md, Hooks (pro Repo!), environment.json, Doku-SSoT, verify-setup.sh."
+    log_info "  3. Bestehendes Projekt: bootstrap Merge-Modus + 'migrate-to-v2.sh --all', dann verify-setup.sh."
+    log_info "  4. Pro-Projekt-Minimal-Checkliste (Anhang U) abhaken."
+    log_info "BOO-80 done. Doku-only, keine Repository-Aenderung noetig."
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3383,7 +3401,7 @@ ALL_ISSUES=(
     BOO-72
     BOO-74
     BOO-75 BOO-76 BOO-77
-    BOO-79
+    BOO-79 BOO-80
 )
 
 print_help() {

@@ -3818,8 +3818,61 @@ Checks 1-4, 6-7 deckt `verify-setup.sh` automatisch ab. **Check 5 (Skill schreib
 
 Quelle: Operator-Frage Tobias 2026-05-28 ("ich brauche den Proof"). Loest den geparkten E2E-Smoke-Test-Gedanken (BOO-48). Skript: `bootstrap/references/verify-setup.sh`.
 
+## Anhang U: Multi-Projekt-Betrieb — Projekt 2..N + bestehendes Projekt onboarden (BOO-80)
+
+Du hast Code-Crash auf einer Maschine (VPS/Mac) — und jetzt kommt das **zweite, dritte, zehnte** Projekt dazu. Musst du jedes Mal alles neu installieren? Nein. Dieser Anhang trennt sauber, **was einmal pro Maschine** und **was pro Projekt** passiert, und zeigt die drei Onboarding-Wege.
+
+![Multi-Projekt-Betrieb — einmal Basis (Maschine), dann pro-Projekt-Setup je Projekt, plus drei Onboarding-Wege](docs/assets/multi-project-onboarding.png)
+
+### Maschinen-Ebene (einmal) vs. Projekt-Ebene (jedes Mal)
+
+Das Detail steht in Anhang S ("Was einmal installieren, was pro Projekt?"). Kurzfassung:
+
+- **Maschine — einmal:** System-Tools (Semgrep, Ruff, ESLint), globaler Skill-Pool (`~/.claude/skills/` bzw. `/opt/claude/skills/`), `~/.claude`-Config. Gilt fuer **alle** Projekte der Maschine.
+- **Projekt — jedes Mal:** `CLAUDE.md`, **Git-Hooks (pro Repo!)**, `.claude/environment.json`, `specs/`, Doku-SSoT-Wahl. Das `.git/`-Verzeichnis wird nicht geklont — darum sind Hooks + environment.json pro Repo neu zu setzen.
+
+### Die drei Onboarding-Wege
+
+**Weg 1 — Neues Projekt von Null.** Voller `/bootstrap` (10 Fragen, 4 Bloecke). Block B erkennt vorhandene Infra; ist die Basis schon da (Tools, globaler Skill-Pool), ueberspringt Phase 5 die Skill-Installation. Du beantwortest trotzdem den Projekt-Kern (Stack, Backlog, Doku-SSoT, Governance-Intensitaet).
+
+**Weg 2 — Projekt 2..N (Basis vorhanden).** Bootstrap-Schnellpfad: Block B erkennt Tools + globalen Skill-Pool → Maschinen-Setup wird uebersprungen. Der Fokus liegt auf der **Projekt-Ebene**:
+
+1. Projekt-Verzeichnis + GitHub-Repo (Block B).
+2. `CLAUDE.md` aus Template (Projekt-Kern).
+3. **Git-Hooks installieren** — pro Repo, weil `.git/hooks/` nicht geklont wird.
+4. `bash .claude/generate-environment-json.sh` — erkennt die einmal-installierten Tools fuer dieses Projekt.
+5. Doku-SSoT waehlen (Block B.3 — oft dieselbe wie Projekt 1, aber pro Projekt entscheidbar).
+6. `bash scripts/verify-setup.sh` (Anhang T) → Proof, dass alles greift.
+
+Effekt: Projekt 2..N ist in Minuten governance-ready, ohne Tools/Skills neu zu installieren.
+
+**Weg 3 — Bestehendes Projekt onboarden.** Kein neuer Skill noetig — ein **dokumentierter Pfad**:
+
+1. `/bootstrap` im **Merge-Modus** starten: Block B erkennt vorhandene Dateien, fragt "Backup / nur fehlende Governance-Dateien ergaenzen / Abbruch". Wahl: **merge** (nur fehlende Governance-Dateien anlegen, bestehenden Code nicht anfassen).
+2. `bash bootstrap/scripts/migrate-to-v2.sh --all` (oder gezielt `--issue BOO-N`) zieht die Governance-Bausteine nach (Hooks, Gates, environment.json, Privacy/Vault-Harvest falls gewuenscht).
+3. `bash scripts/verify-setup.sh` — schliesst die Luecken-Liste.
+
+### Pro-Projekt-Minimal-Checkliste
+
+Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
+
+- [ ] `CLAUDE.md` (Projekt-Vertrag) vorhanden
+- [ ] **Git-Hooks installiert** (`.git/hooks/pre-commit` — pro Repo!) — alternativ `core.hooksPath` global gesetzt
+- [ ] `.claude/environment.json` generiert (Tool-Erreichbarkeit fuer dieses Projekt)
+- [ ] Doku-SSoT festgelegt (Block B.3)
+- [ ] `bash scripts/verify-setup.sh` zeigt 0 FAIL
+
+### Verwandte Anhaenge
+
+- **Anhang S (Skill-Installations-Strategie):** das "Was einmal vs. pro Projekt" im Detail — Fundament fuer diesen Anhang.
+- **Anhang T (Post-Install-Verifikation):** der Proof pro Projekt (`verify-setup.sh`).
+- **Anhang P (Deployment-Szenarien):** auf welcher Topologie die Projekte liegen (Solo-Mac / VPS / Multi-User-VPS).
+- **Bootstrap Block B + Phase 5:** Infra-Erkennung + Skill-Installation, die den Schnellpfad ermoeglichen.
+
+Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt bootstrappen oder Basis-schon-da-Pfad?").
+
 ---
 
 *Dieses Handbuch ist Teil des Code-Crash Frameworks.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Letzte Aktualisierung: 2026-05-28 (Anhang T Post-Install-Verifikation ergaenzt — BOO-79; Anhang S Skill-Installations-Strategie — BOO-76; Anhang R Vault-Harvest — BOO-75)*
+*Letzte Aktualisierung: 2026-05-28 (Anhang U Multi-Projekt-Betrieb ergaenzt — BOO-80; Anhang T Post-Install-Verifikation — BOO-79; Anhang S Skill-Installations-Strategie — BOO-76)*

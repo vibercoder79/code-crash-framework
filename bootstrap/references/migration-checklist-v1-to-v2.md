@@ -1211,6 +1211,24 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 ---
 
+## §BOO-80 — Multi-Projekt-Betrieb (HANDBUCH Anhang U) — Wave R
+
+**Status:** ✓ in v2-Bundle — reines Doku-Issue, keine Repository-Aenderung.
+**Aufwand:** klein (~10 Min Lesen).
+**Linear:** <https://linear.app/owlist/issue/BOO-80>
+**Auto-Schritt:** ja (`migrate_boo_80`, Doku-only Hinweis).
+
+**Operator-Schritte:**
+
+- [ ] HANDBUCH Anhang U lesen — Maschinen-Ebene (einmal) vs Projekt-Ebene (jedes Mal) + 3 Onboarding-Wege.
+- [ ] Projekt 2..N: Bootstrap-Schnellpfad (Block B erkennt Basis, Phase 5 Skip) — nur CLAUDE.md, Git-Hooks (pro Repo!), environment.json, Doku-SSoT, verify-setup.sh.
+- [ ] Bestehendes Projekt: `/bootstrap` Merge-Modus + `bash bootstrap/scripts/migrate-to-v2.sh --all`, dann `verify-setup.sh`.
+- [ ] Pro-Projekt-Minimal-Checkliste (Anhang U) abhaken.
+
+**Verweise:** HANDBUCH Anhang U, Anhang S (was einmal vs pro Projekt), Anhang T (verify), Bootstrap Block B + Phase 5, `specs/BOO-80.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

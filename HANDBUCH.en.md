@@ -3308,6 +3308,61 @@ Source: operator question Tobias 2026-05-28 ("I need the proof"). Resolves the p
 
 ---
 
+## Appendix U: Multi-project operation — project 2..N + onboarding an existing project (BOO-80)
+
+You have Code-Crash on a machine (VPS/Mac) — and now the **second, third, tenth** project arrives. Do you reinstall everything each time? No. This appendix cleanly separates **what happens once per machine** from **what happens per project**, and shows the three onboarding paths.
+
+![Multi-project operation — base once (machine), then per-project setup per project, plus three onboarding paths](docs/assets/multi-project-onboarding.png)
+
+### Machine level (once) vs. project level (each time)
+
+The detail is in Appendix S ("What to install once, what per project?"). Short version:
+
+- **Machine — once:** system tools (Semgrep, Ruff, ESLint), the global skill pool (`~/.claude/skills/` or `/opt/claude/skills/`), `~/.claude` config. Applies to **all** projects on the machine.
+- **Project — each time:** `CLAUDE.md`, **git hooks (per repo!)**, `.claude/environment.json`, `specs/`, doc-SSoT choice. The `.git/` directory is not cloned — that is why hooks + environment.json must be re-set per repo.
+
+### The three onboarding paths
+
+**Path 1 — New project from scratch.** Full `/bootstrap` (10 questions, 4 blocks). Block B detects existing infra; if the base is already there (tools, global skill pool), Phase 5 skips skill installation. You still answer the project core (stack, backlog, doc-SSoT, governance intensity).
+
+**Path 2 — Project 2..N (base present).** Bootstrap fast path: Block B detects tools + global skill pool → machine setup is skipped. The focus is the **project level**:
+
+1. Project directory + GitHub repo (Block B).
+2. `CLAUDE.md` from template (project core).
+3. **Install git hooks** — per repo, because `.git/hooks/` is not cloned.
+4. `bash .claude/generate-environment-json.sh` — detects the once-installed tools for this project.
+5. Choose the doc-SSoT (Block B.3 — often the same as project 1, but decidable per project).
+6. `bash scripts/verify-setup.sh` (Appendix T) → proof that everything interlocks.
+
+Effect: project 2..N is governance-ready in minutes, without reinstalling tools/skills.
+
+**Path 3 — Onboard an existing project.** No new skill needed — a **documented path**:
+
+1. Start `/bootstrap` in **merge mode**: Block B detects existing files and asks "backup / add only missing governance files / abort". Choose **merge** (only create missing governance files, do not touch existing code).
+2. `bash bootstrap/scripts/migrate-to-v2.sh --all` (or selectively `--issue BOO-N`) retrofits the governance building blocks (hooks, gates, environment.json, privacy/vault-harvest if wanted).
+3. `bash scripts/verify-setup.sh` — closes the gap list.
+
+### Per-project minimal checklist
+
+What **must** happen per project, otherwise gates + skills do not engage:
+
+- [ ] `CLAUDE.md` (project contract) present
+- [ ] **Git hooks installed** (`.git/hooks/pre-commit` — per repo!) — or `core.hooksPath` set globally
+- [ ] `.claude/environment.json` generated (tool reachability for this project)
+- [ ] Doc-SSoT chosen (Block B.3)
+- [ ] `bash scripts/verify-setup.sh` shows 0 FAIL
+
+### Related appendices
+
+- **Appendix S (Skill installation strategy):** the "once vs. per project" in detail — the foundation for this appendix.
+- **Appendix T (Post-install verification):** the per-project proof (`verify-setup.sh`).
+- **Appendix P (Deployment scenarios):** the topology the projects sit on (Solo-Mac / VPS / multi-user VPS).
+- **Bootstrap Block B + Phase 5:** infra detection + skill installation that enable the fast path.
+
+Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per project or a base-already-there path?").
+
+---
+
 *This handbook is part of the Code-Crash Framework.*
 *GitHub: github.com/vibercoder79/code-crash-framework*
-*Last updated: 2026-05-28 (Appendix T Post-install verification added — BOO-79; Appendix S Skill Installation Strategy — BOO-76; Appendix R vault harvest — BOO-75)*
+*Last updated: 2026-05-28 (Appendix U Multi-project operation added — BOO-80; Appendix T Post-install verification — BOO-79; Appendix S Skill Installation Strategy — BOO-76)*
