@@ -2998,6 +2998,8 @@ Schrader liefert die Theorie, das Bundle liefert die Praxis — Skill-Code, Konv
 
 Code-Crash-Operatoren bezahlen unnoetig viele Anthropic-Tokens, wenn jeder Skill auf dem Operator-Default-Modell laeuft (meist Opus). Diese Sektion erklaert beide Hebel, die das Framework standardmaessig nutzt — **Modell-Routing pro Skill** und **Prompt-Caching fuer wiederverwendete Bloecke**. Beide folgen dem Designentscheid Leichtgewicht: Empfehlung statt Hard-Lock, Operator-Override jederzeit moeglich, Audit-Trail fuer Compliance.
 
+![Token-Effizienz — zwei Hebel: Modell-Routing (haiku/sonnet/opus) + Prompt-Caching, plus FinOps-Argument](docs/assets/boo-84-token-efficiency.png)
+
 ### N.1 Modell-Routing-Policy
 
 Jeder Skill traegt im Frontmatter `recommended_model: haiku | sonnet | opus` — ein **Tier**, keine Versionsnummer. Die Zuordnung Tier-zu-Version (z.B. Haiku 4.5, Sonnet 4.6, Opus 4.7) lebt zentral in `bootstrap/references/model-tiers.json` und wird einmalig pro Anthropic-Release zentral aktualisiert. So muss kein Operator 11 Skill-Files anfassen, wenn ein neues Modell erscheint.
@@ -3065,6 +3067,8 @@ Bei einer Story mit 5 Lint-Iterationen liest jeder Iterations-Aufruf die `SKILL.
 Cache ist optional aktivierbar via Claude-Code-Hook. Wenn der Hook nicht eingerichtet ist: alles funktioniert weiter, nur ohne Caching-Vorteil und ohne Cost-Aggregat im Sprint-Review (`meta.json.token_tracking` bleibt leer). Kein Hard-Block — Operator kann Caching jederzeit nachruesten.
 
 ## Anhang O: Privacy by Design (BOO-69) — DPO als Framework-Bundle-Skill
+
+![Privacy-Pipeline — DPO + security-architect, drei Modi (ASSESS / REVIEW / AUDIT) entlang der Skill-Kette](docs/assets/boo-69-privacy-pipeline.png)
 
 ### Wann brauche ich den Privacy-Modus?
 

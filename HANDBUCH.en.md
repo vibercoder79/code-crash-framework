@@ -2481,6 +2481,8 @@ Schrader delivers the theory. This bundle delivers the practice — skill code, 
 
 Code-Crash operators waste Anthropic tokens when every skill runs on the operator's default model (usually Opus). This appendix explains both levers the framework uses by default — **per-skill model routing** and **prompt caching for reused blocks**. Both follow the lightweight design decision: recommendation rather than hard lock, operator override always possible, audit trail for compliance.
 
+![Token efficiency — two levers: model routing (haiku/sonnet/opus) + prompt caching, plus the FinOps argument](docs/assets/boo-84-token-efficiency.png)
+
 ### N.1 Model-Routing Policy
 
 Each skill carries `recommended_model: haiku | sonnet | opus` in its frontmatter — a **tier**, not a version number. Tier-to-version mapping (Haiku 4.5, Sonnet 4.6, Opus 4.7) lives centrally in `bootstrap/references/model-tiers.json` and is updated once per Anthropic release. No operator has to touch 11 skill files when a new model ships.
@@ -2548,6 +2550,8 @@ A story with 5 lint iterations re-reads `SKILL.md` (10k tokens) and the constitu
 Caching is optionally enabled via a Claude-Code hook. If the hook is not set up: everything keeps working, just without the caching benefit and without cost aggregate in the sprint review (`meta.json.token_tracking` stays empty). No hard block — operator can retro-fit caching at any time.
 
 ## Appendix O: Privacy by Design (BOO-69) — DPO as a Framework Bundle Skill
+
+![Privacy pipeline — DPO + security-architect, three modes (ASSESS / REVIEW / AUDIT) along the skill chain](docs/assets/boo-69-privacy-pipeline.png)
 
 ### When do I need the Privacy mode?
 
