@@ -348,7 +348,7 @@ Claude arbeitet die Aufgabe direkt ab, ohne Sub-Agents zu spawnen.
 
 **Hinweis zu Skill vs. Ad-hoc:**
 Unter "Skill" sind zwei Arten gemeint:
-1. Existierende Code-Crash-Skills (z.B. `grafana`, `security-architect`) — referenziert + aufgerufen
+1. Existierende INTENTRON-Skills (z.B. `grafana`, `security-architect`) — referenziert + aufgerufen
 2. Ad-hoc Kontext-Briefing — wenn keiner passt: "Du bist [Rolle]", "Dein Kontext: [...]", "Deine Aufgabe: [...]"
 
 **Beispiel `agentic`** (neue Architektur-Dimension mit 4 Dateien):
@@ -487,4 +487,4 @@ Story darf erst auf Linear-Status "Done" wenn:
 
 ---
 
-*Issue-Schreibrichtlinien — {{PROJECT_NAME}} | Code Crash Governance v2 | Version 3.1*
+*Issue-Schreibrichtlinien — {{PROJECT_NAME}} | INTENTRON Governance v2 | Version 3.1*

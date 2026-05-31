@@ -1,6 +1,6 @@
 # Framework-Upgrade fuer bestehende Projekte
 
-Ziel: Bestehende Projekte koennen eine neue Code-Crash-Framework-Version uebernehmen, ohne lokale Entscheidungen, Skills, Hooks, CI oder Sicherheitsdateien blind zu ueberschreiben.
+Ziel: Bestehende Projekte koennen eine neue INTENTRON-Version uebernehmen, ohne lokale Entscheidungen, Skills, Hooks, CI oder Sicherheitsdateien blind zu ueberschreiben.
 
 ## Grundregel
 

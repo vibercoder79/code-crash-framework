@@ -2,7 +2,7 @@
 
 ## Summary
 
-Parent-Spec fuer den lokalen Commit, der die ersten Dry-Run-GAP-Hardening-Wellen aus BOO-52 bis BOO-61 im Code-Crash Framework verankert.
+Parent-Spec fuer den lokalen Commit, der die ersten Dry-Run-GAP-Hardening-Wellen aus BOO-52 bis BOO-61 in INTENTRON verankert.
 
 ## Why
 

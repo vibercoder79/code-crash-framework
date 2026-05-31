@@ -106,7 +106,7 @@ See `SYSTEM_ARCHITECTURE.md` and `ARCHITECTURE_DESIGN.md`.
 
 ## Model-Routing Policy (BOO-84)
 
-Each skill declares a **recommended model tier** in its frontmatter (`recommended_model`). Tier-to-version mappings and pricing live centrally in `bootstrap/references/model-tiers.json` of the Code-Crash Framework.
+Each skill declares a **recommended model tier** in its frontmatter (`recommended_model`). Tier-to-version mappings and pricing live centrally in `bootstrap/references/model-tiers.json` of INTENTRON.
 
 | Tier | Model Class | Used For | Default Skills |
 |------|-------------|----------|----------------|
@@ -154,8 +154,8 @@ Constraints:
 # {{PROJECT_NAME}} — Project Conventions
 
 **Version:** {{VERSION_START}} | **Updated:** {{TODAY}}
-**Framework:** Code-Crash Framework
-**Master specification:** `code-crash-framework/CONVENTIONS.md`
+**Framework:** INTENTRON
+**Master specification:** `intentron/CONVENTIONS.md`
 
 > This document is the project-local contract for governance mode, execution isolation and active gates. Skills read it before writing or implementing stories.
 
@@ -385,7 +385,7 @@ All notable changes to this project are documented here.
 ## [{{VERSION_START}}] — {{TODAY}}
 
 ### Added
-- Initial bootstrap — Code-Crash Framework
+- Initial bootstrap — INTENTRON
 - Documentation: CLAUDE.md, SYSTEM_ARCHITECTURE.md, ARCHITECTURE_DESIGN.md
 - Governance hooks: spec-gate.sh, doc-version-sync.sh
 - Skills installed: [list]

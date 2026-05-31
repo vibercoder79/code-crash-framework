@@ -54,7 +54,7 @@ Bootstrap fragt:
 ```text
 Soll der Research-Skill installiert werden?
 Quelle:
-  a) im Code-Crash Framework enthalten
+  a) in INTENTRON enthalten
   b) Companion-Skill aus claudecodeskills/research
   c) bereits global installiert
   d) nicht installieren

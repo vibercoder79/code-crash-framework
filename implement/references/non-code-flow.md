@@ -6,7 +6,7 @@
 
 ## Warum gibt es das ueberhaupt?
 
-Das Code-Crash Framework ist code-first. Die Quality Gates 6a (ESLint/Ruff), 6a-bis (Semgrep),
+Das INTENTRON Framework ist code-first. Die Quality Gates 6a (ESLint/Ruff), 6a-bis (Semgrep),
 6a-tris (Dependency-Check) und 6a-quart (Coverage) sind alle auf Code-Diffs angewiesen.
 
 **Das Problem:** Manche Stories produzieren keinen Code-Diff, sind aber trotzdem echte

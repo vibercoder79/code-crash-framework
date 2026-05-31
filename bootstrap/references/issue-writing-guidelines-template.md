@@ -314,7 +314,7 @@ Every issue must align with project-local `CONVENTIONS.md`:
 | Pure documentation, single file | → `linear` |
 
 **Note on "Skill":** Two types are valid:
-1. Existing Code-Crash skills (e.g. `grafana`, `security-architect`) — referenced and invoked by name
+1. Existing INTENTRON skills (e.g. `grafana`, `security-architect`) — referenced and invoked by name
 2. Ad-hoc context briefing — when no skill fits: "You are [Role]", "Your context: [...]", "Your task: [...]"
 
 ---
@@ -503,4 +503,4 @@ Story may only move to Linear status "Done" when:
 
 ---
 
-*Issue Writing Guidelines — {{PROJECT_NAME}} | Code Crash Governance v2 | Version 3.1*
+*Issue Writing Guidelines — {{PROJECT_NAME}} | INTENTRON Governance v2 | Version 3.1*

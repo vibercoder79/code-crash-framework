@@ -130,10 +130,10 @@ done | jq -s '
 Lies `token_tracking` aus allen meta.json des Sprints und berechne Cost-Aggregate via `bootstrap/references/model-tiers.json` (Pricing zentral, nicht in jeder meta.json dupliziert).
 
 ```bash
-TIERS_FILE="$(git rev-parse --show-toplevel)/../code-crash-framework/bootstrap/references/model-tiers.json"
+TIERS_FILE="$(git rev-parse --show-toplevel)/../intentron/bootstrap/references/model-tiers.json"
 # Fallback: an typischen Framework-Pfaden suchen (Operator-Setup)
 if [ ! -f "$TIERS_FILE" ]; then
-  TIERS_FILE=$(find ~/Documents/GitHub/code-crash-framework -name model-tiers.json -maxdepth 4 2>/dev/null | head -1)
+  TIERS_FILE=$(find ~/Documents/GitHub/intentron -name model-tiers.json -maxdepth 4 2>/dev/null | head -1)
 fi
 
 if [ -n "$TIERS_FILE" ] && [ -f "$TIERS_FILE" ]; then
@@ -282,7 +282,7 @@ Dem Operator praesentieren:
 
 ### Schritt 7: Anti-Pattern-Selbstdiagnose (BOO-26)
 
-> Liest `code-crash-framework/references/anti-pattern-katalog.md` und stellt pro AP eine kurze Ja/Nein/Unklar-Frage.
+> Liest `intentron/references/anti-pattern-katalog.md` und stellt pro AP eine kurze Ja/Nein/Unklar-Frage.
 > Kein harter Block — dieser Schritt ist Reflexion, nicht Gate.
 > Dauer: ca. 5 Minuten.
 
@@ -312,7 +312,7 @@ Dem Operator praesentieren:
 - **1-2 Ja/Unklar:** Eintrag in Sprint-Retro mit konkretem Gegenmittel aus `anti-pattern-katalog.md`
 - **3+ Ja/Unklar:** ADR-Vorschlag anlegen (unter `docs/domain/adrs/`) + Issue in Backlog für Gegenmittel
 
-Detaillierte Symptome + Gegenmittel: `code-crash-framework/references/anti-pattern-katalog.md`
+Detaillierte Symptome + Gegenmittel: `intentron/references/anti-pattern-katalog.md`
 
 ### Schritt 7c: DPO-Audit-Trigger (BOO-69, nur wenn Privacy-Add-on aktiv)
 

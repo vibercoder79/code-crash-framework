@@ -217,7 +217,7 @@ Regeln:
 - Bei `b)` gibt der Bootstrap nur einen Hinweis-Block aus und keinen Interview-Fork:
 
   ```
-  Du hast "anders" gewaehlt. Code-Crash bringt selbst keine szenarien-
+  Du hast "anders" gewaehlt. INTENTRON bringt selbst keine szenarien-
   spezifische Setup-Automatik mit — lies HANDBUCH Anhang P, waehle dein
   Szenario (Solo-VPS / Multi-User-VPS / Team-Server) und arbeite die
   dort beschriebenen Schritte einmalig ab. Danach kannst du Bootstrap
@@ -442,7 +442,7 @@ Aus `references/file-templates.md` mit Block-A-Angaben befuellen:
 | `CHANGELOG.md` | CHANGELOG.md |
 | `specs/TEMPLATE.md` | specs/TEMPLATE.md |
 
-> **KI-Architektur-Block (BOO-24):** Das `ARCHITECTURE_DESIGN.md`-Template enthaelt bereits den Pflicht-Block "KI-Architektur-Prinzipien + Anti-Patterns" in §2 (Design-Rationale). Referenz: `code-crash-framework/references/ki-architektur-prinzipien.md`. Der Block wird automatisch beim Template-Rendering befuellt — kein manueller Schritt noetig. `/architecture-review` (BOO-7) prueft alle 8 Checks reaktiv bei jeder Story.
+> **KI-Architektur-Block (BOO-24):** Das `ARCHITECTURE_DESIGN.md`-Template enthaelt bereits den Pflicht-Block "KI-Architektur-Prinzipien + Anti-Patterns" in §2 (Design-Rationale). Referenz: `intentron/references/ki-architektur-prinzipien.md`. Der Block wird automatisch beim Template-Rendering befuellt — kein manueller Schritt noetig. `/architecture-review` (BOO-7) prueft alle 8 Checks reaktiv bei jeder Story.
 
 > **CONVENTIONS.md (BOO-51/52/53/54):** Dieses Dokument ist der projektlokale Adapter-Vertrag zwischen allen Skills und Runtimes. `/ideation` liest daraus `runtime_target`, `backlog_adapter`, `governance_mode` und `execution_isolation`; `/implement` nutzt es als Pre-Flight fuer Worktree-/Write-Scope-Pflicht und aktive Gates; `/sprint-review` prueft spaeter Drift gegen die gewaehlte Governance-Intensitaet.
 
@@ -821,7 +821,7 @@ Session-Logging ist in Claude Code per Default aktiv (`~/.claude/settings.json`)
 
 **Schritte:**
 
-1. `scripts/audit-trace.sh` aus `code-crash-framework/bootstrap/scripts/audit-trace.sh` in das Projekt-Verzeichnis kopieren:
+1. `scripts/audit-trace.sh` aus `intentron/bootstrap/scripts/audit-trace.sh` in das Projekt-Verzeichnis kopieren:
    ```bash
    mkdir -p {PROJECT_PATH}/.claude/scripts
    cp {BOOTSTRAPPING_PATH}/bootstrap/scripts/audit-trace.sh {PROJECT_PATH}/.claude/scripts/
@@ -849,7 +849,7 @@ Voraussetzung dafuer, dass kein Merge in `main` ohne gruene CI-Checks moeglich i
 
 **Schritte:**
 
-1. `scripts/setup-branch-protection.sh` aus `code-crash-framework/bootstrap/scripts/setup-branch-protection.sh` in das Projekt-Verzeichnis kopieren:
+1. `scripts/setup-branch-protection.sh` aus `intentron/bootstrap/scripts/setup-branch-protection.sh` in das Projekt-Verzeichnis kopieren:
    ```bash
    mkdir -p {PROJECT_PATH}/.claude/scripts
    cp {BOOTSTRAPPING_PATH}/bootstrap/scripts/setup-branch-protection.sh {PROJECT_PATH}/.claude/scripts/
@@ -960,7 +960,7 @@ Bei `B.2 == nein/c` (kein GitHub gewuenscht): Phase 4.4k komplett skippen — Br
 **Schritte:**
 
 1. **Model-Routing-Sektion in `CLAUDE.md` einfuegen.** Das Template aus `references/file-templates.md` §`CLAUDE.md (Minimum)` enthaelt die Sektionen "Model-Routing-Policy (BOO-84)" und "Prompt-Caching (BOO-84)" bereits — beim Rendern automatisch uebernommen.
-2. **`model-tiers.json` referenzieren.** Das zentrale Mapping `bootstrap/references/model-tiers.json` ist Framework-Owned und wird nicht ins Projekt kopiert. Skills lesen es per Framework-Pfad. Operator findet es bei Fragen via `code-crash-framework/bootstrap/references/model-tiers.json`.
+2. **`model-tiers.json` referenzieren.** Das zentrale Mapping `bootstrap/references/model-tiers.json` ist Framework-Owned und wird nicht ins Projekt kopiert. Skills lesen es per Framework-Pfad. Operator findet es bei Fragen via `intentron/bootstrap/references/model-tiers.json`.
 3. **`meta.json`-Schema erweitern.** Implement-Skill (Schritt 6f-bis) schreibt ab jetzt zusaetzliche Felder: `input_tokens`, `output_tokens`, `cache_creation_input_tokens`, `cache_read_input_tokens`, `model_used`, `skill_invoked`, `story_id`, `iteration_label`, plus `override_audit: []` Array fuer Override-Eintraege. Siehe `implement/SKILL.md` §6f-bis.
 4. **Override-Praezedenz dokumentieren.** Operator wird im Briefing informiert: **CLI-Flag `--model <tier>` > CLAUDE.md `model_overrides:` > Skill-Default-Tier**. Jeder Override schreibt einen Audit-Trail-Eintrag.
 5. **Pflicht-Bleibt-Opus dokumentieren.** Security-relevante Skills (`architecture-review`, `cloud-system-engineer`, `/implement` Schritt 6e) duerfen nicht automatisch downgrade-en. Operator-Override moeglich, aber im Audit-Trail festgehalten — Audit-Argument fuer FINMA/BaFin/MaRisk.
@@ -973,7 +973,7 @@ Bei `B.2 == nein/c` (kein GitHub gewuenscht): Phase 4.4k komplett skippen — Br
 
 > **Issue-Referenz:** BOO-84. Quelle: `references/file-templates.md` §`CLAUDE.md (Minimum)`, `references/model-tiers.json`. Migration fuer Bestands-Projekte: `references/migration-checklist-v1-to-v2.md` §BOO-84.
 
-> **Designentscheid-Hinweis:** Diese Story folgt dem Code-Crash-Leitsatz "leichtgewichtig + pragmatisch, ohne Security-Kompromisse". Modell-Routing ist eine Empfehlung mit Override-Pfad — kein Hard-Lock. Security-Skills bleiben dokumentiert auf Opus (Audit-Pflicht).
+> **Designentscheid-Hinweis:** Diese Story folgt dem INTENTRON-Leitsatz "leichtgewichtig + pragmatisch, ohne Security-Kompromisse". Modell-Routing ist eine Empfehlung mit Override-Pfad — kein Hard-Lock. Security-Skills bleiben dokumentiert auf Opus (Audit-Pflicht).
 
 ### 4.4n Privacy-Setup (BOO-69, nur wenn Privacy-Add-on aktiv)
 
@@ -986,7 +986,7 @@ Bei `B.2 == nein/c` (kein GitHub gewuenscht): Phase 4.4k komplett skippen — Br
 1. **DPO-Skill aus Framework-Bundle installieren** (BOO-74, analog `security-architect`):
    - Quelle: `$SKILL_SRC/dpo/` (Framework-Repo, in Phase 5 bereits gecloned). Ziel: `~/.claude/skills/dpo/` (global) bzw. `{TARGET_SKILLS_DIR}/dpo/` je nach `RUNTIME_TARGET`. Nicht-destruktiv: vorhandene Installation bleibt unveraendert.
    - Keine externe Repo-Wahl mehr — der Skill kommt aus demselben Framework-Repo wie bootstrap/ideation/implement. Master des Skills bleibt `claudecodeskills` (Mirror-Konvention, siehe `references/skills-setup.md`).
-   - Hinweis: DPO bleibt **gleichzeitig** global verfuegbar fuer andere Projekte. Code-Crash-Framework macht keinen exklusiven Anspruch.
+   - Hinweis: DPO bleibt **gleichzeitig** global verfuegbar fuer andere Projekte. INTENTRON macht keinen exklusiven Anspruch.
 2. **security-architect aus Framework-Bundle installieren** (Voraussetzung fuer DPO ↔ security-architect-Zusammenspiel) — gleiche Quelle `$SKILL_SRC/security-architect/`.
 3. **`PRIVACY.md` rendern** aus `references/privacy-template.md` (DE) oder `.en.md` (EN) je nach Projekt-Sprache. Platzhalter `{{PROJECT_NAME}}`, `{{VERSION_START}}`, `{{TODAY}}` ersetzen. Pflicht-Sektionen (Verarbeitungsverzeichnis, Loeschkonzept) erhalten Skelett — Operator fuellt nach.
 4. **`.claude/personal-data-paths.json` und/oder `.codex/personal-data-paths.json`** aus `references/file-templates.md` §`personal-data-paths.json` rendern. Default-Patterns (`**/user*`, `**/customer*`, `**/profile*`, `**/*pii*`, `**/auth/profile/**`, `**/billing/**`). Operator-Hinweis: Pattern-Liste projektspezifisch ergaenzen.
@@ -1071,12 +1071,12 @@ Skills werden aus dem **Framework-Repo** via `git clone` in einen Temp-Ordner ge
 ```bash
 # Temp-Ordner fuer Skill-Quelle — Framework-Repo (BOO-74: alle Bundle-Skills + dpo + security-architect liegen hier)
 SKILL_SRC=$(mktemp -d)
-git clone --depth 1 https://github.com/vibercoder79/code-crash-framework "$SKILL_SRC"
+git clone --depth 1 https://github.com/vibercoder79/intentron "$SKILL_SRC"
 ```
 
 ### Repo-Struktur (BOO-74)
 
-Das `code-crash-framework`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner — keine `code-crash-framework/`-Verschachtelung mehr (das war die alte `claudecodeskills`-Struktur):
+Das `intentron`-Repo enthaelt **alle** Bundle-Skills flach als Top-Level-Ordner — keine `intentron/`-Verschachtelung mehr (das war die alte `claudecodeskills`-Struktur):
 
 - **`$SKILL_SRC/<skill>/`** — alle Framework-Skills: `architecture-review`, `backlog`, `bootstrap`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `intent`, `pitch`, `sprint-review`, `visualize` **plus `dpo` und `security-architect`** (vendored, BOO-74).
 

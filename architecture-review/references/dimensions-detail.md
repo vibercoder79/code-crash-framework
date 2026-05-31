@@ -310,7 +310,7 @@ Detail-Fragen fuer jede Dimension, mit "Pruefen wenn"-Triggerbedingungen. Generi
 
 > **Schrader (Code Crash, Kap. 4 §SYSTEM Z. 1806-1808 + §"Woran scheitert KI-gestuetzte Entwicklung" Z. 1485-1510):** "Die 4 Prinzipien sind Voraussetzung, keine Option." — Wer sie erst im Review prueft, hat sie zu spaet verankert. `/bootstrap` verankert sie proaktiv (BOO-24), `/architecture-review` validiert sie reaktiv.
 >
-> Referenz: `code-crash-framework/references/ki-architektur-prinzipien.md` (Single Source of Truth fuer Prinzipien + Anti-Patterns).
+> Referenz: `intentron/references/ki-architektur-prinzipien.md` (Single Source of Truth fuer Prinzipien + Anti-Patterns).
 
 **8 Checks (4 Prinzipien + 4 Anti-Patterns):**
 

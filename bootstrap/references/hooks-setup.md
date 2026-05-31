@@ -3,7 +3,7 @@
 Diese Hooks sichern maschinell die Kern-Governance-Regeln ab.
 Beide Hooks liegen unter `.claude/hooks/` und werden via Claude Code `settings.json` aktiviert.
 
-Wichtig: Im Code-Crash Framework meint "Hook" zuerst einen **Coding-/Runtime-Hook** des jeweiligen KI-Werkzeugs, nicht zwingend einen nativen Git-Hook in `.git/hooks/`.
+Wichtig: In INTENTRON meint "Hook" zuerst einen **Coding-/Runtime-Hook** des jeweiligen KI-Werkzeugs, nicht zwingend einen nativen Git-Hook in `.git/hooks/`.
 
 | Layer | Zweck | Beispiele |
 |-------|-------|-----------|

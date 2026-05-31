@@ -4,17 +4,56 @@
 
 <a name="english"></a>
 
-# Code-Crash Framework — Claude Code Skills for Coding Governance
+# INTENTRON — AI-Driven Development Governance
+### by OWLIST
 
 > A **battle-tested skill collection** for Claude Code — sets up a complete AI-driven development governance framework for any new project, through an interview-driven orchestrator plus a coherent set of sub-skills covering the full delivery cycle.
 
 **Core idea:** AI writes your code. Governance makes sure you still understand why in six months.
 
+INTENTRON turns the method described in Matthias Schrader's book "Code Crash" into a working operating system for AI-assisted development.
+
+---
+
+## Why INTENTRON? The edge
+
+Most spec-driven frameworks (Spec Kit & co.) optimize exactly one thing: turning a specification into code. Quality, governance, security, privacy, team-readiness — they leave those out. INTENTRON flips the focus: the generated code is not the product, the *path from intent to production* is — with guardrails a team would otherwise have to build itself.
+
+Four things set us apart concretely:
+
+1. **One contract — tool-neutral and machine-executable.** Your rules (tests, logging, security thresholds, governance) live in *one* place and are shared by three readers: the human, the AI tool (Claude, Codex, Cursor) and the CI that enforces them. Others have rules as prose that nobody enforces — and lock you into *one* tool.
+2. **Intent before implementation.** We start one step earlier than the spec — at the *why* (after Schrader). That stops the AI from cleanly building the wrong thing.
+3. **Governance that scales with you.** Solo gets three gates, an enterprise gets twelve — same record, only the strictness is dialed up or down.
+4. **Privacy & security in the bundle.** DPO and security-architect reviews are built in, not an afterthought. For regulated industries that's the entry ticket.
+
+**Common denominator:** Others optimize "the AI writes code." We optimize "a team — human plus *any* AI — gets intent to production, with guardrails it didn't have to build itself." The guardrails are invisible until they catch something — and when they catch, they explain why.
+
+---
+
+## How INTENTRON differs
+
+A methodical comparison against the closest spec-driven framework:
+
+| | INTENTRON | Spec Kit |
+|---|---|---|
+| Focus | Path from intent → production, with gates | Specification → code |
+| Hard gates (blocking) | ✅ Spec, Sensitive-Paths, Coverage, Slopsquatting | ❌ none |
+| Intent before spec | ✅ | ❌ |
+| Governance scales (Solo→Enterprise) | ✅ | ❌ |
+| Privacy/Security built in | ✅ (DPO + Security-Architect) | ❌ |
+| Tool-neutral (1 contract) | ✅ AGENTS.md + CONVENTIONS | partial |
+
+**A different category, not a competitor:** ECC (Everything Claude Code) and similar collections are *harness optimizers / tool pools* — breadth across many tools. INTENTRON is a *method with enforced discipline* — depth. Different axes: breadth does not replace gates.
+
+![INTENTRON positioning — depth & enforcement vs. breadth](docs/intentron-positioning.en.png)
+
+*Two different axes: harness optimizers buy you breadth across tools; INTENTRON buys you depth — enforced discipline from intent to production.*
+
 ---
 
 ## What Is This?
 
-`code-crash-framework/` is a container of Claude Code skills that form one coherent development workflow:
+`intentron/` is a container of Claude Code skills that form one coherent development workflow:
 
 - **The orchestrator** (`bootstrap/`) interviews you about a new project and scaffolds the full governance framework: runtime instructions, documentation SSoT, Developer Onboarding, backlog adapter, Git hooks, skill selection, optional learning-loop.
 - **Sub-skills** (`ideation/`, `implement/`, etc.) cover the downstream delivery workflow — from idea to sprint review.
@@ -31,9 +70,9 @@ Full setup guide: **[HANDBUCH.md](HANDBUCH.md)** (German, ~230 KB) + **[HANDBUCH
 
 ---
 
-## Why "Code-Crash"? (and how to read this)
+## Why the method comes from "Code Crash" (and how to read this)
 
-The name and the thinking behind this framework come from **Matthias Schrader's book "Code Crash"**. Schrader's thesis, in one line: AI now writes the code, so the scarce resource is no longer typing speed — it is **intent, governance and the ability to still understand a system months later**. This framework is our attempt to turn that thesis into a working *operating system* for AI-assisted development: skills, gates and artifacts that keep the "why" alive while the AI handles the "how".
+The thinking behind INTENTRON comes from **Matthias Schrader's book "Code Crash"**. Schrader's thesis, in one line: AI now writes the code, so the scarce resource is no longer typing speed — it is **intent, governance and the ability to still understand a system months later**. INTENTRON is our attempt to turn that thesis into a working *operating system* for AI-assisted development: skills, gates and artifacts that keep the "why" alive while the AI handles the "how".
 
 - **You do not need to have read the book.** The framework and HANDBUCH are written to stand on their own — every concept is explained where it is used.
 - **But we recommend it** for the deeper context. The HANDBUCH references Schrader throughout (anti-patterns, production-readiness, the 4P pipeline), and **Appendix M ("Schrader Decoder")** maps the book's chapters onto the concrete framework pieces.
@@ -41,7 +80,7 @@ The name and the thinking behind this framework come from **Matthias Schrader's 
 
 ## Not a one-size-fits-all framework
 
-Code-Crash gives you a **solid base structure** — but every company, team and setup is different, and we deliberately **do not try to model every case** in the framework itself. The framework stays lightweight; the **HANDBUCH appendices provide guidance for different circumstances** so you can adapt it to your reality:
+INTENTRON gives you a **solid base structure** — but every company, team and setup is different, and we deliberately **do not try to model every case** in the framework itself. The framework stays lightweight; the **HANDBUCH appendices provide guidance for different circumstances** so you can adapt it to your reality:
 
 | Your situation | Where the guidance is |
 |----------------|-----------------------|
@@ -149,20 +188,69 @@ No spec, no commit. That's the difference between a prompt and a governance fram
 
 ---
 
+## License
+
+This project is **source-available** under the [PolyForm Perimeter License 1.0.0](LICENSE.md). Use, modification, and internal deployment — including commercial use — are permitted. You may **not** provide a product that competes with this software (no reselling as a competing product). **INTENTRON** and **OWLIST** are trademarks of OWLIST GmbH; this license grants no trademark rights.
+
+---
+
+<sub>"INTENTRON" is an independent product of OWLIST GmbH and has no business relationship with Matthias Schrader or the publisher of the book "Code Crash". The methodology is based on the principles described in the book "Code Crash"; "Code Crash" is the title of that book. All names mentioned are trademarks of their respective owners.</sub>
+
+---
+
 
 <a name="deutsch"></a>
 
-# Code-Crash Framework — Claude Code Skills fuer Coding Governance
+# INTENTRON — Governance für KI-gestützte Entwicklung
+### by OWLIST
 
 > Eine **battle-tested Skill-Sammlung** für Claude Code — setzt ein vollständiges KI-getriebenes Governance-Framework für jedes neue Projekt auf, über einen interview-geführten Orchestrator plus kohärente Sub-Skills die den kompletten Delivery-Zyklus abdecken.
 
 **Kernidee:** KI schreibt deinen Code. Governance stellt sicher, dass du in 6 Monaten noch weißt warum.
 
+INTENTRON setzt die im Buch »Code Crash« von Matthias Schrader beschriebene Methode in ein funktionierendes Betriebssystem für KI-gestützte Entwicklung um.
+
+---
+
+## Warum INTENTRON? Der Vorteil
+
+Die meisten Spec-Driven-Frameworks (Spec Kit & Co.) optimieren genau eine Sache: aus einer Spezifikation Code generieren. Qualität, Governance, Sicherheit, Datenschutz, Teamfähigkeit blenden sie aus. INTENTRON dreht den Fokus: Nicht der generierte Code ist das Produkt, sondern der *Weg von der Absicht zur Produktion* — mit Leitplanken, die ein Team sonst selbst bauen müsste.
+
+Vier Dinge unterscheiden uns konkret:
+
+1. **Ein Vertrag — tool-neutral und maschinen-ausführbar.** Eure Regeln (Tests, Logging, Security-Schwellen, Governance) leben an *einer* Stelle und werden von drei Lesern geteilt: dem Menschen, dem KI-Tool (Claude, Codex, Cursor) und der CI, die sie erzwingt. Andere haben Regeln als Prosa, die niemand durchsetzt — und binden dich an *ein* Tool.
+2. **Intent vor Implementation.** Wir starten eine Stufe früher als die Spec — beim *Warum* (nach Schrader). Das verhindert, dass die KI sauber das Falsche baut.
+3. **Governance, die mitwächst.** Solo bekommt drei Gates, ein Konzern zwölf — dieselbe Platte, nur die Strenge wird gedimmt.
+4. **Privacy & Security im Bündel.** DPO- und Security-Architect-Prüfungen sind eingebaut, kein Nachgedanke. Für regulierte Branchen ist das die Eintrittskarte.
+
+**Gemeinsamer Nenner:** Andere optimieren „die KI schreibt Code". Wir optimieren „ein Team — Mensch plus *beliebige* KI — bringt Intent nach Produktion, mit Leitplanken, die es nicht selbst bauen musste." Die Leitplanken sind unsichtbar, bis sie etwas fangen — und wenn sie fangen, erklären sie warum.
+
+---
+
+## Wie sich INTENTRON unterscheidet
+
+Ein methodischer Vergleich mit dem nächstliegenden Spec-Driven-Framework:
+
+| | INTENTRON | Spec Kit |
+|---|---|---|
+| Fokus | Weg von Intent → Produktion, mit Gates | Spezifikation → Code |
+| Hard Gates (blockierend) | ✅ Spec, Sensitive-Paths, Coverage, Slopsquatting | ❌ keine |
+| Intent vor Spec | ✅ | ❌ |
+| Governance skaliert (Solo→Konzern) | ✅ | ❌ |
+| Privacy/Security eingebaut | ✅ (DPO + Security-Architect) | ❌ |
+| Tool-neutral (1 Vertrag) | ✅ AGENTS.md + CONVENTIONS | teilweise |
+
+**Eine andere Kategorie, kein Wettbewerber:** ECC (Everything Claude Code) und ähnliche Sammlungen sind *Harness-Optimierer / Werkzeug-Pools* (Breite über viele Tools). INTENTRON ist eine *Methode mit erzwungener Disziplin* (Tiefe). Verschiedene Achsen — Breite ersetzt keine Gates.
+
+![INTENTRON Positionierung — Tiefe & Erzwingung vs. Breite](docs/intentron-positioning.png)
+
+*Zwei verschiedene Achsen: Harness-Optimierer geben dir Breite über Tools; INTENTRON gibt dir Tiefe — erzwungene Disziplin von Intent bis Produktion.*
+
 ---
 
 ## Was ist das hier?
 
-`code-crash-framework/` ist ein Container von Claude Code Skills, die zusammen einen kohärenten Entwicklungs-Workflow bilden:
+`intentron/` ist ein Container von Claude Code Skills, die zusammen einen kohärenten Entwicklungs-Workflow bilden:
 
 - **Der Orchestrator** (`bootstrap/`) führt das Interview zu einem neuen Projekt und legt das komplette Governance-Framework an: Runtime-Anweisungen, Dokumentations-SSoT, Developer Onboarding, Backlog-Adapter, Git-Hooks, Skill-Auswahl, optionaler Learning-Loop.
 - **Sub-Skills** (`ideation/`, `implement/`, etc.) decken den nachgelagerten Delivery-Workflow ab — von der Idee bis zum Sprint-Review.
@@ -179,9 +267,9 @@ Komplettes Setup-Handbuch: **[HANDBUCH.md](HANDBUCH.md)** (Deutsch, ~230 KB) + *
 
 ---
 
-## Warum "Code-Crash"? (und wie man das hier liest)
+## Warum die Methode aus »Code Crash« kommt (und wie man das hier liest)
 
-Name und Denkanstoss kommen aus **Matthias Schraders Buch "Code Crash"**. Schraders These in einem Satz: Die KI schreibt jetzt den Code — die knappe Ressource ist nicht mehr Tippgeschwindigkeit, sondern **Intent, Governance und die Faehigkeit, ein System auch in Monaten noch zu verstehen**. Dieses Framework ist unser Versuch, diese These in ein funktionierendes *Betriebssystem* fuer KI-gestuetzte Entwicklung zu giessen: Skills, Gates und Artefakte, die das "Warum" am Leben halten, waehrend die KI das "Wie" uebernimmt.
+Der Denkanstoss hinter INTENTRON kommt aus **Matthias Schraders Buch »Code Crash«**. Schraders These in einem Satz: Die KI schreibt jetzt den Code — die knappe Ressource ist nicht mehr Tippgeschwindigkeit, sondern **Intent, Governance und die Faehigkeit, ein System auch in Monaten noch zu verstehen**. INTENTRON ist unser Versuch, diese These in ein funktionierendes *Betriebssystem* fuer KI-gestuetzte Entwicklung zu giessen: Skills, Gates und Artefakte, die das "Warum" am Leben halten, waehrend die KI das "Wie" uebernimmt.
 
 - **Du musst das Buch nicht gelesen haben.** Framework und HANDBUCH stehen fuer sich — jedes Konzept wird dort erklaert, wo es genutzt wird.
 - **Wir empfehlen es aber** fuer den tieferen Kontext. Das HANDBUCH nimmt durchgehend Bezug auf Schrader (Anti-Patterns, Production-Readiness, 4P-Pipeline), und **Anhang M ("Schrader-Decoder")** mappt die Buch-Kapitel auf die konkreten Framework-Bausteine.
@@ -189,7 +277,7 @@ Name und Denkanstoss kommen aus **Matthias Schraders Buch "Code Crash"**. Schrad
 
 ## Kein One-Size-Fits-All-Framework
 
-Code-Crash gibt dir eine **solide Grundstruktur** — aber jedes Unternehmen, Team und Setup ist anders, und wir versuchen bewusst **nicht, jeden Einzelfall** im Framework selbst abzubilden. Das Framework bleibt leichtgewichtig; die **HANDBUCH-Anhaenge geben Guidance fuer unterschiedliche Gegebenheiten**, damit du es an deine Realitaet anpasst:
+INTENTRON gibt dir eine **solide Grundstruktur** — aber jedes Unternehmen, Team und Setup ist anders, und wir versuchen bewusst **nicht, jeden Einzelfall** im Framework selbst abzubilden. Das Framework bleibt leichtgewichtig; die **HANDBUCH-Anhaenge geben Guidance fuer unterschiedliche Gegebenheiten**, damit du es an deine Realitaet anpasst:
 
 | Deine Situation | Wo die Guidance steht |
 |-----------------|------------------------|
@@ -296,3 +384,11 @@ Kein Spec, kein Commit. Das ist der Unterschied zwischen einem Prompt und einem 
 - Optional: Grafana Cloud, Miro, Hostinger VPS — Skills nutzen was verfügbar ist
 
 ---
+
+## Lizenz
+
+Dieses Projekt ist **source-available** unter der [PolyForm Perimeter License 1.0.0](LICENSE.md). Nutzung, Anpassung und interner Einsatz — auch kommerziell — sind erlaubt. Nicht erlaubt ist die Bereitstellung eines Produkts, das mit dieser Software **konkurriert** (kein Weiterverkauf als Konkurrenzprodukt). **INTENTRON** und **OWLIST** sind Marken der OWLIST GmbH; die Lizenz gewährt keine Markenrechte.
+
+---
+
+<sub>»INTENTRON« ist ein eigenständiges Produkt der OWLIST GmbH und steht in keiner geschäftlichen Verbindung zu Matthias Schrader oder dem Verlag des Buchs »Code Crash«. Die Methodik ist angelehnt an die im Buch »Code Crash« beschriebenen Prinzipien; »Code Crash« ist der Werktitel dieses Buchs. Alle genannten Namen sind Kennzeichen ihrer jeweiligen Inhaber.</sub>

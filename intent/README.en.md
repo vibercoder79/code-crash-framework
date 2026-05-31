@@ -150,7 +150,7 @@ The skill turns this principle into a reproducible workflow. It enforces the con
 
 ## Installation and usage
 
-Skill lives under `~/.claude/skills/intent/` (locally) or `code-crash-framework/intent/` in the `vibercoder79/claudecodeskills` repo. After running the setup script (`setup.sh`) it's activated automatically.
+Skill lives under `~/.claude/skills/intent/` (locally) or `intentron/intent/` in the `vibercoder79/claudecodeskills` repo. After running the setup script (`setup.sh`) it's activated automatically.
 
 Use in chat:
 
@@ -171,7 +171,7 @@ Skill starts automatically and walks through the 5 steps.
 ## File structure
 
 ```
-code-crash-framework/intent/
+intentron/intent/
 ├── SKILL.md                          ← Skill definition (DE — primary)
 ├── SKILL.en.md                       ← Skill definition (EN)
 ├── README.md                         ← German README

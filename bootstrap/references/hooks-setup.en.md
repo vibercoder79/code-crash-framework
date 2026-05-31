@@ -3,7 +3,7 @@
 These hooks enforce the core governance rules at the machine level.
 Both hooks live under `.claude/hooks/` and are activated via Claude Code `settings.json`.
 
-Important: in the Code-Crash Framework, "hook" first means a **coding/runtime hook** of the active AI tool, not necessarily a native Git hook in `.git/hooks/`.
+Important: in INTENTRON, "hook" first means a **coding/runtime hook** of the active AI tool, not necessarily a native Git hook in `.git/hooks/`.
 
 | Layer | Purpose | Examples |
 |-------|---------|----------|

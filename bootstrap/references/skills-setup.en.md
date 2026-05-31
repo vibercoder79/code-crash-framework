@@ -6,7 +6,7 @@ Skills are fetched from the official GitHub repo via `git clone` into a temp fol
 
 The `claudecodeskills` repo groups governance skills:
 
-- **`$SKILL_SRC/code-crash-framework/<skill>/`** — Sub-skills: `architecture-review`, `backlog`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `sprint-review`, `visualize`
+- **`$SKILL_SRC/intentron/<skill>/`** — Sub-skills: `architecture-review`, `backlog`, `cloud-system-engineer`, `grafana`, `ideation`, `implement`, `sprint-review`, `visualize`
 - **`$SKILL_SRC/<skill>/`** — Top-level skills: `design-md-generator`, `research`, `security-architect`, `setup-checklist`, `skill-creator` (plus other standalone skills)
 
 ## Installation (standard flow)
@@ -22,13 +22,13 @@ git clone --depth 1 https://github.com/vibercoder79/claudecodeskills "$SKILL_SRC
 cd {PROJECT_PATH}
 mkdir -p .claude/skills
 
-# Sub-skills live under code-crash-framework/ in the repo
+# Sub-skills live under intentron/ in the repo
 BOOTSTRAPPING_SUBSKILLS="architecture-review backlog cloud-system-engineer grafana ideation implement sprint-review visualize"
 
 # Copy selected skills (path mapping)
 for skill in ideation implement backlog; do
   if echo "$BOOTSTRAPPING_SUBSKILLS" | grep -qw "$skill"; then
-    SRC_PATH="$SKILL_SRC/code-crash-framework/$skill"
+    SRC_PATH="$SKILL_SRC/intentron/$skill"
   else
     SRC_PATH="$SKILL_SRC/$skill"
   fi
@@ -86,10 +86,10 @@ If a master skill gets an update:
 SKILL_SRC=$(mktemp -d)
 git clone --depth 1 https://github.com/vibercoder79/claudecodeskills "$SKILL_SRC"
 
-# Resolve repo path (code-crash-framework/ vs. top-level) — see "Repo structure" above
+# Resolve repo path (intentron/ vs. top-level) — see "Repo structure" above
 BOOTSTRAPPING_SUBSKILLS="architecture-review backlog cloud-system-engineer grafana ideation implement sprint-review visualize"
 if echo "$BOOTSTRAPPING_SUBSKILLS" | grep -qw "<skill>"; then
-  SRC_PATH="$SKILL_SRC/code-crash-framework/<skill>"
+  SRC_PATH="$SKILL_SRC/intentron/<skill>"
 else
   SRC_PATH="$SKILL_SRC/<skill>"
 fi
@@ -139,21 +139,21 @@ Activation: `.learning-loop` file in project root with content `L1`, `L2` or `L3
 
 ## Sync convention: vendored skills (BOO-74)
 
-Since BOO-74 (Wave M), `dpo` and `security-architect` live as **vendored bundle skills** in the `code-crash-framework` repo. Bootstrap therefore installs them from the same repo as all other bundle skills (Phase 5). But: the **master** of these two skills remains the `claudecodeskills` repo.
+Since BOO-74 (Wave M), `dpo` and `security-architect` live as **vendored bundle skills** in the `intentron` repo. Bootstrap therefore installs them from the same repo as all other bundle skills (Phase 5). But: the **master** of these two skills remains the `claudecodeskills` repo.
 
 ### Master vs. mirror
 
 | Role | Repo | Maintenance |
 |------|------|-------------|
 | Master | `claudecodeskills` | `publish_skill.py <skill>` — source of truth, also for solo operators without the framework |
-| Mirror | `code-crash-framework` | vendored 1:1 copy (`dpo/`, `security-architect/`), the one Bootstrap installs from |
+| Mirror | `intentron` | vendored 1:1 copy (`dpo/`, `security-architect/`), the one Bootstrap installs from |
 
 ### Mandatory on every DPO or security-architect update
 
 1. Change the skill locally in `~/.claude/skills/<skill>/`.
 2. `python3 ~/.claude/skills/skill-creator/scripts/publish_skill.py <skill> -m "..."` — updates the master in `claudecodeskills` + SecondBrain docs.
-3. **Refresh the mirror:** `cp -R ~/.claude/skills/<skill>/ ~/Documents/GitHub/code-crash-framework/<skill>/` and commit in the framework repo.
-4. Verify: `diff -rq ~/.claude/skills/<skill>/ ~/Documents/GitHub/code-crash-framework/<skill>/` → no diff.
+3. **Refresh the mirror:** `cp -R ~/.claude/skills/<skill>/ ~/Documents/GitHub/intentron/<skill>/` and commit in the framework repo.
+4. Verify: `diff -rq ~/.claude/skills/<skill>/ ~/Documents/GitHub/intentron/<skill>/` → no diff.
 
 ### Drift risk
 

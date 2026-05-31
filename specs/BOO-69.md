@@ -4,17 +4,17 @@
 
 ## Summary
 
-DPO-Skill aus dem globalen Skill-Pool (`~/.claude/skills/dpo/`) als 12. Skill ins Code-Crash-Bundle adoptieren. Privacy-Add-on im `/bootstrap` von Doku-Skelett zu echtem Skill-Pfad aufwerten: bei Aktivierung werden DPO + `PRIVACY.md`-Template + Privacy-Hook installiert. 1:1 Spiegelung des bereits etablierten Security-by-Design-Patterns (security-architect + SECURITY.md + security_report_gate.py).
+DPO-Skill aus dem globalen Skill-Pool (`~/.claude/skills/dpo/`) als 12. Skill ins INTENTRON-Bundle adoptieren. Privacy-Add-on im `/bootstrap` von Doku-Skelett zu echtem Skill-Pfad aufwerten: bei Aktivierung werden DPO + `PRIVACY.md`-Template + Privacy-Hook installiert. 1:1 Spiegelung des bereits etablierten Security-by-Design-Patterns (security-architect + SECURITY.md + security_report_gate.py).
 
 ## Why
 
-Heute hat `architecture-review §9 Privacy/DSGVO` nur 5 Bullet-Points und Privacy ist nur ein Multi-Select-Add-on mit Doku-Stub. Das ist **Asymmetrie zu Security** (das ist als voller Skill-Pfad verankert). Operator-Feedback (Martin, 2026-05-27): bei Beratungsarbeit mit personenbezogenen Daten (SAP SuccessFactors, AWS Bedrock Frankfurt) brauchen Code-Crash-Nutzer Privacy by Design als **verbindlichen Standard**, nicht als Best-Effort-Hinweis. Plus: DPO-Skill existiert bereits eigenstaendig — Adoption ist Standardisierung, nicht Neuentwicklung.
+Heute hat `architecture-review §9 Privacy/DSGVO` nur 5 Bullet-Points und Privacy ist nur ein Multi-Select-Add-on mit Doku-Stub. Das ist **Asymmetrie zu Security** (das ist als voller Skill-Pfad verankert). Operator-Feedback (Martin, 2026-05-27): bei Beratungsarbeit mit personenbezogenen Daten (SAP SuccessFactors, AWS Bedrock Frankfurt) brauchen INTENTRON-Nutzer Privacy by Design als **verbindlichen Standard**, nicht als Best-Effort-Hinweis. Plus: DPO-Skill existiert bereits eigenstaendig — Adoption ist Standardisierung, nicht Neuentwicklung.
 
 Konsequenzen ohne diese Story:
 
 - Privacy-Add-on bleibt Doku-Stub ohne operative Tiefe
 - Operator muss DPO-Logik bei jedem Privacy-Projekt manuell zusammenklicken
-- Verkaufsargument "Code-Crash deckt Privacy by Design ab" stimmt halb (nur Add-on-Label, kein Skill)
+- Verkaufsargument "INTENTRON deckt Privacy by Design ab" stimmt halb (nur Add-on-Label, kein Skill)
 - Asymmetrie zu Security bleibt — wirkt unsauber im Audit-Gespraech
 
 ## What
@@ -42,7 +42,7 @@ Konsequenzen ohne diese Story:
 ## Decisions
 
 1. **DPO im Bundle** statt nur Cross-Reference: Privacy-by-Design ist Framework-Garantie, nicht Best-Effort. Konsistenz mit security-architect-Pattern.
-2. **DPO bleibt GLEICHZEITIG global** verfuegbar — nicht-destruktive Adoption (DPO ist auch in Nicht-Code-Crash-Projekten nuetzlich).
+2. **DPO bleibt GLEICHZEITIG global** verfuegbar — nicht-destruktive Adoption (DPO ist auch in Nicht-INTENTRON-Projekten nuetzlich).
 3. **`recommended_model: opus`** fuer DPO (Compliance-kritisch, analog architecture-review/cloud-system-engineer).
 4. **Privacy-Add-on bleibt optional** — kein Aufzwingen fuer Projekte ohne personenbezogene Daten.
 5. **Hook heisst `privacy_report_gate`** (analog `security_report_gate`) statt etwas Generisches wie `dpo_gate` — Symmetrie macht Doku konsistent.

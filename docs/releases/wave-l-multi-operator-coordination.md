@@ -4,7 +4,7 @@ Stand: 2026-05-27
 
 ## Zweck
 
-Wave L schliesst BOO-72. Das Framework bekommt einen HANDBUCH-Anhang R, der die ehrliche Antwort auf eine bisher unbeantwortete Operator-Frage liefert: "Wenn 20 Entwickler gleichzeitig im selben GitHub-Repo arbeiten und sich Doku aus Obsidian (oder Jira/Confluence/Notion) holen — funktioniert das Framework dann noch?". Anhang R trennt die Frage in drei Layer (Code / Koordination / Doku), zeigt pro Layer "was skaliert nativ, was nicht, welche Optionen hat der Operator", und gibt eine konkrete 10-Schritte-Anleitung fuer Code-Crash in einem 20-koepfigen Team. **Reine Doku-Story** — kein neuer Skill, keine neue Bootstrap-Frage, keine Framework-Konvention. Inklusive 1 hochwertigem Excalidraw-Sketch (`docs/assets/boo-72-multi-operator-3-layer.png`).
+Wave L schliesst BOO-72. Das Framework bekommt einen HANDBUCH-Anhang R, der die ehrliche Antwort auf eine bisher unbeantwortete Operator-Frage liefert: "Wenn 20 Entwickler gleichzeitig im selben GitHub-Repo arbeiten und sich Doku aus Obsidian (oder Jira/Confluence/Notion) holen — funktioniert das Framework dann noch?". Anhang R trennt die Frage in drei Layer (Code / Koordination / Doku), zeigt pro Layer "was skaliert nativ, was nicht, welche Optionen hat der Operator", und gibt eine konkrete 10-Schritte-Anleitung fuer INTENTRON in einem 20-koepfigen Team. **Reine Doku-Story** — kein neuer Skill, keine neue Bootstrap-Frage, keine Framework-Konvention. Inklusive 1 hochwertigem Excalidraw-Sketch (`docs/assets/boo-72-multi-operator-3-layer.png`).
 
 **Erwarteter Effekt:** Anhang R schliesst das letzte grosse Vertriebs-Argument bei Team-Mandaten — "skaliert das auf 20 Personen?" hat jetzt eine klare HANDBUCH-Antwort. Anhang P (Wave K) deckt 2-5 Operatoren, Anhang R erweitert auf 5-20+.
 
@@ -27,7 +27,7 @@ Anhang R dokumentiert die Vier-Augen-Konvention fuer `review-ok` (Sensitive-Path
   - **Vier-Augen-Konvention** fuer `review-ok` / `privacy-ok` mit Audit-Spur-Beispiel.
   - **Skill-Pool-Governance** mit Wartungs-Owner-Rolle, Drift-Audits, Skill-Quarantaene fuer externe Skills.
   - **Konflikt-Eskalation** mit 3 Stufen (CODEOWNERS → Squad-Lead → Lead-Architekt-Veto).
-  - **10-Schritte-Setup-Anleitung** "Wie setzt man Code-Crash in einem 20-koepfigen Team auf?" — erweitert Anhang P Szenario 3 (Multi-User-VPS-Coding-Factory).
+  - **10-Schritte-Setup-Anleitung** "Wie setzt man INTENTRON in einem 20-koepfigen Team auf?" — erweitert Anhang P Szenario 3 (Multi-User-VPS-Coding-Factory).
   - "Was Anhang R nicht macht"-Sektion mit harten Abgrenzungen.
 - **Excalidraw-Sketch `docs/assets/boo-72-multi-operator-3-layer.png`** mit OWLIST-Farben — visualisiert das 3-Layer-Modell mit Fan-in (Code), Kanban-Strip (Koordination) und Side-by-Side-Trio (Doku-SSoT-Wahl). Bootstrap-Callout zeigt die Verknuepfung zu Frage B.3 (Doku-SSoT) und A.7 (Deployment).
 
@@ -66,7 +66,7 @@ Operator-Aktion: HANDBUCH Anhang R einmal lesen, je nach Team-Groesse die Konven
 
 ## Designentscheid: Inspirations-Schicht, kein Framework-Enforcement
 
-Anhang R schliesst eine echte Doku-Luecke (Vertriebs-Hindernis bei Team-Mandaten), **ohne** das Framework zu erweitern. Das ist Code-Crash-Philosophie "leichtgewichtig + pragmatisch":
+Anhang R schliesst eine echte Doku-Luecke (Vertriebs-Hindernis bei Team-Mandaten), **ohne** das Framework zu erweitern. Das ist INTENTRON-Philosophie "leichtgewichtig + pragmatisch":
 
 - Kein neuer Skill, keine neue Bootstrap-Frage — das Framework macht schon genug.
 - Pattern-Optionen sind Tradeoff-Tabellen, nicht Empfehlungs-Urteile.

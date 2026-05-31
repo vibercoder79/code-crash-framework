@@ -61,7 +61,7 @@ Without documentation and structure, every new session starts from zero.
 
 ## 2. What You Get
 
-### The Code-Crash Framework
+### The INTENTRON
 
 A **complete operating system for AI-assisted software development**:
 
@@ -220,8 +220,8 @@ mkdir -p ~/.claude/skills
 cd /tmp
 git clone --filter=blob:none --sparse git@github.com:vibercoder79/claudecodeskills.git ki-skills
 cd ki-skills
-git sparse-checkout set code-crash-framework/bootstrap
-cp -r code-crash-framework/bootstrap ~/.claude/skills/
+git sparse-checkout set intentron/bootstrap
+cp -r intentron/bootstrap ~/.claude/skills/
 cd /tmp && rm -rf ki-skills
 
 # Verify the skill is there
@@ -365,7 +365,7 @@ You can accept the proposal as-is, customize it, or opt out of individual layers
 
 Claude creates files, initializes Git, sets up linting, installs governance hooks, and scaffolds component doc skeletons. See the [Artifact Map](#7-the-artifacts--what-gets-created-where-and-why) for a visual overview.
 
-**`ARCHITECTURE_DESIGN.md §2` includes a mandatory KI-Architecture-Principles block (BOO-24, Schrader Ch. 4):** 4 principles (small modules, explicit interfaces, testability, observability) + 4 anti-patterns are anchored proactively at project setup — not discovered reactively in the first review. `/architecture-review` (BOO-7) checks all 8 items at every story. Reference: `code-crash-framework/references/ki-architektur-prinzipien.md`.
+**`ARCHITECTURE_DESIGN.md §2` includes a mandatory KI-Architecture-Principles block (BOO-24, Schrader Ch. 4):** 4 principles (small modules, explicit interfaces, testability, observability) + 4 anti-patterns are anchored proactively at project setup — not discovered reactively in the first review. `/architecture-review` (BOO-7) checks all 8 items at every story. Reference: `intentron/references/ki-architektur-prinzipien.md`.
 
 ### Phase 5: Install skills (automatic)
 
@@ -654,7 +654,7 @@ An **artifact** is a file that the governance framework creates or expects — d
 checklists, hooks, specs, automation scripts, memory entries. Each artifact has a clear
 purpose and is read or written by specific skills.
 
-Most teams collect documentation ad-hoc. The Code-Crash Framework defines a fixed, minimal set of artifacts
+Most teams collect documentation ad-hoc. The INTENTRON defines a fixed, minimal set of artifacts
 that together give you traceable, reproducible, AI-friendly development.
 
 ### The 5 artifact groups
@@ -686,7 +686,7 @@ Rules · architecture · process · history.
 
 ### Security Documentation Model
 
-Security in the Code-Crash Framework is not a single checklist. It is a linked documentation model:
+Security in the INTENTRON is not a single checklist. It is a linked documentation model:
 
 *Sketch: the security workflow shows how `ARCHITECTURE_DESIGN.md`, `SECURITY.md`, sub-artifacts, skill gates and the learning loop reinforce each other. ([Excalidraw source](docs/security-workflow.en.excalidraw))*
 
@@ -1062,7 +1062,7 @@ The hardest anti-patterns emerge not from incompetence but from calculation. Thr
 
 ---
 
-**Full catalogue of all 11 APs** (including the technical ones with skill coverage): `code-crash-framework/references/anti-pattern-katalog.en.md`
+**Full catalogue of all 11 APs** (including the technical ones with skill coverage): `intentron/references/anti-pattern-katalog.en.md`
 
 **Automatic sprint diagnostic:** `/sprint-review` step 7 asks one diagnostic question per AP and recommends actions on hits.
 
@@ -1098,7 +1098,7 @@ In ch. 3 §Production Readiness and ch. 4 §Run the System, Schrader covers the 
 | Audit trails | Ch. 3 p. 68ff | Session-log linkage in the spec + `audit-trace.sh` | `/implement`, `scripts/audit-trace.sh` | BOO-19 |
 | 4P pipeline (Perceive/Prompt/Produce/Pitch) | Ch. 5 p. 135ff | NOT adopted 1:1, mapped onto the existing pipeline | — | Meeting minute 2026-04-22 §EP4 |
 
-> The dimension paths in column 4 (`architecture-dimensions/testability.md` etc.) reference the logical anchoring inside the skill architecture. The fully written-out dimension details actually live consolidated under `code-crash-framework/architecture-review/references/dimensions-detail.en.md`.
+> The dimension paths in column 4 (`architecture-dimensions/testability.md` etc.) reference the logical anchoring inside the skill architecture. The fully written-out dimension details actually live consolidated under `intentron/architecture-review/references/dimensions-detail.en.md`.
 
 ---
 
@@ -1138,7 +1138,7 @@ Required status checks `ESLint`, `Ruff`, `Semgrep`, `SonarCloud` are activated v
 
 ### Branch-protection setup (BOO-29)
 
-Since v3.18.0 (2026-05-12), `/bootstrap` configures the `main` branch protection automatically in **phase 4.4k** — right after the first `git push -u origin main` (phase 4.9). The logic lives in `code-crash-framework/bootstrap/scripts/setup-branch-protection.sh`. Three points matter:
+Since v3.18.0 (2026-05-12), `/bootstrap` configures the `main` branch protection automatically in **phase 4.4k** — right after the first `git push -u origin main` (phase 4.9). The logic lives in `intentron/bootstrap/scripts/setup-branch-protection.sh`. Three points matter:
 
 1. **Dynamic required status checks.** The script reads every workflow file under `.github/workflows/*.yml` and extracts the first `name:` field per file — that is the GitHub Actions context name. From this list it builds `required_status_checks[contexts][]`. Workflows that are missing in a given stack (e.g. `ruff.yml` in a pure Node project) are simply omitted — no hard fail.
 
@@ -1559,7 +1559,7 @@ code formatting is consistent — no matter who works on the project.
 
 `CONVENTIONS.md` is the project-local contract between the operator, the AI tool and the repository. It is created by `/bootstrap` once per project and then read by the downstream skills. It does **not** reinstall skills; it tells the already installed project-local skill copies how strict this project wants to operate.
 
-The bundle-level `code-crash-framework/CONVENTIONS.md` is the framework specification. The project-level `CONVENTIONS.md` is the adaptation for one repository: selected mode, selected isolation strategy and active gates.
+The bundle-level `intentron/CONVENTIONS.md` is the framework specification. The project-level `CONVENTIONS.md` is the adaptation for one repository: selected mode, selected isolation strategy and active gates.
 
 | Question | Answer in `CONVENTIONS.md` |
 |---|---|
@@ -1891,7 +1891,7 @@ breaking changes in v0.1.0.
 | Using Claude Code as **CLI tool** (`claude` in terminal, skills, hooks) | **No** — nothing to do |
 | Importing Claude Code as **library** in your own code | **Yes** — rename package and imports |
 
-**The Code-Crash Framework and this handbook use Claude Code exclusively as a CLI tool.**
+**The INTENTRON and this handbook use Claude Code exclusively as a CLI tool.**
 If you use `/bootstrap`, `/implement`, or other skills, you are **not affected**.
 
 Only if you build your own apps importing `@anthropic-ai/claude-code` or `claude-code-sdk`
@@ -1923,8 +1923,8 @@ Migration guide: https://platform.claude.com/docs/en/agent-sdk/migration-guide
 cd /tmp
 git clone --filter=blob:none --sparse git@github.com:vibercoder79/claudecodeskills.git ki-skills
 cd ki-skills
-git sparse-checkout set code-crash-framework/bootstrap
-cp -r code-crash-framework/bootstrap /root/.claude/skills/
+git sparse-checkout set intentron/bootstrap
+cp -r intentron/bootstrap /root/.claude/skills/
 cd /tmp && rm -rf ki-skills
 
 # In Claude Code: bootstrap can update existing skills
@@ -2045,7 +2045,7 @@ BOOTSTRAP SKILL:
 
 ## Appendix D: Hermes-Bridge — `metadata.hermes` block (BOO-31)
 
-The Code-Crash Framework is designed to dock with [Hermes](https://hermes-agent.nousresearch.com/) — a Compound-Engineering layer that reads CI outputs across projects, detects recurring patterns, and proposes patches as PRs. Hermes is **optional**: if you do not install Hermes, all skills work as before. If you do install Hermes, the skills are prepared so that Hermes can route between them without inference.
+The INTENTRON is designed to dock with [Hermes](https://hermes-agent.nousresearch.com/) — a Compound-Engineering layer that reads CI outputs across projects, detects recurring patterns, and proposes patches as PRs. Hermes is **optional**: if you do not install Hermes, all skills work as before. If you do install Hermes, the skills are prepared so that Hermes can route between them without inference.
 
 Every bundle skill carries a `metadata.hermes` block in its YAML frontmatter. Hermes reads this block when scanning the skill catalog and uses it for routing, cross-skill memory, and toolset-dependency checks.
 
@@ -2448,7 +2448,7 @@ If your performance gate rarely fires and the 20% threshold is fine, skip BOO-46
 
 ## Appendix J: Onboarding the framework under Codex — walkthrough (BOO-50)
 
-Appendix K is the **reference** (all tools, mappings, tool-agnostic components). This appendix is the **one continuous path**: from zero to a running Code-Crash project under OpenAI Codex. For operators using Codex as their primary or secondary runtime. It points to Appendix K, it does not duplicate it.
+Appendix K is the **reference** (all tools, mappings, tool-agnostic components). This appendix is the **one continuous path**: from zero to a running INTENTRON project under OpenAI Codex. For operators using Codex as their primary or secondary runtime. It points to Appendix K, it does not duplicate it.
 
 > **Core principle:** Codex does **not** turn the framework into a fully autonomous developer agent. Codex is an adapter that reads the neutral story contract (`CONVENTIONS.md`) and translates it into its own way of working. The pipeline stays sequential and gate-based: backlog record → spec → controlled implementation → checks → review → result note.
 
@@ -2536,7 +2536,7 @@ Source: BOO-50 — originally conceived as a daily-bug-scanner automation (2026-
 
 ## Appendix K: Tool-Adapter — using this framework with other AI tools (BOO-49)
 
-The Code-Crash Framework was designed Claude-Code-first, but the **methodology is tool-agnostic**. About 70% of what the framework defines is pure convention (file layouts, frontmatter, bash hooks, GitHub Actions). The remaining 30% — slash-commands, skill invocation, MCP integrations — depends on the AI tool. This appendix shows how to operate the framework with the most common alternatives.
+The INTENTRON was designed Claude-Code-first, but the **methodology is tool-agnostic**. About 70% of what the framework defines is pure convention (file layouts, frontmatter, bash hooks, GitHub Actions). The remaining 30% — slash-commands, skill invocation, MCP integrations — depends on the AI tool. This appendix shows how to operate the framework with the most common alternatives.
 
 **Tool-neutral specification:** `CONVENTIONS.md` at the bundle root. Always read that first when adopting the framework with any tool.
 
@@ -2742,7 +2742,7 @@ This appendix is the map from the book into the bundle. Schrader's "Code Crash" 
 
 *The full bundle at a glance — skills, 4P pipeline, governance layer.*
 
-The bundle is Tobias' operating system for Code-Crash engineering. Schrader describes what changes when AI takes over the act of writing code. This bundle is the operational answer: 11 skills, the 4P pipeline, and a governance layer that turn the theory into daily practice.
+The bundle is Tobias' operating system for Intentron engineering. Schrader describes what changes when AI takes over the act of writing code. This bundle is the operational answer: 11 skills, the 4P pipeline, and a governance layer that turn the theory into daily practice.
 
 ### Chapter 1 — Second-Order Effects
 
@@ -2978,7 +2978,7 @@ Schrader delivers the theory, the bundle delivers the practice — skill code, c
 
 ## Appendix N: Token-Efficiency Policy (BOO-84) — Model Routing + Prompt Caching
 
-Code-Crash operators waste Anthropic tokens when every skill runs on the operator's default model (usually Opus). This appendix explains both levers the framework uses by default — **per-skill model routing** and **prompt caching for reused blocks**. Both follow the lightweight design decision: recommendation rather than hard lock, operator override always possible, audit trail for compliance.
+INTENTRON operators waste Anthropic tokens when every skill runs on the operator's default model (usually Opus). This appendix explains both levers the framework uses by default — **per-skill model routing** and **prompt caching for reused blocks**. Both follow the lightweight design decision: recommendation rather than hard lock, operator override always possible, audit trail for compliance.
 
 ![Token efficiency — two levers: model routing (haiku/sonnet/opus) + prompt caching, plus the FinOps argument](docs/assets/boo-84-token-efficiency.png)
 
@@ -3014,11 +3014,11 @@ Security-relevant skills MUST NOT auto-downgrade during a story run. Operator ov
 
 **FinOps argument**
 
-For a typical customer engagement (6 months, ~80 stories, all lints + tests + coverage iterated): naive Opus usage costs roughly $400-500 for iteration loops alone. With Haiku routing for these loops: ~$30-40. **Factor 12x cheaper, margin lever 15-25%.** This argument goes into every discovery conversation: "Code-Crash optimises your LLM costs by design."
+For a typical customer engagement (6 months, ~80 stories, all lints + tests + coverage iterated): naive Opus usage costs roughly $400-500 for iteration loops alone. With Haiku routing for these loops: ~$30-40. **Factor 12x cheaper, margin lever 15-25%.** This argument goes into every discovery conversation: "INTENTRON optimises your LLM costs by design."
 
 ### N.2 Prompt Caching Explained
 
-Anthropic offers a **90% discount on cached input tokens** (ephemeral cache with 5-min TTL). Code-Crash uses this systematically for blocks read multiple times within a story iteration — without the operator having to set cache markers manually.
+Anthropic offers a **90% discount on cached input tokens** (ephemeral cache with 5-min TTL). INTENTRON uses this systematically for blocks read multiple times within a story iteration — without the operator having to set cache markers manually.
 
 **What gets cached**
 
@@ -3064,7 +3064,7 @@ No Privacy mode needed: solo tool without data collection, exclusively anonymous
 
 ### What the DPO skill does (3-mode mapping)
 
-Since **BOO-74 (Wave M)** the DPO skill is a **framework bundle skill**: it lives directly in the `code-crash-framework` repo (analogous to `bootstrap/`, `implement/`, `security-architect/`) and is installed by bootstrap Phase 5 from the framework repo into `~/.claude/skills/dpo/`. The skill's master remains the `claudecodeskills` repo (maintained via `publish_skill.py`); the framework repo holds a mirrored vendored copy. Solo operators without the framework can still get DPO directly from `claudecodeskills`. Three modes with a clear trigger point in the pipeline:
+Since **BOO-74 (Wave M)** the DPO skill is a **framework bundle skill**: it lives directly in the `intentron` repo (analogous to `bootstrap/`, `implement/`, `security-architect/`) and is installed by bootstrap Phase 5 from the framework repo into `~/.claude/skills/dpo/`. The skill's master remains the `claudecodeskills` repo (maintained via `publish_skill.py`); the framework repo holds a mirrored vendored copy. Solo operators without the framework can still get DPO directly from `claudecodeskills`. Three modes with a clear trigger point in the pipeline:
 
 | Mode | Trigger | Pipeline Position | Output |
 |------|---------|--------------------|--------|
@@ -3124,7 +3124,7 @@ The operator maintains `PRIVACY.md` after the initial generation manually — fi
 
 ## Appendix P: Deployment Scenarios — Solo-Mac / Solo-VPS / Multi-User-VPS / Team-Server (BOO-70)
 
-This appendix describes four established setup patterns for the Code-Crash Framework, from a solo operator on a Mac to a multi-user VPS coding factory. It exists because the bootstrap script deliberately asks only **one** additional question (default Solo-Mac) and the details land here, rather than bloating bootstrap. Operators pick their scenario via the decision matrix, read the matching scenario section, and walk through the setup steps once. The framework itself behaves identically in all four scenarios — only the surrounding environment differs.
+This appendix describes four established setup patterns for the INTENTRON, from a solo operator on a Mac to a multi-user VPS coding factory. It exists because the bootstrap script deliberately asks only **one** additional question (default Solo-Mac) and the details land here, rather than bloating bootstrap. Operators pick their scenario via the decision matrix, read the matching scenario section, and walk through the setup steps once. The framework itself behaves identically in all four scenarios — only the surrounding environment differs.
 
 ![Deployment scenarios — the four setup topologies from Solo-Mac to coding factory](docs/assets/boo-70-deployment-scenarios.png)
 
@@ -3336,7 +3336,7 @@ Based on BOO-9 (VPS rollout) and BOO-83 (VPS multi-user pattern).
 
 ## Appendix Q: Sovereignty Stack Guide + LLM Proxy Hook (BOO-71)
 
-Code-Crash operators increasingly work in regulated industries — FINMA, BaFin, MaRisk, NIS-2 sectors, public-sector contracts. In those contexts the default stack composition (GitHub, Anthropic USA, iCloud) is not sovereignty-compliant, and an auditor will eventually ask for EU alternatives. This appendix is the **inspiration layer** of the framework: a curated table of EU-compliant components plus a single hook point (`llm_proxy_url`) for operator-run anonymisation or routing proxies. **No anonymisation engine inside the framework itself** — that is runtime infrastructure and belongs in the operator's hands.
+INTENTRON operators increasingly work in regulated industries — FINMA, BaFin, MaRisk, NIS-2 sectors, public-sector contracts. In those contexts the default stack composition (GitHub, Anthropic USA, iCloud) is not sovereignty-compliant, and an auditor will eventually ask for EU alternatives. This appendix is the **inspiration layer** of the framework: a curated table of EU-compliant components plus a single hook point (`llm_proxy_url`) for operator-run anonymisation or routing proxies. **No anonymisation engine inside the framework itself** — that is runtime infrastructure and belongs in the operator's hands.
 
 ![Sovereignty stack — US default vs. EU alternative per component, plus the optional LLM proxy hook](docs/assets/boo-71-sovereignty-stack.png)
 
@@ -3352,7 +3352,7 @@ Not every project needs a sovereign stack. This decision matrix gives an honest 
 | Personal data tier 3 (health, finance, criminal record) | Yes | Highest GDPR risk class; CLOUD-Act exposure is an audit finding. |
 | Swiss client mandate with nDSG obligation | Yes | nDSG requires demonstrable data-location control and EU/CH contracting party. |
 | Solo tool without EU exposure | No | Default stack is fine; sovereignty would add friction without return. |
-| Code-Crash-Lite setup for hobby projects | No | Learning curve and operator effort are out of proportion; keep the default. |
+| INTENTRON-Lite setup for hobby projects | No | Learning curve and operator effort are out of proportion; keep the default. |
 
 ### EU-compliant alternatives per stack component
 
@@ -3460,7 +3460,7 @@ Default value: `null`. Any HTTP or HTTPS endpoint the operator keeps reachable i
 
 A typical setup: the proxy receives the outgoing prompt, identifies personal entities (names, emails, IBANs) via Microsoft Presidio, replaces them with deterministic tokens and forwards the anonymised prompt to the actual LLM endpoint. On the way back the same proxy unmasks the response. The LLM provider therefore never sees plaintext PII while skill behaviour stays unchanged. Alternatives are equally valid — instead of Microsoft Presidio the operator can use spaCy, a custom Lambda function or another proxy. The framework prescribes nothing here.
 
-> **Design decision:** Anonymisation is runtime infrastructure, not framework responsibility. Code-Crash provides the hook point and the audit trail — nothing more.
+> **Design decision:** Anonymisation is runtime infrastructure, not framework responsibility. INTENTRON provides the hook point and the audit trail — nothing more.
 
 ### Bootstrap behaviour
 
@@ -3481,7 +3481,7 @@ Source: BOO-71 spec. Operator feedback Martin 2026-05-27.
 
 ## Appendix R: Multi-Operator Coordination — 5 to 20+ operators (BOO-72)
 
-Appendix P (BOO-70) describes four deployment scenarios, with scenario 4 covering **2-5 operators** on a shared coding server. But what happens when a consulting engagement with ten people adopts Code-Crash? When an in-house team of twenty developers works in parallel on the same repo? This appendix is the **inspiration layer** for operator teams beyond the solo and small-team setups. It adds **no** new skill, **no** new bootstrap question, and **no** framework convention — it only shows how the existing gates from Wave A-K play out in a larger team.
+Appendix P (BOO-70) describes four deployment scenarios, with scenario 4 covering **2-5 operators** on a shared coding server. But what happens when a consulting engagement with ten people adopts INTENTRON? When an in-house team of twenty developers works in parallel on the same repo? This appendix is the **inspiration layer** for operator teams beyond the solo and small-team setups. It adds **no** new skill, **no** new bootstrap question, and **no** framework convention — it only shows how the existing gates from Wave A-K play out in a larger team.
 
 ![Multi-Operator Coordination — 3-layer model](docs/assets/boo-72-multi-operator-3-layer.png)
 
@@ -3650,7 +3650,7 @@ What happens when two operators want to merge contradictory changes into `SECURI
 
 Important: escalation is a convention, not a framework mechanism. It only works if the team actively lives it. Appendix R is inspiration — how the team fills the roles is a team matter.
 
-### How do you set up Code-Crash for a 20-person team?
+### How do you set up INTENTRON for a 20-person team?
 
 Concrete 10-step guide that extends Appendix P scenario 3 (multi-user VPS coding factory):
 
@@ -3667,7 +3667,7 @@ Concrete 10-step guide that extends Appendix P scenario 3 (multi-user VPS coding
 
 ### What Appendix R does not do
 
-Clear delimitation against the Code-Crash philosophy "lightweight + pragmatic":
+Clear delimitation against the INTENTRON philosophy "lightweight + pragmatic":
 
 - **No new skill.** Appendix R is pure documentation.
 - **No new bootstrap question.** Bootstrap already asks for the documentation SSoT (B.3) and backlog adapter (B.4) — that is enough.
@@ -3766,7 +3766,7 @@ The **default** stays system install (above). For **team setups** where all oper
 | **Pro** | lightweight, no Docker needed | identical toolchain for all, CI-reusable |
 | **Con** | tool versions may differ per machine | Docker dependency, image build time |
 
-**Decision:** the container is **opt-in**, not a new mandatory bootstrap step — the Code-Crash lightweight principle. Whoever uses it runs `bash scripts/verify-setup.sh` (Appendix T) inside the container to confirm the toolchain. Details: `bootstrap/references/devcontainer/README.md`.
+**Decision:** the container is **opt-in**, not a new mandatory bootstrap step — the INTENTRON lightweight principle. Whoever uses it runs `bash scripts/verify-setup.sh` (Appendix T) inside the container to confirm the toolchain. Details: `bootstrap/references/devcontainer/README.md`.
 
 ### Related appendices
 
@@ -3841,7 +3841,7 @@ Source: operator question Tobias 2026-05-28 ("I need the proof"). **Closes BOO-4
 
 ## Appendix U: Multi-project operation — project 2..N + onboarding an existing project (BOO-80)
 
-You have Code-Crash on a machine (VPS/Mac) — and now the **second, third, tenth** project arrives. Do you reinstall everything each time? No. This appendix cleanly separates **what happens once per machine** from **what happens per project**, and shows the three onboarding paths.
+You have INTENTRON on a machine (VPS/Mac) — and now the **second, third, tenth** project arrives. Do you reinstall everything each time? No. This appendix cleanly separates **what happens once per machine** from **what happens per project**, and shows the three onboarding paths.
 
 ![Multi-project operation — base once (machine), then per-project setup per project, plus three onboarding paths](docs/assets/multi-project-onboarding.png)
 
@@ -3894,6 +3894,6 @@ Source: operator question Tobias 2026-05-28 ("several projects — bootstrap per
 
 ---
 
-*This handbook is part of the Code-Crash Framework.*
-*GitHub: github.com/vibercoder79/code-crash-framework*
+*This handbook is part of the INTENTRON.*
+*GitHub: github.com/vibercoder79/intentron*
 *Last updated: 2026-05-28 (Appendix J Codex onboarding walkthrough added — BOO-50; Appendix T extended with the 5-step E2E trial protocol — closes BOO-48; Appendix R vault harvest extended — `default_vault_subdir` + incremental `--since` sync, BOO-82)*

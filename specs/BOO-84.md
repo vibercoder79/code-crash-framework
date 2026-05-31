@@ -11,7 +11,7 @@ Heute laeuft jeder Skill auf dem Modell, das der Operator in Claude Code eingest
 Konsequenzen ohne diese Story:
 
 - Marge bei Kunden-Engagements 15-25% niedriger als noetig.
-- Kein USP "Code-Crash ist Token-optimiert" gegenueber Spec Kit, Aider, Cline.
+- Kein USP "INTENTRON ist Token-optimiert" gegenueber Spec Kit, Aider, Cline.
 - Bei FINMA-Audit keine Antwort auf "wie stellt ihr Cost-Effizienz beim KI-Einsatz sicher?".
 
 ## What

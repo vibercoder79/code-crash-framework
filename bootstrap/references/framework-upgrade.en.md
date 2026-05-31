@@ -1,6 +1,6 @@
 # Framework Upgrade for Existing Projects
 
-Goal: Existing projects can adopt a new Code-Crash Framework version without blindly overwriting local decisions, skills, hooks, CI, or security files.
+Goal: Existing projects can adopt a new INTENTRON version without blindly overwriting local decisions, skills, hooks, CI, or security files.
 
 ## Base rule
 

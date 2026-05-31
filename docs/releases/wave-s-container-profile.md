@@ -4,7 +4,7 @@ Stand: 2026-05-28
 
 ## Zweck
 
-Wave S (BOO-81) gibt dem Framework ein **optionales** Container-Profil fuer die Toolchain — fuer Team-Setups, die eine identische, reproduzierbare Toolchain wollen. **System-Install bleibt der Default** (Code-Crash-Leichtgewicht-Prinzip); der Container ist opt-in.
+Wave S (BOO-81) gibt dem Framework ein **optionales** Container-Profil fuer die Toolchain — fuer Team-Setups, die eine identische, reproduzierbare Toolchain wollen. **System-Install bleibt der Default** (INTENTRON-Leichtgewicht-Prinzip); der Container ist opt-in.
 
 ## Hintergrund: die Container-Entscheidung
 

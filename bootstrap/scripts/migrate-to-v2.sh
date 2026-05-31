@@ -2,14 +2,14 @@
 # migrate-to-v2.sh
 #
 # DE: Idempotentes Skelett-Skript fuer die Migration von Bestands-Projekten
-#     auf Code-Crash-Governance v2. Fuehrt nur deterministische Auto-Schritte
+#     auf INTENTRON-Governance v2. Fuehrt nur deterministische Auto-Schritte
 #     aus. Manuelle Operator-Schritte werden mit `[MANUAL]` markiert und
 #     loggen die noetige Aktion ohne sie auszufuehren. Mehrfaches Ausfuehren
 #     ist sicher: bestehende Dateien werden nicht ueberschrieben, idempotente
 #     Append-Operationen pruefen vor dem Schreiben.
 #
 # EN: Idempotent skeleton script for migrating existing projects to
-#     Code-Crash governance v2. Runs deterministic auto steps only.
+#     INTENTRON governance v2. Runs deterministic auto steps only.
 #     Manual operator steps are tagged `[MANUAL]` and logged without being
 #     executed. Safe to run multiple times: existing files are kept,
 #     idempotent appends check before writing.
@@ -108,7 +108,7 @@ Pro Initiative eine Intent-Datei nach Schrader-Template (Code Crash Kap. 4):
 - `intents/INTENT-XX.md` — Intent-Statement + 5-Schritte-Session-Output (XX = lfd. Nummer mit fuehrenden Nullen)
 - `intents/INTENT-XX.validation.md` — Self-Check-Report mit Status gruen / gelb / rot
 
-Workflow + Templates siehe Skill `/intent` (`code-crash-framework/intent/`).
+Workflow + Templates siehe Skill `/intent` (`intentron/intent/`).
 Pipeline-Verortung: `/intent` -> `/ideation` -> `/backlog` -> `/implement`.
 EOF
             log_info "created intents/README.md"
@@ -117,7 +117,7 @@ EOF
         log_skip "intents/README.md exists"
     fi
     log_manual "Operator: pruefen ob bestehende docs/intent.md oder vergleichbare Notizen existieren — falls ja, in intents/legacy.md migrieren"
-    log_manual "Operator: /intent-Skill verfuegbar machen (via /bootstrap-Update oder durch Kopieren von code-crash-framework/intent/ nach ~/.claude/skills/intent/)"
+    log_manual "Operator: /intent-Skill verfuegbar machen (via /bootstrap-Update oder durch Kopieren von intentron/intent/ nach ~/.claude/skills/intent/)"
     return 0
 }
 
@@ -745,7 +745,7 @@ migrate_boo_27() {
         else
             cat > ".github/ISSUE_TEMPLATE/story.yml" <<'EOF'
 name: Story / Feature
-description: "Code Crash Governance v2 — Schrader Prompt Components (Pflichtfelder)"
+description: "INTENTRON Governance v2 — Schrader Prompt Components (Pflichtfelder)"
 title: "[STORY] "
 body:
   - type: dropdown
@@ -991,7 +991,7 @@ migrate_boo_29() {
 
     if [[ ! -f "$bp_script" ]]; then
         log_warn "setup-branch-protection.sh nicht gefunden unter $bp_script — BOO-29 uebersprungen"
-        log_manual "Operator: scripts/setup-branch-protection.sh aus dem Bootstrap-Repo (code-crash-framework/bootstrap/scripts/) ins Projekt kopieren und dann erneut laufen lassen"
+        log_manual "Operator: scripts/setup-branch-protection.sh aus dem Bootstrap-Repo (intentron/bootstrap/scripts/) ins Projekt kopieren und dann erneut laufen lassen"
         return 0
     fi
 
@@ -1419,11 +1419,11 @@ migrate_boo_8() {
     log_manual "Operator: ARCHITECTURE_DESIGN.md oeffnen, §3 Quality Attributes / Qualitaets-Dimensionen suchen"
     log_manual "Operator: Testability-Zeile zwischen Maintainability (#6) und Cost Efficiency / Domain Quality einfuegen"
     log_manual "Operator: Pruef-Frage uebernehmen: 'Coverage auf neuem Code? Test-Pyramide (Unit/Contract/Integration)? Pass-Rate stabil?'"
-    log_manual "Operator: Detail-Inhalt aus code-crash-framework/architecture-review/references/dimensions-detail.md §7 Testability ins Projekt-spezifische Dokument uebertragen"
+    log_manual "Operator: Detail-Inhalt aus intentron/architecture-review/references/dimensions-detail.md §7 Testability ins Projekt-spezifische Dokument uebertragen"
     log_manual "Operator: pruefen ob Test-Aspekte heute unter Maintainability/Reliability vermischt sind — ggf. nach Testability migrieren (Operator-Entscheidung pro Projekt)"
     log_manual "Operator: Sanity-Test 'grep -E Testability ARCHITECTURE_DESIGN.md' → mindestens ein Treffer"
     log_manual "Operator (DoD, optional): /architecture-review auf Bestands-Projekt durchlaufen lassen — neue Dimension end-to-end validieren"
-    log_manual "Operator: Details in code-crash-framework/bootstrap/references/migration-checklist-v1-to-v2.md §BOO-8"
+    log_manual "Operator: Details in intentron/bootstrap/references/migration-checklist-v1-to-v2.md §BOO-8"
     return 0
 }
 
@@ -1454,7 +1454,7 @@ migrate_boo_13() {
     log_manual "Operator: ADR docs/domain/adrs/NNN-scalability-disabled.md anlegen, falls Scalability fuer dieses Projekt bewusst deaktiviert wird (z.B. Single-User-CLI, Local-Tool ohne Skalierungs-Pfad)"
     log_manual "Operator (DoD, optional): /architecture-review --system durchlaufen lassen — der Skill prueft jetzt 8 Standard-Dimensionen, Report archivieren in journal/reports/"
     log_manual "Operator: Skill-Check — grep -E '^## §?8\\.? Scalability' .claude/skills/architecture-review/references/dimensions-detail.md → falls leer: 'git pull' im Skill-Klon oder Phase 5 von /bootstrap erneut laufen lassen (Skill v1.6.0+)"
-    log_manual "Operator: Details in code-crash-framework/bootstrap/references/migration-checklist-v1-to-v2.md §BOO-13"
+    log_manual "Operator: Details in intentron/bootstrap/references/migration-checklist-v1-to-v2.md §BOO-13"
     return 0
 }
 
@@ -2907,7 +2907,7 @@ migrate_boo_84() {
 
 ## Model-Routing-Policy (BOO-84)
 
-Pro Skill ist ein **empfohlenes Modell-Tier** definiert (siehe Skill-Frontmatter `recommended_model`). Tier-zu-Version + Pricing zentral in `bootstrap/references/model-tiers.json` des Code-Crash Frameworks.
+Pro Skill ist ein **empfohlenes Modell-Tier** definiert (siehe Skill-Frontmatter `recommended_model`). Tier-zu-Version + Pricing zentral in `bootstrap/references/model-tiers.json` von INTENTRON.
 
 | Tier | Wofuer | Default fuer Skills |
 |------|-------|---------------------|
@@ -3092,7 +3092,7 @@ migrate_boo_69() {
     if [[ -d "${HOME}/.claude/skills/dpo" ]]; then
         log_info "BOO-69: DPO-Skill global verfuegbar unter ~/.claude/skills/dpo/."
     else
-        log_warn "BOO-69: DPO-Skill nicht unter ~/.claude/skills/dpo/ gefunden. Operator-Aktion: Skill von Code-Crash-Framework oder Skill-Repo installieren."
+        log_warn "BOO-69: DPO-Skill nicht unter ~/.claude/skills/dpo/ gefunden. Operator-Aktion: Skill von INTENTRON oder Skill-Repo installieren."
     fi
 
     # 4. security-architect-Verfuegbarkeit
@@ -3439,7 +3439,7 @@ ALL_ISSUES=(
 
 print_help() {
     cat <<EOF
-$SCRIPT_NAME — Migrations-Skript fuer Code-Crash-Governance v1 -> v2
+$SCRIPT_NAME — Migrations-Skript fuer INTENTRON-Governance v1 -> v2
 
 DE:
   --all               Alle Auto-Schritte fuer alle BOO-Issues ausfuehren.

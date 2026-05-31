@@ -1,7 +1,7 @@
 /**
  * agents/self-healing.js — {{PROJECT_NAME}} Self-Healing Agent
  *
- * Template from Code-Crash Framework
+ * Template from INTENTRON
  *
  * SETUP:
  *   1. Copy this file to your project: agents/self-healing.js

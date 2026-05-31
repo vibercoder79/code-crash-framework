@@ -8,18 +8,18 @@ Diese Spec **korrigiert** die Wave-J-Decision aus `specs/BOO-69.md` §"Wichtige 
 
 ## Summary
 
-DPO und security-architect werden als **vendored Bundle-Skills** ins `code-crash-framework`-Repo aufgenommen — analog zu `bootstrap/`, `ideation/`, `implement/`, etc. Master-Repo bleibt `claudecodeskills` (gepflegt via `publish_skill.py`), Framework-Repo bekommt 1:1-Kopien (inkl. References DE+EN). Bootstrap Phase 5 wird umgestellt: clont **nur** das Framework-Repo, installiert Skills aus diesem statt aus `claudecodeskills`. Bootstrap Phase 4.4n (Privacy-Setup) wird umformuliert von "Standalone installieren" auf "aus Framework-Bundle installieren". HANDBUCH Anhang O wird entsprechend angepasst. Sync-Konvention wird in der Bootstrap-Doku festgehalten: bei jedem Update von DPO/security-architect in `claudecodeskills` muss der Vendor-Mirror im Framework-Repo nachgezogen werden.
+DPO und security-architect werden als **vendored Bundle-Skills** ins `intentron`-Repo aufgenommen — analog zu `bootstrap/`, `ideation/`, `implement/`, etc. Master-Repo bleibt `claudecodeskills` (gepflegt via `publish_skill.py`), Framework-Repo bekommt 1:1-Kopien (inkl. References DE+EN). Bootstrap Phase 5 wird umgestellt: clont **nur** das Framework-Repo, installiert Skills aus diesem statt aus `claudecodeskills`. Bootstrap Phase 4.4n (Privacy-Setup) wird umformuliert von "Standalone installieren" auf "aus Framework-Bundle installieren". HANDBUCH Anhang O wird entsprechend angepasst. Sync-Konvention wird in der Bootstrap-Doku festgehalten: bei jedem Update von DPO/security-architect in `claudecodeskills` muss der Vendor-Mirror im Framework-Repo nachgezogen werden.
 
 ## Why
 
-Operator-Feedback Tobias (2026-05-27 post-Wave-L): "Der DPO-Skill muss ja ins Framework mit rein. Das ist doch sinnvoll. Der Bootstrap-Prozess muss diesen Skill aus dem Code-Crash-Framework installieren, sonst macht das fuer mich keinen Sinn. Und der Security-Architekt muesste natuerlich auch ins Framework rein."
+Operator-Feedback Tobias (2026-05-27 post-Wave-L): "Der DPO-Skill muss ja ins Framework mit rein. Das ist doch sinnvoll. Der Bootstrap-Prozess muss diesen Skill aus INTENTRON installieren, sonst macht das fuer mich keinen Sinn. Und der Security-Architekt muesste natuerlich auch ins Framework rein."
 
 Ehrliche Bestandsaufnahme der heutigen Inkonsistenz:
 
 - **HANDBUCH Anhang O (Wave J):** beschreibt Privacy-by-Design als Framework-Garantie ("Aktiviert Privacy-Add-on → DPO installiert"). Aber DPO selbst liegt im **Nachbar-Repo** `claudecodeskills`, nicht im Framework-Repo.
-- **Bootstrap Phase 4.4n:** sagt "Skill von Code-Crash-Framework oder Skill-Repo installieren" — Operator muss selbst rausfinden, welches Repo gemeint ist.
-- **Bootstrap Phase 5:** clont `claudecodeskills` und holt Skills von dort. Bundle aus Sub-Folder `code-crash-framework/`, Standalone aus Top-Level. Das setzt voraus, dass der Operator `claudecodeskills` als bestehendes Repo akzeptiert.
-- **Operator-Sicht:** "Code-Crash Framework" = Framework-Repo. Wenn Privacy-Add-on aktiviert wird, sollte alles aus dem Framework-Repo kommen — nicht aus einem anderen Repo, das zufaellig denselben Maintainer hat.
+- **Bootstrap Phase 4.4n:** sagt "Skill von INTENTRON oder Skill-Repo installieren" — Operator muss selbst rausfinden, welches Repo gemeint ist.
+- **Bootstrap Phase 5:** clont `claudecodeskills` und holt Skills von dort. Bundle aus Sub-Folder `intentron/`, Standalone aus Top-Level. Das setzt voraus, dass der Operator `claudecodeskills` als bestehendes Repo akzeptiert.
+- **Operator-Sicht:** "INTENTRON" = Framework-Repo. Wenn Privacy-Add-on aktiviert wird, sollte alles aus dem Framework-Repo kommen — nicht aus einem anderen Repo, das zufaellig denselben Maintainer hat.
 
 Konsequenzen ohne BOO-74:
 
@@ -32,7 +32,7 @@ Konsequenzen ohne BOO-74:
 ### Vendoring-Architektur
 
 - **Master-Repo:** `vibercoder79/claudecodeskills` bleibt **Single Source of Truth** fuer DPO und security-architect. `publish_skill.py` push'd dorthin.
-- **Mirror-Repo:** `vibercoder79/code-crash-framework` bekommt 1:1-Kopien unter:
+- **Mirror-Repo:** `vibercoder79/intentron` bekommt 1:1-Kopien unter:
   - `dpo/` (parallel zu `bootstrap/`, `ideation/`, etc.)
   - `security-architect/` (parallel zu `bootstrap/`, `ideation/`, etc.)
 - **Inhalt der Vendored-Kopien:** SKILL.md, SKILL.en.md, references/* (alle DE+EN), README.md (falls vorhanden), Excalidraw-Overview-Diagramme (falls vorhanden).
@@ -45,7 +45,7 @@ Heute:
 ```bash
 SKILL_SRC=$(mktemp -d)
 git clone --depth 1 https://github.com/vibercoder79/claudecodeskills "$SKILL_SRC"
-# Bundle aus $SKILL_SRC/code-crash-framework/<skill>/
+# Bundle aus $SKILL_SRC/intentron/<skill>/
 # Standalone aus $SKILL_SRC/<skill>/
 ```
 
@@ -53,7 +53,7 @@ Neu:
 
 ```bash
 SKILL_SRC=$(mktemp -d)
-git clone --depth 1 https://github.com/vibercoder79/code-crash-framework "$SKILL_SRC"
+git clone --depth 1 https://github.com/vibercoder79/intentron "$SKILL_SRC"
 # Alle Bundle-Skills + dpo + security-architect direkt aus $SKILL_SRC/<skill>/
 ```
 
@@ -73,7 +73,7 @@ Heute (siehe `bootstrap/SKILL.md` Zeile 928-961):
 
 > **Privacy-Add-on (BOO-69):** Bei `[x] Privacy / DSGVO` installiert Bootstrap zusaetzlich den `dpo`-Skill als **Standalone (analog `security-architect`)** ...
 >
-> 1. **DPO-Skill als Standalone installieren** (analog `security-architect`): ... wenn nicht vorhanden, Operator-Hinweis: "Installiere via `git clone` aus dem Skill-Repo oder kopiere aus dem Code-Crash-Framework".
+> 1. **DPO-Skill als Standalone installieren** (analog `security-architect`): ... wenn nicht vorhanden, Operator-Hinweis: "Installiere via `git clone` aus dem Skill-Repo oder kopiere aus INTENTRON".
 
 Neu:
 
@@ -89,7 +89,7 @@ Heute beschreibt Anhang O DPO als "Standalone-Skill analog security-architect". 
 
 - [ ] `dpo/` als Top-Level-Folder im Framework-Repo (1:1-Kopie aus `claudecodeskills/dpo/`, inkl. SKILL.md, SKILL.en.md, references/* DE+EN)
 - [ ] `security-architect/` als Top-Level-Folder im Framework-Repo (1:1-Kopie aus `claudecodeskills/security-architect/`)
-- [ ] Bootstrap Phase 5 Skill-Quelle umgestellt: `git clone` von `vibercoder79/code-crash-framework` statt `claudecodeskills`
+- [ ] Bootstrap Phase 5 Skill-Quelle umgestellt: `git clone` von `vibercoder79/intentron` statt `claudecodeskills`
 - [ ] Bootstrap Phase 5 Optionen-Block aktualisiert: dpo + security-architect sind im Standard-Set, `research`/`design-md-generator`/`setup-checklist`/`skill-creator` werden via optional-zusatz-Frage ergaenzt
 - [ ] Bootstrap Phase 4.4n umformuliert: "aus Framework-Bundle installieren" (DE+EN)
 - [ ] HANDBUCH Anhang O Wording-Update (DE+EN): DPO als Bundle-Skill, claudecodeskills bleibt fuer Standalone-Use
@@ -121,7 +121,7 @@ Heute beschreibt Anhang O DPO als "Standalone-Skill analog security-architect". 
 
 ## Validation
 
-- Vendoring-Test: `diff -r ~/Documents/GitHub/claudecodeskills/dpo/ ~/Documents/GitHub/code-crash-framework/dpo/` → keine Diff (ausser ggf. `.git`-Ignores).
+- Vendoring-Test: `diff -r ~/Documents/GitHub/claudecodeskills/dpo/ ~/Documents/GitHub/intentron/dpo/` → keine Diff (ausser ggf. `.git`-Ignores).
 - Bootstrap-Lauf gegen ein Test-Projekt: Phase 5 clont Framework-Repo, Phase 4.4n installiert DPO aus Framework. Smoke-Test gegen `/tmp/demo-wave-m-test`.
 - HANDBUCH-Anhang-O-Diff: vorher "Standalone-Skill", nachher "Bundle-Skill". Privacy-Mechanik unveraendert.
 - `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-74 --dry-run` → meldet Vendored-Pfad-Check + Operator-Hinweise.

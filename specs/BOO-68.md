@@ -8,7 +8,7 @@ Empirische Validation der in BOO-84 etablierten Token-Effizienz-Policy durch ein
 
 ## Why
 
-BOO-84-Spec verlangt explizit `BOO-68 Test-Lauf mit Routing+Caching dokumentiert (PR-Belege)` als letzten Validation-Punkt (siehe `specs/BOO-84.md` §Decisions Punkt 5 + §Validation). Ohne diesen Beleg bleibt die Policy methodisch unbestaetigt — die postulierten Zahlen (50-70% Reduktion, Faktor 12x) stammen aus Anthropic-Pricing-Rechnung, nicht aus realem Code-Crash-Workflow.
+BOO-84-Spec verlangt explizit `BOO-68 Test-Lauf mit Routing+Caching dokumentiert (PR-Belege)` als letzten Validation-Punkt (siehe `specs/BOO-84.md` §Decisions Punkt 5 + §Validation). Ohne diesen Beleg bleibt die Policy methodisch unbestaetigt — die postulierten Zahlen (50-70% Reduktion, Faktor 12x) stammen aus Anthropic-Pricing-Rechnung, nicht aus realem INTENTRON-Workflow.
 
 Konsequenzen ohne diese Story:
 

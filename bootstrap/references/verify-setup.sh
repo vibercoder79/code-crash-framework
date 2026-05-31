@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# verify-setup.sh — Post-Install-Verifikation fuer ein Code-Crash-Projekt (BOO-79).
+# verify-setup.sh — Post-Install-Verifikation fuer ein INTENTRON-Projekt (BOO-79).
 #
 # Beantwortet die Frage "Framework installiert — funktioniert auch alles?".
 # Prueft Governance-Geruest + Toolchain + Hooks + Artefakte und gibt pro Check
@@ -35,7 +35,7 @@ section() { [[ $QUIET -eq 1 ]] || printf '\n\033[1m%s\033[0m\n' "$1"; }
 env_val() { grep -o "\"$1\"[[:space:]]*:[[:space:]]*[^,}]*" "$ENV_FILE" 2>/dev/null | head -1 | sed -E 's/.*:[[:space:]]*//; s/[[:space:]]*$//; s/^"//; s/"$//'; }
 env_tool_true() { grep -o "\"$1\"[[:space:]]*:[[:space:]]*true" "$ENV_FILE" >/dev/null 2>&1; }
 
-[[ $QUIET -eq 1 ]] || printf '\033[1mCode-Crash Post-Install-Verifikation\033[0m (BOO-79)\n'
+[[ $QUIET -eq 1 ]] || printf '\033[1mINTENTRON Post-Install-Verifikation\033[0m (BOO-79)\n'
 
 # --- 1. environment.json ---------------------------------------------------
 section "1. Environment-Manifest"

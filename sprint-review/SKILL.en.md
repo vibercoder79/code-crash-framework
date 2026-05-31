@@ -131,10 +131,10 @@ done | jq -s '
 Read `token_tracking` from all sprint meta.json files and compute cost aggregates via `bootstrap/references/model-tiers.json` (pricing is central, not duplicated per meta.json).
 
 ```bash
-TIERS_FILE="$(git rev-parse --show-toplevel)/../code-crash-framework/bootstrap/references/model-tiers.json"
+TIERS_FILE="$(git rev-parse --show-toplevel)/../intentron/bootstrap/references/model-tiers.json"
 # Fallback: search at typical framework paths (operator setup)
 if [ ! -f "$TIERS_FILE" ]; then
-  TIERS_FILE=$(find ~/Documents/GitHub/code-crash-framework -name model-tiers.json -maxdepth 4 2>/dev/null | head -1)
+  TIERS_FILE=$(find ~/Documents/GitHub/intentron -name model-tiers.json -maxdepth 4 2>/dev/null | head -1)
 fi
 
 if [ -n "$TIERS_FILE" ] && [ -f "$TIERS_FILE" ]; then
@@ -283,7 +283,7 @@ Present to the operator:
 
 ### Step 7: Anti-Pattern Self-Diagnosis (BOO-26)
 
-> Reads `code-crash-framework/references/anti-pattern-katalog.en.md` and asks a brief Yes/No/Unclear question per AP.
+> Reads `intentron/references/anti-pattern-katalog.en.md` and asks a brief Yes/No/Unclear question per AP.
 > No hard block — this step is reflection, not a gate.
 > Duration: approx. 5 minutes.
 
@@ -313,7 +313,7 @@ Present to the operator:
 - **1-2 Yes/Unclear:** Entry in sprint retro with concrete countermeasure from `anti-pattern-katalog.en.md`
 - **3+ Yes/Unclear:** Propose an ADR (`docs/domain/adrs/`) + issue in backlog for the countermeasure
 
-Full symptoms + countermeasures: `code-crash-framework/references/anti-pattern-katalog.en.md`
+Full symptoms + countermeasures: `intentron/references/anti-pattern-katalog.en.md`
 
 ### Step 7c: DPO audit trigger (BOO-69, only if Privacy add-on active)
 

@@ -46,7 +46,7 @@ Bezugs-Datei: [INTENT-XX.md](INTENT-XX.md)
 
 ## Goldstandard-Vergleich
 
-Vergleich des Drafts gegen das Londoner-Team-Beschwerde-Beispiel (siehe [intent-examples.md](../code-crash-framework/intent/references/intent-examples.md) §1).
+Vergleich des Drafts gegen das Londoner-Team-Beschwerde-Beispiel (siehe [intent-examples.md](../intentron/intent/references/intent-examples.md) §1).
 
 Drei konkrete Verbesserungsvorschlaege:
 
@@ -110,7 +110,7 @@ Source file: [INTENT-XX.md](INTENT-XX.md)
 
 ## Gold-standard comparison
 
-Comparison of the draft against the London-team complaint example (see [intent-examples.md](../code-crash-framework/intent/references/intent-examples.md) §1).
+Comparison of the draft against the London-team complaint example (see [intent-examples.md](../intentron/intent/references/intent-examples.md) §1).
 
 Three concrete improvement suggestions:
 
