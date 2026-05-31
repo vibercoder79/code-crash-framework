@@ -1328,6 +1328,47 @@ Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-chec
 
 ---
 
+## §BOO-87 — Deterministischer dpo-Kontrollkatalog: Projekt-Overlay + Reports — Wave X
+
+**Status:** ✓ in v2-Bundle — additiv, nicht-destruktiv. Leichtgewichtige Projekt-Migration (Overlay-Verzeichnis + Reports-Dir).
+**Aufwand:** klein (~1 Min, automatisch).
+**Linear:** <https://linear.app/owlist/issue/BOO-87>
+**Auto-Schritt:** ja (`migrate_boo_87`, idempotent + additiv).
+
+**Was es tut:** Bereitet ein Bestands-Projekt fuer den deterministischen dpo-Kontrollkatalog vor. Die Kataloge (`dpo/controls/gdpr.yml` + `ndsg.yml`) und der Runner (`dpo/scripts/dpo-audit.py`) werden **mit dem dpo-Skill (v1.2.0)** ausgeliefert und **nicht** pro Projekt gescaffoldet — daher ist die Projekt-Migration bewusst leichtgewichtig. Sie legt nur an: (1) das **Projekt-Overlay** `.claude/dpo/controls/` (Bring-Your-Own-Controls, ueberlebt Framework-Updates) mit erklaerender `README.md`, und (2) das **Reports-Verzeichnis** `dpo/reports/` (mit `.gitkeep`). Der Audit laeuft deterministisch und liefert pro Kontrolle einen Status (PASS / GAP / REVIEW-NEEDED) — auditor-ready Compliance-Evidenz ohne DB.
+
+**Auto-Vorbereitung:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-87` — legt an (nur falls nicht vorhanden):
+  - `.claude/dpo/controls/` (Projekt-Overlay-Verzeichnis, **Kunden-Eigentum — wird NIE ueberschrieben**)
+  - `.claude/dpo/controls/README.md` (erklaert das BYO-Overlay; flaches Schema wie `dpo/controls/*.yml`: `id` / `titel` / `evidenz` / `check_typ` / `check_arg` / `mapsTo` / `quelle`; `check_typ ∈ file-exists | file-contains | grep-absent | review`)
+  - `dpo/reports/` (mit `.gitkeep`)
+- **Kein Scaffolding** von Katalog / Runner / Skill — die kommen mit dem dpo-Skill. Die Funktion gibt nur `[MANUAL]`-Hinweise aus.
+- **Idempotenz:** zweiter Lauf erzeugt keine Diffs — vorhandene Verzeichnisse/Dateien werden erkannt (`[SKIP]`); `--dry-run` loggt nur (`[DRY]`).
+
+**Tests / Verifikation:**
+
+- [ ] Verzeichnisse existieren: `test -d .claude/dpo/controls && test -d dpo/reports` → Exit 0.
+- [ ] Overlay-Doku vorhanden: `test -f .claude/dpo/controls/README.md` → Exit 0.
+- [ ] Reports-Keep vorhanden: `test -f dpo/reports/.gitkeep` → Exit 0.
+- [ ] Audit erzeugt einen Report: `DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py` → schreibt einen Report nach `dpo/reports/` (PASS/GAP/REVIEW-NEEDED pro Kontrolle).
+- [ ] Idempotenz: zweiter `--issue BOO-87`-Lauf → nur `[SKIP]`, kein Diff, Kunden-Overlay unberuehrt.
+
+**Operator-Schritte:**
+
+- [ ] Projekt-eigene Kontrollen in `.claude/dpo/controls/*.yml` (oder `.json`) ergaenzen — flaches Schema, siehe Overlay-`README.md`.
+- [ ] Audit ausfuehren: `DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py` (nutzt die Framework-Kataloge `dpo/controls/*.yml` + dein Overlay; Report landet in `dpo/reports/`).
+
+**Rollback:**
+
+- Verzeichnisse entfernen: `.claude/dpo/controls/` und `dpo/reports/` (nur falls vom Projekt nicht gepflegt — eigene Overlays vorher sichern). Katalog/Runner liegen im dpo-Skill und sind nicht betroffen.
+
+**Skill-Quelle:** dpo-Skill **v1.2.0** (Bump 1.1.0 → 1.2.0) — liefert Kataloge `dpo/controls/{gdpr,ndsg}.yml` + Runner `dpo/scripts/dpo-audit.py`. nDSG ist das CH-Alleinstellungsmerkmal. **Keine** Datenbank; OSCAL ist eine spaetere Ausbaustufe. Bezug zum `agentic-security`-Pattern (deterministischer Control-Runner) — **kein Code uebernommen** (PolyForm-Lizenz), nur die Idee.
+
+**Verweise:** `docs/releases/wave-x-dpo-control-catalog.md`, dpo-Skill `dpo/controls/*.yml` + `dpo/scripts/dpo-audit.py`, `specs/BOO-87.md`.
+
+---
+
 ## Nicht-Skill-Issues (uebersprungen)
 
 Diese Issues betreffen Operator-Tooling, Meta-Arbeit oder Doppelungen und brauchen **keine** Migration in Bestands-Projekten. Sie erscheinen in `migration-status.md` mit Status ✗.

@@ -10,7 +10,7 @@ description: |
   "Records of Processing", "Verarbeitungsverzeichnis", "data subject rights",
   "Betroffenenrechte", "deletion policy", "Loeschkonzept", "/dpo" — or automatically
   when other skills plan or implement features with personal data.
-version: 1.1.0
+version: 1.2.0
 recommended_model: opus  # BOO-69 — compliance-critical, audit-relevant
 language: en
 metadata:
@@ -185,46 +185,104 @@ Another skill calls DPO?                  → ASSESS or REVIEW (depending on pha
 
 **When:** On demand ("/dpo audit"), before releases, periodically, on supervisory authority requests.
 
+AUDIT mode is **catalogue-driven and deterministic**: instead of a free-form LLM assessment, a
+runner works through the versioned control catalogues under `dpo/controls/*.yml`. Same project
+state = same result — reproducible and Git-traceable.
+
 **Workflow:**
 
-1. **Create/check Records of Processing Activities (Art. 30)**
-   → [references/verarbeitungsverzeichnis.en.md](references/verarbeitungsverzeichnis.en.md)
+1. **Work through the catalogues (deterministic runner)**
 
-   For each processing activity document:
-   - Designation and purpose
-   - Categories of data subjects and data
-   - Recipients (internal + external)
-   - Third country transfers
-   - Retention periods
-   - TOMs (reference to Security Architect)
+   The runner reads the framework catalogues `dpo/controls/*.yml` (`gdpr`, `ndsg`,
+   optionally `nist-ai-600`) plus an optional **project overlay** under
+   `.claude/dpo/controls/` (`.yml` + `.json`) and executes each control check mechanically:
 
-2. **Apply all REVIEW checks** to the entire project
+   ```bash
+   DPO_PROJECT_ROOT=. python3 <skill-dir>/scripts/dpo-audit.py
+   ```
 
-3. **Check information duties (Art. 13/14)**
-   - Privacy notice complete and up to date?
-   - All processing purposes listed?
-   - Legal bases named?
-   - Data subject rights explained?
-   - Contact details of controller/DPO?
+   (`<skill-dir>` is this skill's directory. The call is dependency-free —
+   pure python3 stdlib, no PyYAML, no database.)
 
-4. **Check processor agreements (Art. 28)**
-   - All service providers with DPA captured?
-   - Sub-processors documented?
-   - Instruction-bound nature ensured?
+2. **Report is generated deterministically**
 
-5. **TOM check (Art. 32)**
-   Reference to Security Architect for technical measures:
-   - Encryption (at rest + in transit)
-   - Pseudonymisation
-   - Access control
-   - Backup & recovery
-   - Regular testing of measures
+   The runner writes the report pair under `dpo/reports/`:
+   - `dpo/reports/<date>_audit.md` — human-readable: pass/gap table, fix hint per GAP (`mapsTo`)
+   - `dpo/reports/<date>_audit.json` — machine-readable: the same data, structured
 
-**Output:** Compliance audit report with:
-- Records of Processing Activities (summary)
-- Compliance status per processing activity
-- Open measures prioritised
-- Positive findings
+   Each row carries the control ID, title, `quelle` (GDPR/nDSG article as audit evidence), status and detail.
+
+3. **Honest determinism — mechanical vs. judgement**
+
+   The runner cleanly separates two classes of checks and does NOT fake full automation:
+
+   | Check class | check_typ | Result | Who decides |
+   |-------------|-----------|--------|-------------|
+   | **Mechanical** | `file-exists`, `file-contains`, `grep-absent` | **PASS / GAP** (reproducible) | Machine |
+   | **Judgement** | `review` (purpose limitation, proportionality, third country, DPA) | **REVIEW-NEEDED** | Operator/skill — manually afterwards |
+
+   Mechanical checks return PASS/GAP reproducibly. Judgement checks deliberately return
+   **REVIEW-NEEDED** — the operator (or the skill afterwards) works these off using the
+   guiding questions below and records the outcome back into the report. No invented legal
+   advice — the skill poses the probing question, the operator decides.
+
+4. **REVIEW-NEEDED guiding questions (bound to control IDs)**
+
+   The existing substantive checkpoints remain as guiding questions — they are now each bound to
+   a control ID and surfaced into the report via the `review` type:
+
+   - **Records of Processing Activities (Art. 30)** — `GDPR-Art30-001`, `NDSG-Art12-001`
+     → [references/verarbeitungsverzeichnis.en.md](references/verarbeitungsverzeichnis.en.md)
+     Per processing activity: designation/purpose, categories of data subjects and data,
+     recipients (internal + external), third country transfers, retention periods, TOMs (→ Security Architect).
+   - **Information duties (Art. 13/14)** — `GDPR-Art13-001`, `NDSG-Art19-001`
+     Privacy notice complete/up to date? All purposes and legal bases named?
+     Data subject rights explained? Contact details of controller/DPO?
+   - **Legal basis & purpose limitation (Art. 6 / Art. 5)** — `GDPR-Art6-001`, `GDPR-Art5-001`, `GDPR-Art5-002`
+     Does each processing have a legal basis? A fixed, documented purpose? Is data minimisation met?
+   - **Processor agreements (Art. 28)** — `GDPR-Art28-001`
+     All service providers with DPA captured? Sub-processors documented? Instruction-bound nature?
+   - **Third country transfer (nDSG effects principle)** — `NDSG-Art16-001`
+     Transfers checked against the Federal Council country list? Proportionality?
+   - **TOMs (Art. 32 / nDSG Art. 8)** — `GDPR-Art32-001`, `GDPR-Art32-002`, `NDSG-Art8-001`
+     Encryption at rest/in transit, pseudonymisation, access control, backup, regular testing
+     (→ Security Architect). The secret/TLS checks already run mechanically here as `grep-absent`.
+
+**Output:** The deterministic report pair `dpo/reports/<date>_audit.{md,json}` —
+pass/gap table with fix hints and the open REVIEW-NEEDED list for the operator.
+
+> An **OSCAL export** of the results is planned as an optional later build stage (not part of this
+> story). Determinism comes from the versioned Git YAML catalogues — deliberately NO database.
+
+---
+
+## Control Catalogues
+
+AUDIT mode is fed by flat, versioned YAML catalogues. Each control is a mapping with a fixed schema:
+
+| Field | Meaning |
+|-------|---------|
+| `id` | Control ID (e.g. `GDPR-Art30-001`) |
+| `titel` | Plain-text label |
+| `evidenz` | Required evidence |
+| `check_typ` | `file-exists` \| `file-contains` \| `grep-absent` \| `review` |
+| `check_arg` | `file-exists` → path · `file-contains` → `path::needle` · `grep-absent` → regex (GAP if found in source) · `review` → empty |
+| `mapsTo` | Reference to check/artefact/fix hint |
+| `quelle` | **Mandatory** — origin (GDPR/nDSG article), audit evidence |
+| `ergebnis` | set during the run (PASS \| GAP \| REVIEW-NEEDED), empty in the catalogue |
+
+**Framework catalogues** (`dpo/controls/`):
+
+| Catalogue | Content |
+|-----------|---------|
+| `gdpr.yml` | GDPR controls (Art. 5/6/13/17/28/30/32) |
+| `ndsg.yml` | Swiss nDSG controls (Art. 8/12/16/19/22/24/25) — CH differentiator |
+| `nist-ai-600.yml` | optional, for AI processing |
+
+**Project overlay (BYO framework):** A project can place its own catalogues under
+`.claude/dpo/controls/` (`.yml` + `.json`, same schema). The runner automatically merges them
+with the framework catalogues. This way project-specific controls survive a framework update —
+they live in the project repo, not in the skill.
 
 ---
 
@@ -291,3 +349,5 @@ Security Architect                    DPO
 | [privacy-patterns.en.md](references/privacy-patterns.en.md) | Privacy by Design code patterns, pseudonymisation, consent flows |
 | [verarbeitungsverzeichnis.en.md](references/verarbeitungsverzeichnis.en.md) | Art. 30 template, example entries, mandatory fields |
 | [ndsg-schweiz.en.md](references/ndsg-schweiz.en.md) | Swiss nDSG particularities, comparison with GDPR, EDOEB |
+| [controls/gdpr.yml](controls/gdpr.yml), [controls/ndsg.yml](controls/ndsg.yml) | Deterministic control catalogues (schema: id/titel/evidenz/check_typ/check_arg/mapsTo/quelle/ergebnis); project overlay under `.claude/dpo/controls/` |
+| [scripts/dpo-audit.py](scripts/dpo-audit.py) | Deterministic AUDIT runner (python3 stdlib, dependency-free); produces `dpo/reports/<date>_audit.{md,json}` |

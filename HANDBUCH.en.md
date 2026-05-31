@@ -3071,7 +3071,7 @@ Since **BOO-74 (Wave M)** the DPO skill is a **framework bundle skill**: it live
 |------|---------|--------------------|--------|
 | ASSESS | Story plans new processing of personal data | `/ideation` Step 0e (`personal_data: true` in story frontmatter) | `dpia/DPIA-<feature>.md` from DPIA template, legal basis chosen |
 | REVIEW | Code change hits personal-data-paths | `/implement` Step 5.5b (Personal-Data-Paths-Gate) | Privacy findings inline + `journal/reports/local/<date>_<story>/privacy.md` |
-| AUDIT | Every N sprints (default 4, configurable via `environment.json.privacy_audit_cadence`) | `/sprint-review` Step 7c | Records-of-processing diff in sprint report, open compliance items |
+| AUDIT | Every N sprints (default 4, configurable via `environment.json.privacy_audit_cadence`) | `/sprint-review` Step 7c | Deterministic catalog report `dpo/reports/<date>_audit.{md,json}` with PASS/GAP/REVIEW-NEEDED per control (BOO-87) |
 
 DPO covers GDPR (EU), BDSG (DE) and nDSG (CH). Swiss specifics (no 72h limit, fines against natural persons, EDOEB instead of EU authority) are documented in the skill references.
 
@@ -3115,9 +3115,33 @@ bash bootstrap/scripts/migrate-to-v2.sh migrate_boo_69
 
 The operator maintains `PRIVACY.md` after the initial generation manually — fills in legal bases, data categories and deletion deadlines with project reality. DPO ASSESS mode can support the initial fill-in.
 
+### Deterministic control catalog (BOO-87)
+
+Since BOO-87 the AUDIT mode works through a **deterministic control catalog** instead of an AI free-text assessment. The catalog runner `dpo/scripts/dpo-audit.py` reads the versioned YAML catalogs under `dpo/controls/` control by control and produces a reproducible report pair `dpo/reports/<date>_audit.md` (+ `.json`). Invoke from the project root:
+
+```bash
+DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py
+```
+
+**What it is — control by control instead of an AI essay.** Each control is a clearly scoped check with `id`, `quelle` (e.g. a GDPR article), required `evidenz` and a `check_typ`. Mechanical checks (`file-exists`, `file-contains`, `grep-absent`) reproducibly yield **PASS** or **GAP**; judgment checks (`review`) yield **REVIEW-NEEDED**. The AI does not itself judge whether something is "compliant" — it runs the catalog and records the result.
+
+**Why no database.** Determinism and versioning come straight from the **Git YAML**. The catalogs are plain text, diffable and versioned together with the code. This makes "which rule applied at which commit?" answerable at any time — the audit state can be reproduced against any Git state (`same project state = same result`). A database would move this audit trail into a separate, harder-to-verify state; the YAML-in-repo solution stays dependency-free (python3 stdlib, no PyYAML) and auditable.
+
+**How to read the report.** The header names the loaded catalogs and the totals `n PASS · n GAP · n REVIEW-NEEDED`. The control table lists every check with its status:
+
+- **PASS** — mechanical check satisfied, no action needed.
+- **GAP** — mechanical check failed; the "Open GAPs" section names the evidence and `mapsTo` (where it belongs). The operator closes the gap.
+- **REVIEW-NEEDED** — judgment check that is **not** decided automatically. Honest determinism: the tool does not presume a legal verdict but flags the item for a **human to confirm**. That is a feature, not a shortcoming — no invented legal advice.
+
+**nDSG as the CH unique selling point.** The catalog `dpo/controls/ndsg.yml` covers the Swiss nDSG (in force since 2023) — including the CH specifics (the term "Bearbeitung" instead of "Verarbeitung", the effects principle for cross-border disclosure, EDOEB, DPIA per Art. 22). This is a deliberate differentiator: common agentic-security tools do not cover the nDSG.
+
+**OSCAL as a later expansion stage.** The flat YAML schema is deliberately kept minimal. An export to **OSCAL** (NIST Open Security Controls Assessment Language) for machine-interoperable compliance evidence is planned as a later expansion stage but is not implemented today.
+
+**Project overlays.** Project-specific controls are added additively under `.claude/dpo/controls/` (`.yml` or `.json`); the runner reads framework catalogs and overlays together. The framework/runner files themselves are not modified per project.
+
 ### Related appendices
 
-- **Appendix N (Token Efficiency):** DPO runs on `recommended_model: opus` (compliance-critical, audit-relevant). With active model routing, this is fairly accounted for in the sprint-review cost aggregate as opus tier.
+- **Appendix N (Token Efficiency):** DPO runs on `recommended_model: opus` (compliance-critical, audit-relevant). With active model routing, this is fairly accounted for in the sprint-review cost aggregate as opus tier. The deterministic catalog runner (BOO-87) itself needs no model — it runs dependency-free in python3.
 - **Appendix Q (Sovereignty Stack, BOO-71, planned):** Data sovereignty (US-vs-EU cloud providers) is a **separate topic** and not a privacy replacement — even a sovereign stack needs privacy-by-design. Appendix Q provides the inspiration layer for EU-compliant alternatives.
 - **Appendix F (Hermes Compound-Layer):** DPO is registered in the `metadata.hermes` mapping with `category: governance` and tags `[privacy, gdpr, dsgvo, ndsg, compliance]`.
 

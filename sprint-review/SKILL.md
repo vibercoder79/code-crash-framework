@@ -318,22 +318,24 @@ Detaillierte Symptome + Gegenmittel: `intentron/references/anti-pattern-katalog.
 
 > **Aktivierung:** Dieser Schritt wird nur ausgefuehrt, wenn `PRIVACY.md` im Projekt-Root existiert UND der Sprint-Counter die `privacy_audit_cadence`-Schwelle erreicht hat (aus `environment.json`, Default: alle 4 Sprints).
 
-**Zweck:** Periodische Datenschutz-Compliance-Pruefung via DPO AUDIT-Modus. Liefert Verarbeitungsverzeichnis-Diff, offene Compliance-Punkte und ggf. Hinweis auf neue DPIAs.
+**Zweck:** Periodische Datenschutz-Compliance-Pruefung via **deterministischem Kontrollkatalog** (BOO-87) statt Freitext-Bewertung. Der Katalog-Runner arbeitet die YAML-Kataloge unter `dpo/controls/` Control-fuer-Control ab und erzeugt ein reproduzierbares, auditor-ready Report-Paar.
 
 **Schritte:**
 
 1. **Cadence-Check:** Sprint-Counter (z.B. via `journal/sprints/`-Verzeichnis-Anzahl) gegen `environment.json.privacy_audit_cadence` pruefen. Wenn nicht erreicht: skip mit Log-Eintrag "BOO-69 DPO-Audit: Cadence nicht erreicht (Sprint {{N}} von {{CADENCE}})".
-2. **DPO AUDIT-Modus ausfuehren:** `/dpo --mode audit` mit dem Projekt-Root als Kontext.
-3. **DPO liefert:**
-   - Verarbeitungsverzeichnis-Diff (welche Verarbeitungen sind seit letztem Audit hinzugekommen, geaendert, gestrichen?)
-   - Offene Compliance-Punkte (z.B. fehlende Rechtsgrundlage, Loeschfrist unklar, DPIA ueberfaellig)
-   - Hinweis auf neue oder zu aktualisierende DPIAs unter `dpia/`
-4. **Aggregation in den Sprint-Report:** Sektion `## Privacy Audit (BOO-69)` mit DPO-Output, Cadence-Info, Empfehlungen.
-5. **Backlog-Folge-Stories anlegen** (falls offene Compliance-Punkte): pro offenem Punkt eine Story im Backlog-Adapter mit Label `privacy`.
+2. **Katalog-Runner ausfuehren** (deterministisch, BOO-87): aus dem Projekt-Root
+   `DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py`
+   (`<dpo-skill>` = Pfad des dpo-Skills, Standalone unter `~/.claude/skills/dpo/`). Der Runner liest `dpo/controls/gdpr.yml` + `ndsg.yml` plus optionale Projekt-Overlays unter `.claude/dpo/controls/`.
+3. **Erzeugtes Report-Paar** unter `dpo/reports/<date>_audit.md` (menschenlesbar) + `.json` (maschinenlesbar). Jeder Control hat den Status:
+   - **PASS** — mechanischer Check erfuellt (reproduzierbar)
+   - **GAP** — mechanischer Check fehlgeschlagen, konkrete Luecke (siehe `mapsTo`)
+   - **REVIEW-NEEDED** — Urteils-Check, den der Operator manuell bestaetigt (kein Auto-Urteil, keine Rechtsberatung)
+4. **Aggregation in den Sprint-Report:** Sektion `## Privacy Audit (BOO-69/BOO-87)` mit Verweis auf `dpo/reports/<date>_audit.md`, der PASS/GAP/REVIEW-NEEDED-Zusammenfassung sowie der **GAP-Liste** und den **REVIEW-NEEDED-Punkten**, die der Operator abarbeitet.
+5. **Backlog-Folge-Stories anlegen** (pro offenem GAP und pro offenem REVIEW-NEEDED-Punkt): je eine Story im Backlog-Adapter mit Label `privacy`.
 
 **Skip-Fall:** Wenn `PRIVACY.md` fehlt oder Cadence nicht erreicht → Schritt 7c ueberspringen, keine weiteren Konsequenzen.
 
-> **Issue-Referenz:** BOO-69. DPO-Skill als Standalone unter `~/.claude/skills/dpo/`. Configuration: `environment.json.privacy_audit_cadence` (Default 4). HANDBUCH-Hintergrund: Anhang O Privacy by Design §AUDIT-Modus.
+> **Issue-Referenz:** BOO-69 (Trigger) + BOO-87 (deterministischer Kontrollkatalog). DPO-Skill als Standalone unter `~/.claude/skills/dpo/`. Kataloge: `dpo/controls/`. Configuration: `environment.json.privacy_audit_cadence` (Default 4). HANDBUCH-Hintergrund: Anhang O Privacy by Design §AUDIT-Modus + §Deterministischer Kontrollkatalog (BOO-87).
 
 ### Schritt 8: Learning-Loop-Eintrag (PFLICHT wenn Learning-Loop aktiv)
 

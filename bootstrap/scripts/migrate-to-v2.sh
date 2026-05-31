@@ -3876,6 +3876,125 @@ REGISTER_PYEOF
 }
 
 # -----------------------------------------------------------------------------
+# BOO-87 — Deterministischer dpo-Kontrollkatalog: Projekt-Overlay + Reports-Dir — Wave X
+# -----------------------------------------------------------------------------
+
+migrate_boo_87() {
+    # BOO-87 — Leichtgewichtige Projekt-Migration fuer den deterministischen dpo-
+    # Kontrollkatalog. Kataloge (dpo/controls/gdpr.yml + ndsg.yml) und Runner
+    # (dpo/scripts/dpo-audit.py) werden MIT dem dpo-Skill (v1.2.0) verteilt und NICHT
+    # pro Projekt gescaffoldet. Diese Funktion legt nur das Projekt-Overlay-Verzeichnis
+    # (.claude/dpo/controls/) und das Reports-Verzeichnis (dpo/reports/) an.
+    # Idempotent + additiv: vorhandene Dateien/Verzeichnisse werden NIE ueberschrieben;
+    # das Kunden-Overlay ueberlebt Framework-Updates.
+    # https://linear.app/owlist/issue/BOO-87
+    log_info "BOO-87: dpo-Kontrollkatalog — Projekt-Overlay (.claude/dpo/controls/) + Reports-Dir (dpo/reports/) anlegen"
+    log_info "BOO-87: dpo control catalog — project overlay (.claude/dpo/controls/) + reports dir (dpo/reports/)"
+
+    local overlay_dir=".claude/dpo/controls"
+    local overlay_readme="$overlay_dir/README.md"
+    local reports_dir="dpo/reports"
+    local reports_keep="$reports_dir/.gitkeep"
+
+    # --- 1. Projekt-Overlay-Verzeichnis .claude/dpo/controls/ ---
+    ensure_dir "$overlay_dir"
+
+    # --- 2. Overlay-README.md (BYO-Overlay erklaeren) ---
+    if [[ -f "$overlay_readme" ]]; then
+        log_skip "$overlay_readme existiert (Kunden-Overlay nicht angetastet)"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $overlay_readme (BYO-Overlay-Doku, flaches dpo-Schema)"
+    else
+        cat > "$overlay_readme" <<'OVERLAY_README_EOF'
+# dpo — Projekt-Overlay (Bring Your Own Controls)
+
+Dieses Verzeichnis (`.claude/dpo/controls/`) ist das **Projekt-Overlay** fuer den
+deterministischen dpo-Kontrollkatalog. Hier ergaenzt du **projekt-eigene** Datenschutz-
+Kontrollen, die der Runner `dpo-audit.py` zusaetzlich zu den Framework-Katalogen
+(`dpo/controls/gdpr.yml` + `ndsg.yml`, kommen mit dem dpo-Skill) auswertet.
+
+Dieses Overlay **ueberlebt Framework-Updates** — der Skill-Katalog wird beim Update
+ersetzt, dein Overlay nie.
+
+## Format
+
+Dateien: `*.yml` oder `*.json` in diesem Verzeichnis. Gleiches **flaches Schema** wie
+`dpo/controls/*.yml`. Eine Liste von Kontroll-Eintraegen mit folgenden Feldern:
+
+| Feld        | Pflicht | Beschreibung                                                              |
+|-------------|---------|---------------------------------------------------------------------------|
+| `id`        | ja      | Eindeutige Kontroll-ID (z.B. `OV-001`).                                    |
+| `titel`     | ja      | Kurztitel der Kontrolle.                                                   |
+| `evidenz`   | ja      | Welcher Nachweis belegt die Kontrolle (auditor-ready Evidenz-Beschreibung).|
+| `check_typ` | ja      | Einer von: `file-exists`, `file-contains`, `grep-absent`, `review`.       |
+| `check_arg` | ja*     | Argument zum Check (Pfad bzw. Pfad + Muster). Bei `review` optional/leer.  |
+| `mapsTo`    | nein    | Verweis auf Regulierung/Artikel (z.B. `GDPR Art. 30`, `nDSG Art. 12`).     |
+| `quelle`    | nein    | Herkunft/Begruendung der Kontrolle (Policy, Interne Richtlinie, …).        |
+
+`*` `check_arg` ist Pflicht fuer alle Check-Typen ausser `review`.
+
+### check_typ — Semantik
+
+- `file-exists`  — PASS, wenn die in `check_arg` genannte Datei existiert; sonst GAP.
+- `file-contains`— PASS, wenn die Datei das Muster enthaelt (`check_arg`: `pfad::muster`); sonst GAP.
+- `grep-absent`  — PASS, wenn das Muster **nicht** vorkommt (`check_arg`: `pfad::muster`); sonst GAP.
+- `review`       — immer REVIEW-NEEDED (manuelle Pruefung durch DPO/Operator erforderlich).
+
+## Beispiel (`overlay.yml`)
+
+```yaml
+- id: OV-001
+  titel: Auftragsverarbeitungsvertrag dokumentiert
+  evidenz: docs/privacy/avv-liste.md listet alle Auftragsverarbeiter mit AVV-Status.
+  check_typ: file-exists
+  check_arg: docs/privacy/avv-liste.md
+  mapsTo: GDPR Art. 28
+  quelle: Interne Datenschutz-Richtlinie §4
+
+- id: OV-002
+  titel: Keine Klartext-Personendaten in Logs
+  evidenz: Quellcode enthaelt kein Logging von E-Mail/Name auf INFO-Level.
+  check_typ: grep-absent
+  check_arg: src/::logger.info\(.*email
+  mapsTo: GDPR Art. 5 (1)(f)
+  quelle: Security-Review-Befund 2026
+
+- id: OV-003
+  titel: Loeschkonzept fachlich freigegeben
+  evidenz: DPO bestaetigt Loeschfristen pro Verarbeitungstaetigkeit.
+  check_typ: review
+  mapsTo: GDPR Art. 17
+  quelle: Jaehrliches Datenschutz-Audit
+```
+
+## Audit ausfuehren
+
+Der Runner kommt mit dem dpo-Skill (v1.2.0+), nicht aus diesem Repo:
+
+```bash
+DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py
+```
+
+Er liest die Framework-Kataloge `dpo/controls/*.yml`, ergaenzt dieses Overlay und
+schreibt den Report nach `dpo/reports/`.
+OVERLAY_README_EOF
+        log_info "created $overlay_readme (BOO-87, BYO-Overlay-Doku)"
+    fi
+
+    # --- 3. Reports-Verzeichnis dpo/reports/ (mit .gitkeep) ---
+    ensure_dir "$reports_dir"
+    ensure_file "$reports_keep"
+
+    # --- 4. KEIN Scaffolding von Katalog/Runner/Skill — nur Operator-Hinweis ---
+    log_manual "Operator: Kataloge (dpo/controls/*.yml) + Runner (dpo-audit.py) kommen MIT dem dpo-Skill (v1.2.0) — werden NICHT pro Projekt scaffolded."
+    log_manual "Operator: Audit laeuft via 'DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py' und nutzt die Framework-Kataloge dpo/controls/*.yml; Report landet in dpo/reports/."
+    log_manual "Operator: Projekt-eigene Kontrollen in .claude/dpo/controls/*.yml ergaenzen (siehe README — flaches Schema, ueberlebt Framework-Updates)."
+
+    log_info "BOO-87 done. Idempotent + additiv: zweiter Lauf erzeugt nur SKIPs, Kunden-Overlay bleibt unberuehrt."
+    return 0
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3896,6 +4015,7 @@ ALL_ISSUES=(
     BOO-75 BOO-76 BOO-77
     BOO-79 BOO-80 BOO-81
     BOO-86
+    BOO-87
 )
 
 print_help() {

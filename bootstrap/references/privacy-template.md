@@ -103,7 +103,7 @@ Der `dpo`-Skill liefert drei Modi, jeder mit klarem Trigger-Punkt in der Pipelin
 |-------|---------|------------------|--------|
 | ASSESS | Story plant neue Verarbeitung personenbezogener Daten | `/ideation` Schritt 0e (`personal_data: true`) | `dpia/DPIA-<feature>.md` aus Template, Rechtsgrundlage gewaehlt |
 | REVIEW | Code-Aenderung trifft personal-data-paths | `/implement` Schritt 5.5b (Personal-Data-Paths-Gate) | Privacy-Findings inline + `journal/reports/local/<date>_<story>/privacy.md` |
-| AUDIT | Alle N Sprints (Default 4, konfigurierbar) | `/sprint-review` Schritt 7c | Verarbeitungsverzeichnis-Diff im Sprint-Report, offene Compliance-Punkte |
+| AUDIT | Alle N Sprints (Default 4, konfigurierbar) | `/sprint-review` Schritt 7c | Deterministischer Katalog-Report `dpo/reports/<date>_audit.md` mit PASS/GAP/REVIEW-NEEDED je Control |
 
 Ablauf einer Story mit `personal_data: true`:
 
@@ -112,7 +112,23 @@ Ablauf einer Story mit `personal_data: true`:
 3. `/implement` Schritt 5.5b prueft bei Code-Aenderung in personal-data-paths → triggert `dpo --mode review`
 4. DPO REVIEW dokumentiert Befunde, blockiert bei HOCH-Findings
 5. `/implement` Schritt 6e ergaenzt Privacy-Findings zur Security-Findings-Doku
-6. `/sprint-review` Schritt 7c (alle N Sprints) triggert DPO AUDIT fuer Verarbeitungsverzeichnis-Pflege
+6. `/sprint-review` Schritt 7c (alle N Sprints) triggert den deterministischen DPO-AUDIT fuer den Compliance-Nachweis
+
+## 7a. Audit-Nachweis (deterministischer Kontrollkatalog, BOO-87)
+
+Der Compliance-Status dieses Projekts wird **Control-fuer-Control belegt** — nicht per Freitext-Bewertung. Der jeweils aktuelle Report
+
+`dpo/reports/<date>_audit.md`
+
+ist der **auditor-ready Nachweis**: Er fuehrt jeden Control mit Status auf — **PASS** (mechanischer Check erfuellt), **GAP** (konkrete Luecke) oder **REVIEW-NEEDED** (Urteils-Check, vom Operator manuell bestaetigt). Weil der Report deterministisch aus versionierten Katalogen erzeugt wird, gilt: gleicher Projektstand = gleiches Ergebnis (reproduzierbar).
+
+Die Kataloge liegen als versionierte YAML unter `dpo/controls/` (`gdpr.yml` fuer DSGVO/EU, `ndsg.yml` fuer das Schweizer nDSG). **Projekt-eigene Controls** werden additiv als Overlay unter `.claude/dpo/controls/` ergaenzt (`.yml` oder `.json`) — der Runner liest Framework-Kataloge und Projekt-Overlays gemeinsam ab. Erzeugung des Reports:
+
+```bash
+DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py
+```
+
+Hintergrund und Lese-Anleitung: HANDBUCH Anhang O §Deterministischer Kontrollkatalog (BOO-87).
 
 ## 8. Incident-Notiz (Datenschutz-Vorfall)
 

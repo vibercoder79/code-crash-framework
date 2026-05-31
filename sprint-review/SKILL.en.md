@@ -319,22 +319,24 @@ Full symptoms + countermeasures: `intentron/references/anti-pattern-katalog.en.m
 
 > **Activation:** this step runs only if `PRIVACY.md` exists in the project root AND the sprint counter has reached the `privacy_audit_cadence` threshold (from `environment.json`, default: every 4 sprints).
 
-**Purpose:** periodic privacy compliance check via DPO AUDIT mode. Delivers records-of-processing diff, open compliance items, and possibly a hint about new DPIAs.
+**Purpose:** periodic privacy compliance check via a **deterministic control catalog** (BOO-87) instead of free-text assessment. The catalog runner works through the YAML catalogs under `dpo/controls/` control by control and produces a reproducible, auditor-ready report pair.
 
 **Steps:**
 
 1. **Cadence check:** compare sprint counter (e.g. via count of `journal/sprints/` directory) against `environment.json.privacy_audit_cadence`. If not reached: skip with log entry "BOO-69 DPO audit: cadence not reached (sprint {{N}} of {{CADENCE}})".
-2. **Run DPO AUDIT mode:** `/dpo --mode audit` with the project root as context.
-3. **DPO delivers:**
-   - Records-of-processing diff (which processings have been added, changed, removed since the last audit?)
-   - Open compliance items (e.g. missing legal basis, unclear deletion period, DPIA overdue)
-   - Hint about new or to-be-updated DPIAs under `dpia/`
-4. **Aggregation into the sprint report:** section `## Privacy Audit (BOO-69)` with DPO output, cadence info, recommendations.
-5. **Create backlog follow-up stories** (if open compliance items): per open item one story in the backlog adapter with label `privacy`.
+2. **Run the catalog runner** (deterministic, BOO-87): from the project root
+   `DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py`
+   (`<dpo-skill>` = path of the dpo skill, standalone under `~/.claude/skills/dpo/`). The runner reads `dpo/controls/gdpr.yml` + `ndsg.yml` plus optional project overlays under `.claude/dpo/controls/`.
+3. **Generated report pair** under `dpo/reports/<date>_audit.md` (human-readable) + `.json` (machine-readable). Each control carries a status:
+   - **PASS** — mechanical check satisfied (reproducible)
+   - **GAP** — mechanical check failed, concrete gap (see `mapsTo`)
+   - **REVIEW-NEEDED** — judgment check that the operator confirms manually (no auto-verdict, no legal advice)
+4. **Aggregation into the sprint report:** section `## Privacy Audit (BOO-69/BOO-87)` referencing `dpo/reports/<date>_audit.md`, the PASS/GAP/REVIEW-NEEDED summary, plus the **GAP list** and the **REVIEW-NEEDED items** the operator works through.
+5. **Create backlog follow-up stories** (per open GAP and per open REVIEW-NEEDED item): one story each in the backlog adapter with label `privacy`.
 
 **Skip case:** if `PRIVACY.md` is missing or cadence not reached → skip Step 7c, no further consequences.
 
-> **Issue reference:** BOO-69. DPO skill as standalone under `~/.claude/skills/dpo/`. Configuration: `environment.json.privacy_audit_cadence` (default 4). HANDBUCH background: Appendix O Privacy by Design §AUDIT mode.
+> **Issue reference:** BOO-69 (trigger) + BOO-87 (deterministic control catalog). DPO skill as standalone under `~/.claude/skills/dpo/`. Catalogs: `dpo/controls/`. Configuration: `environment.json.privacy_audit_cadence` (default 4). HANDBUCH background: Appendix O Privacy by Design §AUDIT mode + §Deterministic control catalog (BOO-87).
 
 ### Step 8: Learning-loop entry (mandatory if learning loop active)
 
