@@ -42,7 +42,7 @@ Beantwortet "Warum haben wir X so gebaut?" für neue Entwickler und KI-Assistent
 
 ### KI-Architektur-Prinzipien + Anti-Patterns (Schrader Kap. 4, Pflicht)
 
-> Referenz: `code-crash-framework/references/ki-architektur-prinzipien.md` — proaktiv verankert durch `/bootstrap`, reaktiv geprüft durch `/architecture-review` (BOO-7).
+> Referenz: `intentron/references/ki-architektur-prinzipien.md` — proaktiv verankert durch `/bootstrap`, reaktiv geprüft durch `/architecture-review` (BOO-7).
 > Schrader: "Die Prinzipien sind Voraussetzung, keine Option." (Kap. 4, Z. 1806)
 
 **Die 4 Prinzipien (Was tun?):**

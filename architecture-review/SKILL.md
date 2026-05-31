@@ -73,7 +73,7 @@ Eine einzelne Story oder geplante Aenderung architektonisch bewerten.
 4. Relevante Dimensionen pruefen (nicht immer alle):
    Siehe [references/dimensions-detail.md](references/dimensions-detail.md)
    **Standard-Dimensionen:** Reliability, Data Integrity, Security, Performance, Observability, Maintainability, Testability, Scalability.
-   **KI-Tauglichkeit (Standard, BOO-7):** 8 Checks (4 Prinzipien + 4 Anti-Patterns) aus Schrader Kap. 4. Referenz: `code-crash-framework/references/ki-architektur-prinzipien.md`. Detail: [references/dimensions-detail.md §9](references/dimensions-detail.md).
+   **KI-Tauglichkeit (Standard, BOO-7):** 8 Checks (4 Prinzipien + 4 Anti-Patterns) aus Schrader Kap. 4. Referenz: `intentron/references/ki-architektur-prinzipien.md`. Detail: [references/dimensions-detail.md §9](references/dimensions-detail.md).
    **Add-ons (wenn aktiv):** Privacy / DSGVO, Cost Efficiency, Signal Quality, Compliance.
 4. Risiken und Empfehlungen praesentieren
 5. Falls noetig: Aenderungen an der Story vorschlagen

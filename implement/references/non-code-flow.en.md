@@ -6,7 +6,7 @@
 
 ## Why this exists at all
 
-The Code-Crash framework is code-first. The quality gates 6a (ESLint/Ruff), 6a-bis (Semgrep),
+The INTENTRON framework is code-first. The quality gates 6a (ESLint/Ruff), 6a-bis (Semgrep),
 6a-tris (dependency check) and 6a-quart (coverage) all depend on code diffs.
 
 **The problem:** Some stories don't produce a code diff but are still real implementations with

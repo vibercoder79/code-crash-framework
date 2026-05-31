@@ -2,7 +2,7 @@
 
 ## Summary
 
-HANDBUCH-Anhang R "Multi-Operator-Koordination" (DE+EN): Inspirations-Schicht fuer Teams jenseits Anhang-P-Szenario-4. Anhang P (BOO-70) hat "Team mit Coding-Server" fuer 2-5 Operatoren dokumentiert, aber wenn ein Beratungsmandat mit 10-20 Personen oder ein groesseres Inhouse-Team Code-Crash adoptieren will, fehlen Antworten auf: Branch-Strategie, Code-Owners pro Datei-Bereich, Doku-SSoT-Wahl im Team, Skill-Pool-Governance, Konflikt-Eskalation. Anhang R liefert die drei Layer (Code / Koordination / Doku) mit "was skaliert, was nicht, welche Optionen hat der Operator". **Reine Doku, kein Framework-Code-Change**, kein neuer Skill, keine neue Bootstrap-Frage. Inklusive 1 hochwertigem Excalidraw-Sketch als visuelles Anker-Bild.
+HANDBUCH-Anhang R "Multi-Operator-Koordination" (DE+EN): Inspirations-Schicht fuer Teams jenseits Anhang-P-Szenario-4. Anhang P (BOO-70) hat "Team mit Coding-Server" fuer 2-5 Operatoren dokumentiert, aber wenn ein Beratungsmandat mit 10-20 Personen oder ein groesseres Inhouse-Team INTENTRON adoptieren will, fehlen Antworten auf: Branch-Strategie, Code-Owners pro Datei-Bereich, Doku-SSoT-Wahl im Team, Skill-Pool-Governance, Konflikt-Eskalation. Anhang R liefert die drei Layer (Code / Koordination / Doku) mit "was skaliert, was nicht, welche Optionen hat der Operator". **Reine Doku, kein Framework-Code-Change**, kein neuer Skill, keine neue Bootstrap-Frage. Inklusive 1 hochwertigem Excalidraw-Sketch als visuelles Anker-Bild.
 
 ## Why
 
@@ -36,7 +36,7 @@ Der Anhang strukturiert die Antwort entlang dreier Layer. Jede Layer-Sektion hat
 - **Operator-Optionen:**
   - **Trunk-Based Development**: kleine Stories, schnelles Mergen (1-2 Tage pro Branch), Feature-Flags fuer "noch nicht fertig"-Code. Gut fuer hohe Release-Frequenz.
   - **GitFlow**: `develop` + `release/*` Branches zusaetzlich zu `main`. Audit-tauglich, gut fuer regulierte Branchen mit kalendarischen Releases.
-  - **Feature-Branches mit PR-Review (Standard heute):** pro Story ein Branch, PR-Review-Gate, Merge in `main`. Einfach, robust, der Code-Crash-Default.
+  - **Feature-Branches mit PR-Review (Standard heute):** pro Story ein Branch, PR-Review-Gate, Merge in `main`. Einfach, robust, der INTENTRON-Default.
 - **Empfehlung:**
   - 5-10 Operatoren: Feature-Branches reichen.
   - 10-20: Trunk-Based oder Feature-Branches mit verbindlichem PR-Reviewer-Pool.

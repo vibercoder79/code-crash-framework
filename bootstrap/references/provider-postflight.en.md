@@ -54,7 +54,7 @@ Bootstrap asks:
 ```text
 Should the Research skill be installed?
 Source:
-  a) included in the Code-Crash Framework
+  a) included in INTENTRON
   b) companion skill from claudecodeskills/research
   c) already installed globally
   d) do not install

@@ -52,7 +52,7 @@ Operator-Themen, die als eigene Stories anstehen:
 
 - **Multi-Projekt-Onboarding:** wie ein zweites/drittes Projekt auf einer Maschine aufsetzen, wenn die Basis (Tools, Skills) schon installiert ist — leichtgewichtiger pro-Projekt-Pfad vs. vollem Bootstrap. Braucht Doku + Sketch.
 - **Projekt-Verification-Checkliste:** "Framework installiert — jetzt der Proof, dass alles funktioniert" (Linter da, Hooks feuern, Skills schreiben Artefakte, Artefakte existieren). Doku-Checkliste + ggf. automatisierender Skill.
-- **Existing-Project-Onboarding-Skill:** ein bestehendes Projekt fuer Code-Crash vorbereiten.
+- **Existing-Project-Onboarding-Skill:** ein bestehendes Projekt fuer INTENTRON vorbereiten.
 - **Tools-/Container-Setup:** wie die Toolchain konkret eingebunden wird (Container-Entscheidung klaeren).
 
 ## Verweise

@@ -211,7 +211,7 @@ Story points are not just token estimate but also mode selector. The mode is set
 
 Before every story `/implement` step 0b checks the current token level against the story estimate (see BOO-40). At projected > 80%, sprint close is recommended.
 
-**Details:** see `code-crash-framework/HANDBUCH.md` Appendix G "Sprint-sizing mechanics".
+**Details:** see `intentron/HANDBUCH.md` Appendix G "Sprint-sizing mechanics".
 
 ---
 

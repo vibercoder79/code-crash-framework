@@ -37,7 +37,7 @@ operator: <handle>
 
 # Migrations-Status <Projekt>
 
-Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/migration-checklist-v1-to-v2.md`. Status hier pflegen, nicht in der Master.
+Spiegel der Master-Checkliste aus `intentron/bootstrap/references/migration-checklist-v1-to-v2.md`. Status hier pflegen, nicht in der Master.
 
 | BOO  | Titel                                               | Status | Datum      | Notizen                  |
 | ---- | --------------------------------------------------- | ------ | ---------- | ------------------------ |
@@ -89,21 +89,21 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 ### BOO-1 — /intent-Skill bauen (Schrader Kap. 4)
 
 **Status:** ☐ offen
-**Aufwand:** klein-mittel (Skill selbst ist seit 2026-05-01 in `code-crash-framework/intent/` verfuegbar — pro Bestands-Projekt nur `intents/`-Verzeichnis nachziehen)
+**Aufwand:** klein-mittel (Skill selbst ist seit 2026-05-01 in `intentron/intent/` verfuegbar — pro Bestands-Projekt nur `intents/`-Verzeichnis nachziehen)
 **Linear:** https://linear.app/owlist/issue/BOO-1
 **Auto-Schritt:** ja (Schritte 1-3 idempotent automatisiert)
 **Schritte:**
-0. Aus dem Bestands-Projekt-Root: `bash <pfad-zum-skill-repo>/code-crash-framework/bootstrap/scripts/migrate-to-v2.sh --issue BOO-1` ausfuehren — legt Schritte 1-3 automatisch an.
+0. Aus dem Bestands-Projekt-Root: `bash <pfad-zum-skill-repo>/intentron/bootstrap/scripts/migrate-to-v2.sh --issue BOO-1` ausfuehren — legt Schritte 1-3 automatisch an.
 1. Verzeichnis `intents/` im Repo-Root (Speicherort fuer Intent-Dateien pro Initiative).
 2. `intents/.gitkeep` anlegen, damit das Verzeichnis im Repo bleibt.
 3. `intents/README.md` mit Hinweis auf den `/intent`-Skill und Datei-Konvention `intents/INTENT-XX.md` + paralleler `INTENT-XX.validation.md`.
 4. **Manuell:** Pruefen, ob bestehende `docs/intent.md` oder vergleichbare Notizen existieren — falls ja, nach `intents/legacy.md` migrieren mit Hinweis auf neue Konvention.
-5. **Manuell:** Skill verfuegbar machen — entweder via `/bootstrap`-Update (Phase 5 zieht alle Sub-Skills) oder durch Kopieren von `code-crash-framework/intent/` nach `~/.claude/skills/intent/` bzw. `<projekt>/.claude/skills/intent/`.
+5. **Manuell:** Skill verfuegbar machen — entweder via `/bootstrap`-Update (Phase 5 zieht alle Sub-Skills) oder durch Kopieren von `intentron/intent/` nach `~/.claude/skills/intent/` bzw. `<projekt>/.claude/skills/intent/`.
 6. **Test:** `ls intents/ && cat intents/README.md` → Verzeichnis und README vorhanden. Skill-Trigger `/intent` im Projekt funktioniert.
 
 **Rollback:** `rm -rf intents/`, ggf. `docs/intent.md` aus Git-History wiederherstellen.
 **Abhaengigkeiten:** keine
-**Skill-Quelle:** `~/Documents/GitHub/claudecodeskills/code-crash-framework/intent/` (Erstveroeffentlichung 2026-05-01, v1.0.0)
+**Skill-Quelle:** `~/Documents/GitHub/claudecodeskills/intentron/intent/` (Erstveroeffentlichung 2026-05-01, v1.0.0)
 
 ### BOO-2 — ESLint-Regelsatz haerten (Airbnb + security + sonarjs)
 
@@ -112,7 +112,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Linear:** https://linear.app/owlist/issue/BOO-2
 **Auto-Schritt:** teilweise (npm install + Konfig-Anzeige automatisierbar, Datei-Replacement bewusst manuell wegen moeglicher Hausregel-Anpassungen)
 **Schritte:**
-1. **Auto-Vorbereitung:** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/code-crash-framework/bootstrap/scripts/migrate-to-v2.sh --issue BOO-2` ausfuehren — installiert die npm-Pakete (Node-Projekte) bzw. zeigt den Operator-Hinweis fuer Python.
+1. **Auto-Vorbereitung:** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/intentron/bootstrap/scripts/migrate-to-v2.sh --issue BOO-2` ausfuehren — installiert die npm-Pakete (Node-Projekte) bzw. zeigt den Operator-Hinweis fuer Python.
 2. **Node.js / Full-Stack:** `npm install --save-dev eslint @eslint/js eslint-config-airbnb-base eslint-plugin-security eslint-plugin-sonarjs @eslint/compat` (mit React: `eslint-config-airbnb` statt `-base`).
 3. **Node.js:** `eslint.config.mjs` aus aktualisiertem `bootstrap/references/file-templates.md` §eslint.config.mjs uebernehmen (4-Layer-Stack: Recommended + Airbnb + Security + SonarJS + Hausregeln).
 4. **Python:** in `pyproject.toml` den Block `[tool.ruff.lint]` aus `file-templates.md` §pyproject.toml uebernehmen — `select` enthaelt `S` (flake8-bandit), `B` (bugbear), `C4` (comprehensions). Plus `[tool.ruff.lint.per-file-ignores]` fuer Tests/Migrations.
@@ -121,7 +121,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** Pakete deinstallieren (`npm uninstall eslint-config-airbnb-base eslint-plugin-security eslint-plugin-sonarjs @eslint/compat`), `eslint.config.mjs` und `pyproject.toml` aus Git-History wiederherstellen.
 **Abhaengigkeiten:** keine
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §eslint.config.mjs + §pyproject.toml (BOO-2 v3.2.2, 2026-05-01) — und `code-crash-framework/implement/SKILL.md` §Schritt 6a fuer den deklarativen Iterations-Loop.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §eslint.config.mjs + §pyproject.toml (BOO-2 v3.2.2, 2026-05-01) — und `intentron/implement/SKILL.md` §Schritt 6a fuer den deklarativen Iterations-Loop.
 
 ---
 
@@ -134,7 +134,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Linear:** https://linear.app/owlist/issue/BOO-3
 **Auto-Schritt:** ja (sprach-aware)
 **Schritte:**
-1. **Auto-Vorbereitung:** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/code-crash-framework/bootstrap/scripts/migrate-to-v2.sh --issue BOO-3` ausfuehren — legt `.semgrep.yml` und `.semgrepignore` mit sprach-erkanntem Default-Ruleset an. Idempotent — vorhandene Dateien werden nicht ueberschrieben.
+1. **Auto-Vorbereitung:** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/intentron/bootstrap/scripts/migrate-to-v2.sh --issue BOO-3` ausfuehren — legt `.semgrep.yml` und `.semgrepignore` mit sprach-erkanntem Default-Ruleset an. Idempotent — vorhandene Dateien werden nicht ueberschrieben.
 2. **Auto:** `.semgrep.yml` enthaelt drei Layer:
    - **Layer 1 (Pflicht, alle Stacks):** `p/security-audit`, `p/secrets`
    - **Layer 2 (sprach-spezifisch, auto-erkannt):** `p/javascript` aktiv wenn `package.json` vorhanden, `p/python` aktiv wenn `pyproject.toml` vorhanden
@@ -147,7 +147,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** `.semgrep.yml` und `.semgrepignore` loeschen.
 **Abhaengigkeiten:** keine
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §.semgrep.yml + §.semgrepignore (BOO-3 v3.2.3, 2026-05-06) — und `code-crash-framework/bootstrap/SKILL.md` §4.4b fuer den Bootstrap-Flow neuer Projekte.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §.semgrep.yml + §.semgrepignore (BOO-3 v3.2.3, 2026-05-06) — und `intentron/bootstrap/SKILL.md` §4.4b fuer den Bootstrap-Flow neuer Projekte.
 
 ### BOO-4 — /implement Schritt 6a-bis: Semgrep als zweiter Gate (Pre-Commit + CI)
 
@@ -167,7 +167,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** `.git/hooks/pre-commit` und `.github/workflows/semgrep.yml` loeschen.
 **Abhaengigkeiten:** BOO-3 (Semgrep-Manifest muss existieren)
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §.git/hooks/pre-commit + §.github/workflows/semgrep.yml (BOO-4 v3.2.4, 2026-05-06) — und `code-crash-framework/implement/SKILL.md` §Schritt 6a-bis fuer den Iterations-Loop.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §.git/hooks/pre-commit + §.github/workflows/semgrep.yml (BOO-4 v3.2.4, 2026-05-06) — und `intentron/implement/SKILL.md` §Schritt 6a-bis fuer den Iterations-Loop.
 
 ### BOO-5 — /bootstrap: SonarQube Cloud Auto-Setup
 
@@ -203,7 +203,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** Skills auf v1.9.0 / v2.2.0 zuruecksetzen (`git checkout <pre-boo6-commit> -- architecture-review/ sprint-review/`). Effekt: kein SonarQube-Lese-Block, Reviews laufen ohne diese Metriken.
 **Abhaengigkeiten:** BOO-5 (SonarQube-Cloud-Setup + sonar-project.properties + SONAR_TOKEN). Nutzt auch BOO-32 (`journal/reports/ci/`-Konvention) und BOO-36 (`journal/reports/local/`-Konvention) fuer die erweiterte Sprint-Review-Aggregation.
-**Skill-Quelle:** `code-crash-framework/architecture-review/SKILL.md` §SonarQube-Cloud-API-Lese-Block + `code-crash-framework/sprint-review/SKILL.md` §Schritt 2b.
+**Skill-Quelle:** `intentron/architecture-review/SKILL.md` §SonarQube-Cloud-API-Lese-Block + `intentron/sprint-review/SKILL.md` §Schritt 2b.
 
 ### BOO-12 — Dependency + Halluzinations-Check Pre-Commit (Slopsquatting-Schutz)
 
@@ -223,7 +223,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** `.claude/hooks/dependency-check.sh` loeschen, Pre-Commit-Hook (`.git/hooks/pre-commit`) Aufruf-Zeile entfernen.
 **Abhaengigkeiten:** BOO-4 (Pre-Commit-Hook-Infrastruktur)
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §hooks/dependency-check.sh (BOO-12 v3.2.5, 2026-05-06) — und `code-crash-framework/implement/SKILL.md` §Schritt 6a-tris fuer den Workflow-Anschluss.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §hooks/dependency-check.sh (BOO-12 v3.2.5, 2026-05-06) — und `intentron/implement/SKILL.md` §Schritt 6a-tris fuer den Workflow-Anschluss.
 
 ### BOO-15 — /implement Coverage-Gate (>=80% fuer neuen Code)
 
@@ -245,7 +245,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** `.claude/hooks/coverage-check.sh` loeschen.
 **Abhaengigkeiten:** keine (laeuft unabhaengig von BOO-4-Hook)
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §hooks/coverage-check.sh (BOO-15 v3.2.6, 2026-05-06) — und `code-crash-framework/implement/SKILL.md` §Schritt 6a-quart fuer den Workflow-Anschluss.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §hooks/coverage-check.sh (BOO-15 v3.2.6, 2026-05-06) — und `intentron/implement/SKILL.md` §Schritt 6a-quart fuer den Workflow-Anschluss.
 
 ### BOO-27 — Issue-Template: 4 Schrader-Prompt-Bestandteile als Pflichtfelder + Pre-Flight-Check
 
@@ -267,7 +267,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Rollback:** `.github/ISSUE_TEMPLATE/story.yml` loeschen.
 **Abhaengigkeiten:** keine
 
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/issue-writing-guidelines-template.de.md` v3.0 (BOO-27) + `code-crash-framework/implement/SKILL.md` v2.1.0 §Schritt 1b fuer den HARD GATE.
+**Skill-Quelle:** `intentron/bootstrap/references/issue-writing-guidelines-template.de.md` v3.0 (BOO-27) + `intentron/implement/SKILL.md` v2.1.0 §Schritt 1b fuer den HARD GATE.
 
 ### BOO-28 — /bootstrap: ESLint als GitHub Action konfigurieren (CI-Gate)
 
@@ -301,7 +301,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 3. `.gitignore`-Eintrag `.ci-reports/` entfernen (manueller Edit).
 
 **Abhaengigkeiten:** BOO-2 (ESLint-Config muss bereits gehaertet sein), BOO-32 (SARIF-Konsumtion durch Hermes — Pflicht-Output-Format jetzt schon vorbereitet).
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §`.github/workflows/eslint.yml (BOO-28 — ESLint CI Gate)` + §`.github/workflows/ruff.yml (BOO-28 — Ruff CI Gate)` (v3.17.0, 2026-05-12) — und `code-crash-framework/bootstrap/SKILL.md` Phase 4.4 fuer den Bootstrap-Flow neuer Projekte.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §`.github/workflows/eslint.yml (BOO-28 — ESLint CI Gate)` + §`.github/workflows/ruff.yml (BOO-28 — Ruff CI Gate)` (v3.17.0, 2026-05-12) — und `intentron/bootstrap/SKILL.md` Phase 4.4 fuer den Bootstrap-Flow neuer Projekte.
 
 ### BOO-29 — /bootstrap: Branch-Protection mit Required Status Checks
 
@@ -349,7 +349,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Abhaengigkeiten:** BOO-28 (ESLint-Workflow), BOO-4 (Semgrep-Workflow), BOO-5 (SonarQube-Workflow), BOO-15 (Coverage), BOO-16 (Perf) — mindestens einer der Workflows muss existieren, sonst wird die Protection ohne Required Status Checks gesetzt (Skript-Warnung).
 
-**Skill-Quelle:** `code-crash-framework/bootstrap/scripts/setup-branch-protection.sh` (v3.18.0, 2026-05-12), `code-crash-framework/bootstrap/scripts/migrate-to-v2.sh` §`migrate_boo_29` (v3.18.0) — und `code-crash-framework/bootstrap/SKILL.md` Phase 4.4k fuer den Bootstrap-Flow neuer Projekte.
+**Skill-Quelle:** `intentron/bootstrap/scripts/setup-branch-protection.sh` (v3.18.0, 2026-05-12), `intentron/bootstrap/scripts/migrate-to-v2.sh` §`migrate_boo_29` (v3.18.0) — und `intentron/bootstrap/SKILL.md` Phase 4.4k fuer den Bootstrap-Flow neuer Projekte.
 
 ### BOO-30 — Linear-Workflow-States + Definition-of-Done konfigurieren
 
@@ -394,7 +394,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 3. Linear-States: in Linear-UI loeschen oder umbenennen (zerstoert dann allerdings die Historie aller Bestands-Issues).
 
 **Abhaengigkeiten:** BOO-27 (Issue-Template muss vorhanden sein, sonst `[WARN]` + Abbruch des Patch-Schritts), BOO-29 (Required Status Checks werden in der DoD-Checkliste referenziert).
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/issue-writing-guidelines-template.de.md` v3.1 (BOO-30), `code-crash-framework/bootstrap/scripts/migrate-to-v2.sh` §`migrate_boo_30` (v3.19.0, 2026-05-12), `code-crash-framework/bootstrap/SKILL.md` Phase 4.4l, `code-crash-framework/HANDBUCH.md` §8g Linear-Setup pro Projekt.
+**Skill-Quelle:** `intentron/bootstrap/references/issue-writing-guidelines-template.de.md` v3.1 (BOO-30), `intentron/bootstrap/scripts/migrate-to-v2.sh` §`migrate_boo_30` (v3.19.0, 2026-05-12), `intentron/bootstrap/SKILL.md` Phase 4.4l, `intentron/HANDBUCH.md` §8g Linear-Setup pro Projekt.
 
 ### BOO-34 — /bootstrap: .claude/environment.json — Skill-Umgebungs-Awareness
 
@@ -416,7 +416,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** `.claude/environment.json` und `.claude/generate-environment-json.sh` loeschen.
 **Abhaengigkeiten:** keine
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §`.claude/environment.json` + §`.claude/generate-environment-json.sh` (BOO-34 v3.3.0, 2026-05-06) — und `code-crash-framework/bootstrap/SKILL.md` Phase 4.4e fuer den Bootstrap-Flow neuer Projekte.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §`.claude/environment.json` + §`.claude/generate-environment-json.sh` (BOO-34 v3.3.0, 2026-05-06) — und `intentron/bootstrap/SKILL.md` Phase 4.4e fuer den Bootstrap-Flow neuer Projekte.
 
 ### BOO-36 — /implement: Local-Iteration-Outputs in journal/reports/local/ persistieren
 
@@ -447,7 +447,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** §9 aus `Projekt-Governance.md` entfernen, threshold-Felder aus environment.json zuruecknehmen. Effekt: Skill warnt nicht mehr vor Window-Erschoepfung (BOO-40 wird wirkungslos).
 **Abhaengigkeiten:** keine. Voraussetzung fuer BOO-39 (Token-Heuristik referenziert die SP-Tabelle) und BOO-40 (Pre-Flight nutzt die thresholds).
-**Skill-Quelle:** `code-crash-framework/HANDBUCH.md` Anhang G + `bootstrap/references/governance-template.md` §9.
+**Skill-Quelle:** `intentron/HANDBUCH.md` Anhang G + `bootstrap/references/governance-template.md` §9.
 
 ### BOO-39 — /ideation: Token-Heuristik + Ausfuehrungsmodus-Empfehlung
 
@@ -464,7 +464,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** Skill auf v2.3.0 zuruecksetzen (`git checkout <pre-boo39-commit> -- ideation/`). Effekt: Schritt 5b entfaellt, SP wird wieder manuell gesetzt.
 **Abhaengigkeiten:** BOO-38 (HANDBUCH Anhang G mit SP-Tabelle muss bekannt sein, weil Schritt 5b darauf verweist).
-**Skill-Quelle:** `code-crash-framework/ideation/SKILL.md` Schritt 5b + `ideation/references/token-heuristik.md`.
+**Skill-Quelle:** `intentron/ideation/SKILL.md` Schritt 5b + `ideation/references/token-heuristik.md`.
 
 ### BOO-40 — /implement: Token-Window-Pre-Flight (Schritt 0b)
 
@@ -489,7 +489,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** Skill auf v2.6.0 zuruecksetzen (`git checkout <pre-boo40-commit> -- implement/`). Effekt: Schritt 0b entfaellt, kein Warnsystem mehr — Compaction-Notfaelle moeglich.
 **Abhaengigkeiten:** BOO-38 (HANDBUCH Anhang G + thresholds-Felder), BOO-39 (`token_estimate` im Spec-Frontmatter), BOO-36 (meta.json um `pre_flight_warning`-Feld erweitert).
-**Skill-Quelle:** `code-crash-framework/implement/SKILL.md` Schritt 0b + HANDBUCH Anhang G §Schwellen-Konfiguration.
+**Skill-Quelle:** `intentron/implement/SKILL.md` Schritt 0b + HANDBUCH Anhang G §Schwellen-Konfiguration.
 
 ---
 
@@ -504,19 +504,19 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Linear:** https://linear.app/owlist/issue/BOO-8
 **Auto-Schritt:** nein (Operator-getrieben — Auto-Edit waere zu projekt-spezifisch riskant)
 **Schritte:**
-1. **Auto-Vorbereitung:** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/code-crash-framework/bootstrap/scripts/migrate-to-v2.sh --issue BOO-8` ausfuehren — gibt den `[MANUAL]`-Hinweis mit den Operator-Schritten aus. Das Skript schreibt **keine** Datei (zu projekt-spezifisch).
+1. **Auto-Vorbereitung:** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/intentron/bootstrap/scripts/migrate-to-v2.sh --issue BOO-8` ausfuehren — gibt den `[MANUAL]`-Hinweis mit den Operator-Schritten aus. Das Skript schreibt **keine** Datei (zu projekt-spezifisch).
 2. **Manuell:** `ARCHITECTURE_DESIGN.md` (oder das aequivalente Hub-File des Projekts) oeffnen, §3 "Quality Attributes" / "Qualitaets-Dimensionen" suchen.
 3. **Manuell:** Neue Zeile **Testability** zwischen Maintainability (#6) und den optional-Spalten (Cost Efficiency / Domain Quality) einfuegen. Vorlage:
    - Dimension: **Testability**
    - Pruef-Frage fuer dieses Projekt: Coverage auf neuem Code (Change Value)? Test-Pyramide (Unit/Contract/Integration)? Pass-Rate stabil?
-   - Detail-Inhalt aus `code-crash-framework/architecture-review/references/dimensions-detail.md §7 Testability` uebernehmen.
+   - Detail-Inhalt aus `intentron/architecture-review/references/dimensions-detail.md §7 Testability` uebernehmen.
 4. **Manuell (Bewertung):** Pruefen, ob heute Test-Aspekte unter Maintainability oder Reliability vermischt sind — z.B. "Tests fuer kritische Pfade?" als Sub-Punkt unter Maintainability. Falls ja: Operator entscheidet pro Projekt, ob diese Punkte nach Testability migriert werden oder beide Dimensionen sich darauf beziehen.
 5. **Test (Sanity):** `grep -E "Testability" ARCHITECTURE_DESIGN.md` → mindestens ein Treffer in der Quality-Attributes-Tabelle.
 6. **Test (End-to-End, optional):** `architecture-review` Skill auf einem Bestands-Projekt durchlaufen lassen — verifizieren, dass die neue Dimension korrekt erkannt und gepruefft wird. Das ist der DoD-Punkt aus dem urspruenglichen Linear-Issue.
 
 **Rollback:** Testability-Zeile aus `ARCHITECTURE_DESIGN.md` entfernen. Add-on-Dimensionen rutschen wieder eine Position nach oben.
 **Abhaengigkeiten:** keine
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/architecture-design-template.md` + `code-crash-framework/architecture-review/references/dimensions-detail.md §7 Testability` (BOO-8 v3.4.0, 2026-05-06).
+**Skill-Quelle:** `intentron/bootstrap/references/architecture-design-template.md` + `intentron/architecture-review/references/dimensions-detail.md §7 Testability` (BOO-8 v3.4.0, 2026-05-06).
 
 ### BOO-13 — Scalability als 8. Standard-Architektur-Dimension einfuehren
 
@@ -527,7 +527,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Linear:** https://linear.app/owlist/issue/BOO-13
 **Auto-Schritt:** nein (Operator-getrieben — Scalability gilt fuer alle Stacks gleichermassen, kein Skelett-File noetig)
 **Schritte:**
-1. **`[AUTO]`** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/code-crash-framework/bootstrap/scripts/migrate-to-v2.sh --issue BOO-13` ausfuehren — gibt den `[MANUAL]`-Hinweis mit den Operator-Schritten aus. Das Skript schreibt **keine** Datei (Scalability ist eine Architektur-Dimension, kein Code-Skelett).
+1. **`[AUTO]`** Aus dem Projekt-Root `bash <pfad-zum-skill-repo>/intentron/bootstrap/scripts/migrate-to-v2.sh --issue BOO-13` ausfuehren — gibt den `[MANUAL]`-Hinweis mit den Operator-Schritten aus. Das Skript schreibt **keine** Datei (Scalability ist eine Architektur-Dimension, kein Code-Skelett).
 2. **`[MANUAL]`** `docs/ARCHITECTURE_DESIGN.md` (oder das aequivalente Hub-File des Projekts) oeffnen, §3 "Quality Attributes" / "Qualitaets-Dimensionen" suchen. Zeile **Scalability** zwischen Testability (#7) und den optional-Spalten (Cost Efficiency / Domain Quality) einfuegen. Die 4 Pro-Invarianten (Stateless, Horizontal-Scaling-Faehigkeit, 12-Factor, Async-Entkopplung) und 4 Anti-Patterns als Sub-Bullets oder als Verweis auf `architecture-review/references/dimensions-detail.md §8 Scalability` aufnehmen.
 3. **`[MANUAL]`** Architektur des Bestands-Projekts gegen die 4 Pro-Invarianten haltbar machen — pro Invariante: Status (erfuellt / nicht erfuellt / n/a) + Begruendung. Pruefen, was nicht erfuellt ist (Stateless: keine In-Process-Sessions / kein Modul-Globaler State; Horizontal-Scaling: Service kann ohne Koordination N-mal laufen; 12-Factor: Config in ENV, nicht im Code; Async-Entkopplung: Long-Running-Jobs ueber Queue/Bus, nicht inline).
 4. **`[MANUAL]`** Anti-Pattern-Sweep: `grep -RIn "globalThis\.sessions\|\.lock\b\|setInterval\|node-cron\|node-schedule" src/ lib/ services/` und manueller Scan auf Modul-globale Mutables / Singleton-State / In-Process-Cron. Funde dokumentieren — entweder als ADR unter `docs/domain/adrs/NNN-scalability-debt.md` oder als Backlog-Issue. Bewusste Schulden sind akzeptabel, dokumentiert.
@@ -544,7 +544,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** Scalability-Zeile aus `docs/ARCHITECTURE_DESIGN.md` entfernen; ADR `NNN-scalability-disabled.md` (falls angelegt) als `superseded` markieren statt loeschen. Add-on-Dimensionen rutschen wieder eine Position nach oben.
 **Abhaengigkeiten:** keine harten — additiv zu BOO-8 (Testability als 7. Standard-Dimension) und BOO-25 (Reliability-Saeulen). Inhaltliche Ueberlappung mit BOO-25 Backpressure-Strategie ist beabsichtigt — Scalability prueft die Strukturfrage (kann der Service skaliert werden?), Reliability prueft die Robustheits-Frage (haelt er bei Druck stand?).
-**Skill-Quelle:** `code-crash-framework/architecture-review/references/dimensions-detail.md §8 Scalability` (4 Pro-Invarianten + 4 Anti-Patterns) seit Skill-Version v1.6.0 (BOO-13, 2026-05-08) — und `code-crash-framework/bootstrap/references/architecture-design-template.md` fuer den Bootstrap-Flow neuer Projekte.
+**Skill-Quelle:** `intentron/architecture-review/references/dimensions-detail.md §8 Scalability` (4 Pro-Invarianten + 4 Anti-Patterns) seit Skill-Version v1.6.0 (BOO-13, 2026-05-08) — und `intentron/bootstrap/references/architecture-design-template.md` fuer den Bootstrap-Flow neuer Projekte.
 
 ### BOO-14 — /bootstrap Observability-Skelett (strukturiertes Logging + Metrics-Endpoint + Alert-Rules)
 
@@ -574,7 +574,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 3. `.gitignore`-Eintrag `observability/.env.observability` entfernen (manueller Edit).
 
 **Abhaengigkeiten:** BOO-8 (Observability ist bereits Standard-Dimension #5; BOO-14 baut nur das physische Skelett).
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §`observability.md` + §`observability/alerts/<service>.yml` + §`observability/.env.observability` (BOO-14 v3.5.0, 2026-05-07) — und `code-crash-framework/bootstrap/SKILL.md` Phase 4.4f fuer den Bootstrap-Flow neuer Projekte.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §`observability.md` + §`observability/alerts/<service>.yml` + §`observability/.env.observability` (BOO-14 v3.5.0, 2026-05-07) — und `intentron/bootstrap/SKILL.md` Phase 4.4f fuer den Bootstrap-Flow neuer Projekte.
 
 ### BOO-16 — Performance-Baseline-Gate (P95 + Alarm bei 20% Rueckfall)
 
@@ -609,7 +609,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 7. Branch-Protection: `Perf` Required Status Check deaktivieren.
 
 **Abhaengigkeiten:** BOO-14 (Service-Liste wird optional aus `observability.md` geparst — wenn BOO-14 noch nicht migriert ist, wird die Liste ueber ENV `BOO16_SERVICES` oder den Default-Service-Eintrag erzeugt).
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §`journal/perf-baseline.json` + §`bench/<service>.bench.js` + §`bench/<service>_bench.py` + §`.github/workflows/perf.yml` (BOO-16 v3.8.0, 2026-05-11) — und `code-crash-framework/bootstrap/SKILL.md` Phase 4.4g fuer den Bootstrap-Flow neuer Projekte.
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §`journal/perf-baseline.json` + §`bench/<service>.bench.js` + §`bench/<service>_bench.py` + §`.github/workflows/perf.yml` (BOO-16 v3.8.0, 2026-05-11) — und `intentron/bootstrap/SKILL.md` Phase 4.4g fuer den Bootstrap-Flow neuer Projekte.
 
 ### BOO-25 — Reliability als eigene Architektur-Dimension einfuehren (Schraders 6. Saeule)
 
@@ -640,7 +640,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 4. ADR `docs/domain/adrs/NNN-reliability-pillars.md` als `superseded` markieren statt loeschen.
 
 **Abhaengigkeiten:** BOO-8 (Reliability als 6. Standard-Dimension; BOO-25 baut das physische Skelett), BOO-13 (Scalability-Invarianten ueberlappen mit Backpressure-Strategie). Keine harte Abhaengigkeit zu BOO-14 — kann auch ohne Observability gefahren werden, aber `docs/SLO.md` referenziert BOO-14-Metrics-Endpoint als SLI-Quelle.
-**Skill-Quelle:** `code-crash-framework/bootstrap/references/file-templates.md` §`lib/idempotency` + §`lib/retry` + §`lib/circuit-breaker` + §`docs/SLO.md` (BOO-25 v3.7.0, 2026-05-07) — und `code-crash-framework/bootstrap/SKILL.md` Phase 4.4h fuer den Bootstrap-Flow neuer Projekte. Cross-Link Architektur-Dimensionen: `architecture-review/references/dimensions-detail.md` §1.1-§1.5 (die fuenf Reliability-Saeulen).
+**Skill-Quelle:** `intentron/bootstrap/references/file-templates.md` §`lib/idempotency` + §`lib/retry` + §`lib/circuit-breaker` + §`docs/SLO.md` (BOO-25 v3.7.0, 2026-05-07) — und `intentron/bootstrap/SKILL.md` Phase 4.4h fuer den Bootstrap-Flow neuer Projekte. Cross-Link Architektur-Dimensionen: `architecture-review/references/dimensions-detail.md` §1.1-§1.5 (die fuenf Reliability-Saeulen).
 
 ---
 
@@ -697,7 +697,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Auto-Schritt:** nein (Operator-getrieben — ARCHITECTURE_DESIGN.md-Struktur ist zu projekt-spezifisch fuer Auto-Edit)
 **Schritte:**
 1. `ARCHITECTURE_DESIGN.md` oeffnen und in §2 Design-Rationale den KI-Block einfuegen:
-   - Vorlage: `code-crash-framework/references/ki-architektur-prinzipien.md` §1 + §2
+   - Vorlage: `intentron/references/ki-architektur-prinzipien.md` §1 + §2
    - Kompakt-Block (wie im Template) einfuegen — nicht die volle Detail-Datei kopieren
 2. In `ARCHITECTURE_DESIGN.md §5` Tabelle Zeile 9 fuer KI-Tauglichkeit ergaenzen:
    - `| 9 | **KI-Tauglichkeit** | 4 Prinzipien eingehalten (Module <500 LOC, explizite Interfaces, Testbarkeit, Observability)? 4 Anti-Patterns abwesend? |`
@@ -712,7 +712,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** Block und Zeile 9 entfernen.
 **Abhaengigkeiten:** keine
-**Skill-Quelle:** `code-crash-framework/references/ki-architektur-prinzipien.md` + `code-crash-framework/bootstrap/references/architecture-design-template.md` §2 + §5 (BOO-24, 2026-05-10).
+**Skill-Quelle:** `intentron/references/ki-architektur-prinzipien.md` + `intentron/bootstrap/references/architecture-design-template.md` §2 + §5 (BOO-24, 2026-05-10).
 
 **Erwarteter Zeitaufwand:** 30-60 min je nach Zustand des Projekts.
 
@@ -855,7 +855,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Rollback:** Skill auf v1-Frontmatter zuruecksetzen (`git checkout <pre-boo31-commit> -- SKILL.md`). Hermes-Routing degraded auf Inferenz, andere Skill-Funktionen unveraendert.
 
 **Abhaengigkeiten:** keine. Voraussetzung fuer BOO-32 (CI-Output-Konsumtion) und BOO-33 (Setup-Anleitung).
-**Skill-Quelle:** `code-crash-framework/HANDBUCH.md` Anhang D (Schema + Mapping-Tabelle).
+**Skill-Quelle:** `intentron/HANDBUCH.md` Anhang D (Schema + Mapping-Tabelle).
 
 ### BOO-32 — CI-Output-Standardisierung fuer Hermes-Konsumtion
 
@@ -884,7 +884,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Rollback:** Collect + Upload-artifact-Steps aus Workflows entfernen, `.gitignore`-Eintrag entfernen, Verzeichnis loeschen. CI-Output-Verhalten zurueck auf Pre-BOO-32 (kein Signal-Sammeln, Hermes nicht andockfaehig).
 **Abhaengigkeiten:** BOO-2 (ESLint-Haertung), BOO-3/4 (Semgrep), BOO-5 (SonarCloud), BOO-15 (Coverage), BOO-16 (Performance), BOO-28 (ESLint-CI), BOO-31 (Frontmatter).
-**Skill-Quelle:** `code-crash-framework/HANDBUCH.md` Anhang E (Layout + Tool-Mapping + Aggregator-Snippet).
+**Skill-Quelle:** `intentron/HANDBUCH.md` Anhang E (Layout + Tool-Mapping + Aggregator-Snippet).
 
 ### BOO-33 — Hermes-Setup-Anleitung im HANDBUCH
 
@@ -943,15 +943,15 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Linear:** https://linear.app/owlist/issue/BOO-49
 **Auto-Schritt:** ja (Doku ist Teil des Bundles)
 **Schritte:**
-1. **`[AUTO]`** `cd ~/Documents/GitHub/claudecodeskills && git pull origin main` — neue `code-crash-framework/CONVENTIONS.md` + HANDBUCH Anhang K liegen jetzt im Bundle.
+1. **`[AUTO]`** `cd ~/Documents/GitHub/claudecodeskills && git pull origin main` — neue `intentron/CONVENTIONS.md` + HANDBUCH Anhang K liegen jetzt im Bundle.
 2. **`[MANUAL]`** Operator: `CONVENTIONS.md` einmal durchlesen — beschreibt das Framework tool-neutral. Erlaubt spaeter Tool-Wechsel (Claude Code → Codex → Cursor → lokales LLM) ohne Framework-Verlust.
 3. **`[MANUAL]`** Optional: HANDBUCH Anhang K "Tool-Adapter" lesen, falls du planst ein zweites KI-Tool zu nutzen (z.B. Codex fuer Background-Tasks, siehe BOO-50).
 
-**Test:** `CONVENTIONS.md` ist auf `code-crash-framework/`-Top-Level vorhanden. HANDBUCH hat Anhang K. README.md verweist auf CONVENTIONS.md.
+**Test:** `CONVENTIONS.md` ist auf `intentron/`-Top-Level vorhanden. HANDBUCH hat Anhang K. README.md verweist auf CONVENTIONS.md.
 
 **Rollback:** n/a — reine Doku-Erweiterung, kein Risiko fuer existierende Projekte.
 **Abhaengigkeiten:** keine. Konzeptionelle Voraussetzung fuer BOO-50 (Codex-Integration).
-**Skill-Quelle:** `code-crash-framework/CONVENTIONS.md` + `HANDBUCH.md` Anhang K.
+**Skill-Quelle:** `intentron/CONVENTIONS.md` + `HANDBUCH.md` Anhang K.
 
 ---
 
@@ -970,7 +970,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Test:**
 - `CLAUDE.md` enthaelt Sektionen "Model-Routing-Policy (BOO-84)" und "Prompt-Caching (BOO-84)".
-- `grep "recommended_model:" code-crash-framework/*/SKILL.md` zeigt 11 Treffer (alle Bundle-Skills).
+- `grep "recommended_model:" intentron/*/SKILL.md` zeigt 11 Treffer (alle Bundle-Skills).
 - `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-84` zweites Mal: meldet `[SKIP] CLAUDE.md enthaelt bereits Model-Routing-Policy`.
 - Naechster `/implement`-Lauf schreibt `meta.json` mit `token_tracking`-Skelett (leer ohne Hook, gefuellt mit Hook).
 
@@ -1100,7 +1100,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 
 **Was sich aendert:**
 
-- `dpo/` und `security-architect/` liegen ab jetzt als Top-Level-Ordner im `code-crash-framework`-Repo (vendored). Master bleibt `claudecodeskills` (via `publish_skill.py`), Framework-Repo ist Mirror.
+- `dpo/` und `security-architect/` liegen ab jetzt als Top-Level-Ordner im `intentron`-Repo (vendored). Master bleibt `claudecodeskills` (via `publish_skill.py`), Framework-Repo ist Mirror.
 - Bootstrap Phase 5 clont ab v3.29.0 **nur** das Framework-Repo (statt `claudecodeskills`). Optionale Allzweck-Skills (research, design-md-generator, setup-checklist, skill-creator) via Ja/Nein-Zusatzfrage aus claudecodeskills.
 - Bootstrap Phase 4.4n installiert DPO + security-architect aus dem Framework-Bundle.
 
@@ -1119,7 +1119,7 @@ Spiegel der Master-Checkliste aus `code-crash-framework/bootstrap/references/mig
 **Test:**
 
 - `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-74 --dry-run` zweites Mal: meldet "bereits vorhanden — keine Aenderung".
-- `ls code-crash-framework/dpo/SKILL.md code-crash-framework/security-architect/SKILL.md` → beide vorhanden (im Repo).
+- `ls intentron/dpo/SKILL.md intentron/security-architect/SKILL.md` → beide vorhanden (im Repo).
 
 **Rollback:** Vendored-Kopien aus dem Framework-Repo entfernen + Bootstrap-Skill-Quelle zurueck auf `claudecodeskills`. Bestehende `~/.claude/skills/`-Installationen bleiben unberuehrt.
 

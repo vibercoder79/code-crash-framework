@@ -6,7 +6,7 @@ Stand: 2026-05-27
 
 Wave M schliesst BOO-74 und **korrigiert eine Wave-J-Decision**. In Wave J (BOO-69) wurde der DPO-Skill bewusst als Standalone-Skill adoptiert — analog `security-architect`, das auch ausserhalb des Framework-Repos lag. Operator-Feedback Tobias (2026-05-27 post-Wave-L) zeigte die Inkonsistenz: wenn das Framework Privacy-by-Design **garantieren** will (HANDBUCH Anhang O), muss der DPO-Skill aus dem Framework-Repo installierbar sein, nicht aus einem Nachbar-Repo. Gleiche Logik fuer `security-architect` (Security-Dimension in Bootstrap-Frage A.4).
 
-**Loesung:** DPO und security-architect werden **vendored Bundle-Skills** im `code-crash-framework`-Repo. Bootstrap installiert sie aus demselben Repo wie alle anderen Bundle-Skills. Master bleibt `claudecodeskills`, Framework-Repo ist Mirror.
+**Loesung:** DPO und security-architect werden **vendored Bundle-Skills** im `intentron`-Repo. Bootstrap installiert sie aus demselben Repo wie alle anderen Bundle-Skills. Master bleibt `claudecodeskills`, Framework-Repo ist Mirror.
 
 **Erwarteter Effekt:** Das Framework wird **self-contained**. Ein `git clone` des Framework-Repos enthaelt alles, was Bootstrap braucht — inklusive Privacy- und Security-Skills. Solo-Operatoren ohne Framework beziehen DPO/security-architect weiterhin aus `claudecodeskills`.
 
@@ -22,11 +22,11 @@ Wave M schliesst BOO-74 und **korrigiert eine Wave-J-Decision**. In Wave J (BOO-
 
 ### Bootstrap clont nur noch Framework-Repo
 
-Vor BOO-74 clonte Bootstrap Phase 5 das `claudecodeskills`-Repo und unterschied zwischen `code-crash-framework/`-Sub-Folder-Skills und Top-Level-Standalone-Skills. Ab v3.29.0 clont Bootstrap **nur** das Framework-Repo — alle Bundle-Skills + dpo + security-architect liegen dort flach als Top-Level-Ordner. Optionale Allzweck-Skills (research, design-md-generator, setup-checklist, skill-creator) werden via Ja/Nein-Zusatzfrage aus claudecodeskills ergaenzt.
+Vor BOO-74 clonte Bootstrap Phase 5 das `claudecodeskills`-Repo und unterschied zwischen `intentron/`-Sub-Folder-Skills und Top-Level-Standalone-Skills. Ab v3.29.0 clont Bootstrap **nur** das Framework-Repo — alle Bundle-Skills + dpo + security-architect liegen dort flach als Top-Level-Ordner. Optionale Allzweck-Skills (research, design-md-generator, setup-checklist, skill-creator) werden via Ja/Nein-Zusatzfrage aus claudecodeskills ergaenzt.
 
 ### Solo-Use bleibt erhalten
 
-Wer DPO oder security-architect **ohne** das Code-Crash-Framework nutzt (Solo-Tool, anderes Projekt), bezieht sie unveraendert aus `claudecodeskills`. Die Vendored-Kopie im Framework-Repo ist nur fuer den Bootstrap-Installations-Pfad relevant.
+Wer DPO oder security-architect **ohne** INTENTRON nutzt (Solo-Tool, anderes Projekt), bezieht sie unveraendert aus `claudecodeskills`. Die Vendored-Kopie im Framework-Repo ist nur fuer den Bootstrap-Installations-Pfad relevant.
 
 ### Inhaltlich unveraendert
 
@@ -34,7 +34,7 @@ DPO und security-architect werden durch BOO-74 **nicht** inhaltlich geaendert �
 
 ## Was Nutzer mit dem neuen Setup bekommen
 
-- **`dpo/` und `security-architect/` als Top-Level-Ordner** im `code-crash-framework`-Repo (vendored 1:1 aus claudecodeskills, inkl. References DE+EN bei DPO).
+- **`dpo/` und `security-architect/` als Top-Level-Ordner** im `intentron`-Repo (vendored 1:1 aus claudecodeskills, inkl. References DE+EN bei DPO).
 - **Bootstrap v3.29.0** clont nur das Framework-Repo. Skill-Auswahl "Standard" enthaelt jetzt dpo + security-architect. Optionale Allzweck-Skills via Zusatzfrage.
 - **Bootstrap Phase 4.4n** installiert DPO + security-architect aus dem Framework-Bundle (`$SKILL_SRC/dpo/`, `$SKILL_SRC/security-architect/`) statt aus einem externen Repo.
 - **HANDBUCH Anhang O** umgestellt: "DPO als Framework-Bundle-Skill" statt "Standalone-Skill". Privacy-Mechanik (3-Modi, Trigger-Punkte) unveraendert.

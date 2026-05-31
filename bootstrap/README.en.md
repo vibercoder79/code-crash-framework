@@ -271,7 +271,7 @@ Obsidian, Telegram Bot Token, OpenRouter API Key, Hostinger API Key, Miro Access
 
 MIT — free to use, adapt for your project.
 
-Part of the **Code-Crash Framework**.
+Part of **INTENTRON**.
 Skills repo: [github.com/vibercoder79/claudecodeskills](https://github.com/vibercoder79/claudecodeskills)
 
 ---

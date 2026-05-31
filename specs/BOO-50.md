@@ -4,7 +4,7 @@
 
 **Umgeschnitten 2026-05-28** (Operator-Entscheidung Tobias, AskUserQuestion). Urspruenglicher Scope: eine fertige Codex-Daily-Bug-Scanner-Automation (TOML-Template + Bootstrap-Frage D.7 + Anhang J Setup). Neuer Scope: ein **durchgehender Codex-Onboarding-Walkthrough** als HANDBUCH **Anhang J** — "Framework unter Codex einfuehren".
 
-Grund fuer den Umschnitt: Die Codex-*Einfuehrung* war die eigentliche Luecke, nicht eine spezifische Automation. Der Bootstrap fragt die Ziel-Runtime bereits ab (A.1c / BOO-53/54: `RUNTIME_TARGET = claude-code | codex | cross-tool | unknown`) und legt `AGENTS.md` + `CONVENTIONS.md` an. Anhang K (BOO-49) beschreibt die Codex-Nutzung als **Referenz** (Mappings, tool-agnostische Komponenten). Was fehlte: ein **durchgehender Schritt-fuer-Schritt-Pfad** von null zu einem laufenden Code-Crash-Projekt unter Codex. Die Bug-Scanner-Automation ist jetzt ein **optionales Beispiel** am Ende des Walkthroughs, kein eigenes Feature.
+Grund fuer den Umschnitt: Die Codex-*Einfuehrung* war die eigentliche Luecke, nicht eine spezifische Automation. Der Bootstrap fragt die Ziel-Runtime bereits ab (A.1c / BOO-53/54: `RUNTIME_TARGET = claude-code | codex | cross-tool | unknown`) und legt `AGENTS.md` + `CONVENTIONS.md` an. Anhang K (BOO-49) beschreibt die Codex-Nutzung als **Referenz** (Mappings, tool-agnostische Komponenten). Was fehlte: ein **durchgehender Schritt-fuer-Schritt-Pfad** von null zu einem laufenden INTENTRON-Projekt unter Codex. Die Bug-Scanner-Automation ist jetzt ein **optionales Beispiel** am Ende des Walkthroughs, kein eigenes Feature.
 
 ## Why
 

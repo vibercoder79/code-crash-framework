@@ -1,7 +1,7 @@
 /**
  * lib/doc-sync.js — {{PROJECT_NAME}} Documentation Sync
  *
- * Template from Code-Crash Framework
+ * Template from INTENTRON
  *
  * WHAT IT DOES:
  *   1. Reads all DOC_FILES from config.js

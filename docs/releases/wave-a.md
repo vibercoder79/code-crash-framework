@@ -4,7 +4,7 @@ Stand: 2026-05-19
 
 ## Zweck
 
-Wave A haertet die Codex- und Dry-Run-Lesbarkeit des Code-Crash Frameworks. Der Schwerpunkt
+Wave A haertet die Codex- und Dry-Run-Lesbarkeit von INTENTRON. Der Schwerpunkt
 liegt auf dem Bootstrap- und Vertragsfundament: Runtime-Auswahl, Artefakt-Baseline,
 Backlog-Adapter, Postflight, Handbuch-Klarstellung und Upgrade-Pfad.
 
@@ -25,10 +25,10 @@ vollautonomer Developer-Agent. Codex, Claude, Cursor oder lokale LLMs sind Adapt
 Story-Vertrag. Subagents sind spezialisierte Ausfuehrungshelfer innerhalb einer kontrollierten
 Story und bleiben an Rolle, Kontext, Write-Scope, Rueckgabeformat und Gates gebunden.
 
-### Bootstrap Skill vs. Code-Crash Framework
+### Bootstrap Skill vs. INTENTRON
 
 Der Bootstrap Skill installiert und initialisiert ein Projekt: Governance-Dateien, lokale
-Skill-Kopien, Hooks, optionale Adapter und Basis-Artefakte. Das Code-Crash Framework ist die
+Skill-Kopien, Hooks, optionale Adapter und Basis-Artefakte. INTENTRON ist die
 Methodik und der Vergleichsgegenstand: Konventionen, Gates, Artefakte, Rollen und Review-Punkte.
 Bootstrap bringt das Framework ins Projekt; Bootstrap ist nicht das Framework selbst.
 

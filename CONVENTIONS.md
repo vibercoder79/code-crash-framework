@@ -2,9 +2,9 @@
 
 <a name="english"></a>
 
-# Code-Crash Framework — Conventions
+# INTENTRON — Conventions
 
-> **What this is.** A tool-neutral specification of the Code-Crash Framework: the file layouts, frontmatter shapes, workflow rules, and CI gates that any compliant project follows — regardless of which AI coding tool drives it (Claude Code, Codex, Cursor, Aider, a local LLM, or no AI tool at all).
+> **What this is.** A tool-neutral specification of INTENTRON: the file layouts, frontmatter shapes, workflow rules, and CI gates that any compliant project follows — regardless of which AI coding tool drives it (Claude Code, Codex, Cursor, Aider, a local LLM, or no AI tool at all).
 >
 > **Why it exists.** The framework is an operational answer to Matthias Schrader's "Code Crash" (2026): once AI takes over the act of writing code, the bottleneck moves from typing to Intent, and the work has to be re-organised around it. The conventions in this document are the pieces that make that real — they have to be tool-portable because the AI landscape shifts faster than any one tool stays optimal. For the chapter-by-chapter mapping from Schrader's book to this bundle, see **HANDBUCH Appendix M — Schrader Decoder**.
 
@@ -39,7 +39,7 @@ Read §0 (this section), then §3 (workflow conventions), then **HANDBUCH Append
 
 ## §1. Project layout
 
-Every project that follows the Code-Crash Framework has this top-level structure. **Why this layout exists:** Schrader Ch. 5 argues the 4P pipeline replaces the classical approval process — that only works if Intent (`intents/`), execution (`specs/`), evidence (`journal/`) and outcome (`pitch/`) each have a fixed home.
+Every project that follows INTENTRON has this top-level structure. **Why this layout exists:** Schrader Ch. 5 argues the 4P pipeline replaces the classical approval process — that only works if Intent (`intents/`), execution (`specs/`), evidence (`journal/`) and outcome (`pitch/`) each have a fixed home.
 
 ```
 <project-root>/
@@ -364,7 +364,7 @@ Every project declares `execution_isolation` in `CONVENTIONS.md`:
 
 Rule: `sub-agents` requires either `write-scope` or `git-worktree`. `agentic` requires `git-worktree`. If an issue or spec declares `execution_mode: sub-agents` or `agentic`, the spec must also declare `worktree_strategy` and `write_scopes` before `/implement` starts.
 
-This is the operational boundary between a controlled pipeline and autonomous agent work. The Code-Crash Framework is primarily a sequential engineering pipeline with quality gates, not a fully autonomous developer agent. Agents may use it, but they must stay inside its declared isolation, specs, gates, reports and review points.
+This is the operational boundary between a controlled pipeline and autonomous agent work. INTENTRON is primarily a sequential engineering pipeline with quality gates, not a fully autonomous developer agent. Agents may use it, but they must stay inside its declared isolation, specs, gates, reports and review points.
 
 ### Codex execution adapter
 
@@ -414,7 +414,7 @@ For detailed adapter guidance per tool, see HANDBUCH **Appendix K — Tool-Adapt
 
 ## §6. Tool-portability checklist
 
-A project follows the Code-Crash Framework conventions (and is therefore tool-portable) when:
+A project follows the INTENTRON conventions (and is therefore tool-portable) when:
 
 - [ ] Directory layout matches §1 (including `intents/` and `pitch/` since bootstrap v3.23.0)
 - [ ] Project-local `CONVENTIONS.md` exists and declares `governance_mode` + `execution_isolation`
@@ -444,9 +444,9 @@ If yes → operator can switch AI coding tools (Claude Code → Codex → Cursor
 
 <a name="deutsch"></a>
 
-# Code-Crash Framework — Konventionen
+# INTENTRON — Konventionen
 
-> **Was das hier ist.** Eine tool-neutrale Spezifikation des Code-Crash Frameworks: die Datei-Layouts, Frontmatter-Schemata, Workflow-Regeln und CI-Gates, die jedes Bundle-konforme Projekt einhaelt — unabhaengig vom verwendeten KI-Coding-Tool (Claude Code, Codex, Cursor, Aider, lokales LLM, oder gar kein KI-Tool).
+> **Was das hier ist.** Eine tool-neutrale Spezifikation von INTENTRON: die Datei-Layouts, Frontmatter-Schemata, Workflow-Regeln und CI-Gates, die jedes Bundle-konforme Projekt einhaelt — unabhaengig vom verwendeten KI-Coding-Tool (Claude Code, Codex, Cursor, Aider, lokales LLM, oder gar kein KI-Tool).
 >
 > **Warum es das gibt.** Das Framework ist die operative Antwort auf Matthias Schraders "Code Crash" (2026): sobald KI das Code-Schreiben uebernimmt, wandert der Engpass vom Tippen zum Intent — und die Arbeit muss um diesen neuen Engpass herum neu organisiert werden. Die Konventionen in diesem Dokument sind genau die Bausteine, die das real machen. Sie sind tool-portabel, weil sich die KI-Landschaft schneller bewegt als irgendein einzelnes Tool optimal bleibt. Fuer das Kapitel-fuer-Kapitel-Mapping von Schraders Buch in dieses Bundle siehe **HANDBUCH Anhang M — Schrader-Decoder**.
 
@@ -481,7 +481,7 @@ Lies §0 (diese Sektion), dann §3 (Workflow-Konventionen), dann **HANDBUCH Anha
 
 ## §1. Projekt-Layout
 
-Jedes Projekt, das dem Code-Crash Framework folgt, hat diese Top-Level-Struktur. **Warum dieses Layout existiert:** Schrader Kap. 5 argumentiert, dass die 4P-Pipeline den klassischen Genehmigungsprozess ersetzt — das funktioniert nur, wenn Intent (`intents/`), Ausfuehrung (`specs/`), Evidenz (`journal/`) und Outcome (`pitch/`) jeweils einen festen Platz haben.
+Jedes Projekt, das INTENTRON folgt, hat diese Top-Level-Struktur. **Warum dieses Layout existiert:** Schrader Kap. 5 argumentiert, dass die 4P-Pipeline den klassischen Genehmigungsprozess ersetzt — das funktioniert nur, wenn Intent (`intents/`), Ausfuehrung (`specs/`), Evidenz (`journal/`) und Outcome (`pitch/`) jeweils einen festen Platz haben.
 
 ```
 <project-root>/
@@ -806,7 +806,7 @@ Jedes Projekt deklariert `execution_isolation` in `CONVENTIONS.md`:
 
 Regel: `sub-agents` braucht entweder `write-scope` oder `git-worktree`. `agentic` braucht `git-worktree`. Wenn Issue oder Spec `execution_mode: sub-agents` oder `agentic` deklariert, muss die Spec vor `/implement` auch `worktree_strategy` und `write_scopes` deklarieren.
 
-Das ist die operative Grenze zwischen kontrollierter Pipeline und autonomerer Agentenarbeit. Das Code-Crash Framework ist zuerst eine sequenzielle Engineering-Pipeline mit Quality-Gates, nicht selbst ein vollautonomer Developer-Agent. Agenten koennen es nutzen, muessen aber innerhalb der deklarierten Isolation, Specs, Gates, Reports und Review-Punkte bleiben.
+Das ist die operative Grenze zwischen kontrollierter Pipeline und autonomerer Agentenarbeit. INTENTRON ist zuerst eine sequenzielle Engineering-Pipeline mit Quality-Gates, nicht selbst ein vollautonomer Developer-Agent. Agenten koennen es nutzen, muessen aber innerhalb der deklarierten Isolation, Specs, Gates, Reports und Review-Punkte bleiben.
 
 ### Codex-Ausfuehrungsadapter
 
@@ -856,7 +856,7 @@ Fuer detaillierte Adapter-Anleitung pro Tool siehe HANDBUCH **Anhang K — Tool-
 
 ## §6. Tool-Portabilitaets-Checkliste
 
-Ein Projekt folgt den Code-Crash-Framework-Konventionen (und ist damit tool-portabel), wenn:
+Ein Projekt folgt den INTENTRON-Konventionen (und ist damit tool-portabel), wenn:
 
 - [ ] Verzeichnis-Layout matched §1 (inkl. `intents/` und `pitch/` seit Bootstrap v3.23.0)
 - [ ] Projektlokale `CONVENTIONS.md` existiert und deklariert `governance_mode` + `execution_isolation`

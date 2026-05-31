@@ -1,8 +1,8 @@
-# Code-Crash Framework — Q&A
+# INTENTRON — Q&A
 
 Stand: 2026-05-20
 
-Dieses Dokument sammelt operative Fragen, die beim Arbeiten mit dem Code-Crash Framework entstehen. Es ergänzt das große `HANDBUCH.md`: Das Handbuch erklärt das System zusammenhängend, dieses Q&A beantwortet konkrete Praxisfragen.
+Dieses Dokument sammelt operative Fragen, die beim Arbeiten mit INTENTRON entstehen. Es ergänzt das große `HANDBUCH.md`: Das Handbuch erklärt das System zusammenhängend, dieses Q&A beantwortet konkrete Praxisfragen.
 
 ## Umsetzung, Linter und Hooks
 

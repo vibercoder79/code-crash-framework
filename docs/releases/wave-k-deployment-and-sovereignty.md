@@ -6,7 +6,7 @@ Stand: 2026-05-27
 
 Wave K schliesst BOO-70 und BOO-71. Das Framework gibt Operatoren erstmals strukturierte Orientierung zu zwei Setup-Fragen, die bisher Beratungsthemen waren:
 
-1. **BOO-70 — Deployment-Szenarien:** Auf welcher Geraete-Topologie laeuft Code-Crash? Anhang P beschreibt vier gelebte Patterns (Solo-Mac, Solo-VPS, Multi-User-VPS-Coding-Factory, Team-mit-Coding-Server) mit Decision-Matrix, Setup-Schritten, Skill-Installation, Secrets-Trennung, Backup-Strategie und Tradeoffs.
+1. **BOO-70 — Deployment-Szenarien:** Auf welcher Geraete-Topologie laeuft INTENTRON? Anhang P beschreibt vier gelebte Patterns (Solo-Mac, Solo-VPS, Multi-User-VPS-Coding-Factory, Team-mit-Coding-Server) mit Decision-Matrix, Setup-Schritten, Skill-Installation, Secrets-Trennung, Backup-Strategie und Tradeoffs.
 2. **BOO-71 — Souveraenitaets-Stack-Guide + LLM-Proxy-Hook:** Welche EU-konformen Alternativen gibt es zur Default-Stack-Zusammensetzung (GitHub, Anthropic USA, iCloud)? Anhang Q liefert die Inspirations-Schicht — fuenf Stack-Komponenten mit Tabellen-Mapping und kurzer Migrations-Anleitung — und ergaenzt das optionale Config-Feld `llm_proxy_url` als Hook-Punkt fuer Operator-betriebene Anonymisierungs-/Souveraenitaets-Proxys.
 
 **Erwarteter Effekt:** Beide Themen werden vom "fragen-wir-die-Beratung"-Modus in den "lies-den-Anhang"-Modus ueberfuehrt. Bootstrap bleibt frictionless (Default Solo-Mac, kein neuer Interview-Schritt fuer Souveraenitaet) — aber Operatoren mit regulierten Anforderungen finden im HANDBUCH eine erste Orientierung.
@@ -79,14 +79,14 @@ Operator-Schritte: HANDBUCH Anhang P + Q einmal lesen, Status in `migration-stat
 
 ## Designentscheid: Inspirations-Schicht, kein Setup-Generator
 
-Code-Crash bleibt fuer ~80% der Operatoren (Solo-Mac, Default-Stack) frictionless. Wave K fuegt **keinen** Pflicht-Schritt hinzu — beide Anhaenge sind Lese-Material plus 1 Bootstrap-Frage (mit Default-Pfad) plus 1 optionales Config-Feld. Operatoren mit regulierten Anforderungen haben jetzt eine Anlaufstelle im HANDBUCH, statt Beratungsgespraeche zu brauchen. Wer den Souveraenitaets-Switch tatsaechlich vollzieht, folgt externer Tool-Doku (Codeberg, Mistral, etc.) — das Framework macht dort keine eigenen Setup-Vorgaben.
+INTENTRON bleibt fuer ~80% der Operatoren (Solo-Mac, Default-Stack) frictionless. Wave K fuegt **keinen** Pflicht-Schritt hinzu — beide Anhaenge sind Lese-Material plus 1 Bootstrap-Frage (mit Default-Pfad) plus 1 optionales Config-Feld. Operatoren mit regulierten Anforderungen haben jetzt eine Anlaufstelle im HANDBUCH, statt Beratungsgespraeche zu brauchen. Wer den Souveraenitaets-Switch tatsaechlich vollzieht, folgt externer Tool-Doku (Codeberg, Mistral, etc.) — das Framework macht dort keine eigenen Setup-Vorgaben.
 
 ## Noch offen / Folgepunkte
 
 - **DPO-Skill SecondBrain-Doku** (Folge-Aufgabe aus Wave J): `03 Bereiche/Skills/dpo.md` + `dpo.en.md` befuellen analog `security-architect.md`-Doku. In dieser Welle nachgezogen.
-- **Souveraenitaets-Stack-Praxis-Beispiel:** ein konkretes Owlist-Projekt vollstaendig auf EU-Stack umstellen (z.B. Code-Crash-Framework selbst nach Codeberg spiegeln) waere ein guter "show, don't tell"-Folgeschritt. Eigene Spec faellig.
+- **Souveraenitaets-Stack-Praxis-Beispiel:** ein konkretes Owlist-Projekt vollstaendig auf EU-Stack umstellen (z.B. INTENTRON selbst nach Codeberg spiegeln) waere ein guter "show, don't tell"-Folgeschritt. Eigene Spec faellig.
 - **`meta.json.llm_routing`-Aggregation im `/sprint-review`:** wenn Operatoren `llm_proxy_url` aktiv nutzen, koennte das Sprint-Review eine `proxy_active`-Quote ausweisen. Eigene Spec faellig.
-- **Anhang R (Code-Crash Multi-Tool-Adoption):** parallel laufende Beratungsidee — wie kombinieren Operator-Teams Code-Crash mit Spec Kit, Cursor und anderen Tools? Eigene Welle.
+- **Anhang R (INTENTRON Multi-Tool-Adoption):** parallel laufende Beratungsidee — wie kombinieren Operator-Teams INTENTRON mit Spec Kit, Cursor und anderen Tools? Eigene Welle.
 
 ## Verweise
 

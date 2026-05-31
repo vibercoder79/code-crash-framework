@@ -21,11 +21,11 @@ token_estimate: 30
 
 ### Insight (Perceive)
 
-Das Code-Crash Framework geht heute implizit davon aus, dass jede Story Code produziert. Die Quality-Gates 6a (ESLint/Ruff), 6a-bis (Semgrep), 6a-tris (Dependency-Check) und 6a-quart (Coverage) sind alle code-zentriert und werden via `tools_available.<tool>` skippt, wenn die Tools fehlen oder kein passender Diff vorliegt.
+INTENTRON geht heute implizit davon aus, dass jede Story Code produziert. Die Quality-Gates 6a (ESLint/Ruff), 6a-bis (Semgrep), 6a-tris (Dependency-Check) und 6a-quart (Coverage) sind alle code-zentriert und werden via `tools_available.<tool>` skippt, wenn die Tools fehlen oder kein passender Diff vorliegt.
 
 Das ist ok fuer "kein Code wegen reiner Doku-Aenderung". Es ist NICHT ok fuer Implementierungen, die echte Risiken tragen, aber kein Code-Diff erzeugen — z.B. n8n-Workflows, Terraform/IaC-Modules, Cloud-Configs (IAM, DNS, CORS), Content-Migrationen in CMS-Systemen, Webhook-Konfigurationen.
 
-Konkret: Wenn ein Operator eine Story implementiert, die einen n8n-Workflow mit Webhook-Trigger, externer API-Call und Credentials-Node baut, durchlaeuft `/implement` heute alle Code-Gates leer ("kein passender Diff") und meldet `final_status: passed` — obwohl niemand geprueft hat, ob der Webhook Auth hat, ob Credentials nicht im Klartext stehen, ob die Error-Branches sauber sind. Das verletzt das Schrader-Prinzip "kein Output ohne Verify" und das Code-Crash-Versprechen "Quality Gates sind Pflicht".
+Konkret: Wenn ein Operator eine Story implementiert, die einen n8n-Workflow mit Webhook-Trigger, externer API-Call und Credentials-Node baut, durchlaeuft `/implement` heute alle Code-Gates leer ("kein passender Diff") und meldet `final_status: passed` — obwohl niemand geprueft hat, ob der Webhook Auth hat, ob Credentials nicht im Klartext stehen, ob die Error-Branches sauber sind. Das verletzt das Schrader-Prinzip "kein Output ohne Verify" und das INTENTRON-Versprechen "Quality Gates sind Pflicht".
 
 ### Constraints
 

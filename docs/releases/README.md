@@ -1,7 +1,7 @@
 # Release Notes — Konvention
 
 Dieser Ordner ist die **Quelle der Release Notes**. Sie werden zusaetzlich als **GitHub Releases** veroeffentlicht:
-<https://github.com/vibercoder79/code-crash-framework/releases>
+<https://github.com/vibercoder79/intentron/releases>
 
 ## Zwei Ebenen
 

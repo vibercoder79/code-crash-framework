@@ -188,7 +188,7 @@ Geh zurueck zu /ideation und ergaenze den fehlenden Bestandteil bevor du /implem
 
 **Bei vollstaendigem Issue:** Weiter zu Schritt 2.
 
-> Pruefung regelbasiert (kein LLM noetig). Issues vor Code Crash Governance v2 (ohne `## Schrader-Prompt-Bestandteile`) koennen den Gate-Check nicht passieren — Operator muss die Sektion nachtraeglich ergaenzen (Migrations-Schritt in `migration-checklist-v1-to-v2.md`).
+> Pruefung regelbasiert (kein LLM noetig). Issues vor INTENTRON Governance v2 (ohne `## Schrader-Prompt-Bestandteile`) koennen den Gate-Check nicht passieren — Operator muss die Sektion nachtraeglich ergaenzen (Migrations-Schritt in `migration-checklist-v1-to-v2.md`).
 
 ### Schritt 2: Abhaengigkeits-Check
 

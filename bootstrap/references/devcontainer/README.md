@@ -1,4 +1,4 @@
-# Code-Crash Container-Profil (optional) — BOO-81
+# INTENTRON Container-Profil (optional) — BOO-81
 
 Reproduzierbare Toolchain im Container. **Optional** — der Default-Pfad bleibt System-Install (siehe HANDBUCH Anhang S). Dieses Profil ist fuer **Team-Setups** gedacht, wo "Tools einmal installieren" portabel und identisch fuer alle Operatoren sein soll.
 

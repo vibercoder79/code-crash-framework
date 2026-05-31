@@ -1,7 +1,7 @@
 {
   "type": "excalidraw",
   "version": 2,
-  "source": "code-crash-framework BOO-50 Anhang J",
+  "source": "intentron BOO-50 Anhang J",
   "elements": [
     {"type":"text","id":"title","x":60,"y":34,"width":760,"height":30,"text":"Framework unter Codex einführen — Onboarding-Flow","originalText":"Framework unter Codex einführen — Onboarding-Flow","fontSize":24,"fontFamily":3,"textAlign":"left","verticalAlign":"top","strokeColor":"#1d1d1b","backgroundColor":"transparent","fillStyle":"solid","strokeWidth":1,"strokeStyle":"solid","roughness":0,"opacity":100,"angle":0,"seed":101,"version":1,"versionNonce":1,"isDeleted":false,"groupIds":[],"boundElements":null,"link":null,"locked":false,"containerId":null,"lineHeight":1.25},
     {"type":"text","id":"subtitle","x":60,"y":70,"width":820,"height":22,"text":"Anhang J · Codex als Runtime: von Bootstrap bis Verifikation. Pipeline bleibt sequenziell + gate-basiert.","originalText":"Anhang J · Codex als Runtime: von Bootstrap bis Verifikation. Pipeline bleibt sequenziell + gate-basiert.","fontSize":15,"fontFamily":3,"textAlign":"left","verticalAlign":"top","strokeColor":"#d77f11","backgroundColor":"transparent","fillStyle":"solid","strokeWidth":1,"strokeStyle":"solid","roughness":0,"opacity":100,"angle":0,"seed":102,"version":1,"versionNonce":2,"isDeleted":false,"groupIds":[],"boundElements":null,"link":null,"locked":false,"containerId":null,"lineHeight":1.25},

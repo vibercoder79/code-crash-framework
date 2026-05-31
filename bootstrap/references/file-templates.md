@@ -120,7 +120,7 @@ Nach Feature-Entwicklung:
 
 ## Model-Routing-Policy (BOO-84)
 
-Pro Skill ist ein **empfohlenes Modell-Tier** definiert (siehe Skill-Frontmatter `recommended_model`). Die Tier-zu-Version-Mappings und Pricing sind zentral in `bootstrap/references/model-tiers.json` des Code-Crash Frameworks gepflegt.
+Pro Skill ist ein **empfohlenes Modell-Tier** definiert (siehe Skill-Frontmatter `recommended_model`). Die Tier-zu-Version-Mappings und Pricing sind zentral in `bootstrap/references/model-tiers.json` von INTENTRON gepflegt.
 
 | Tier | Modell-Klasse | Wofuer | Default fuer Skills |
 |------|--------------|--------|---------------------|
@@ -168,8 +168,8 @@ Constraints:
 # {{PROJECT_NAME}} — Project Conventions
 
 **Version:** {{VERSION_START}} | **Stand:** {{TODAY}}
-**Framework:** Code-Crash Framework
-**Master-Spezifikation:** `code-crash-framework/CONVENTIONS.md`
+**Framework:** INTENTRON
+**Master-Spezifikation:** `intentron/CONVENTIONS.md`
 
 > Dieses Dokument ist der projektlokale Vertrag fuer Governance-Modus, Ausfuehrungs-Isolation und aktive Gates. Alle Skills lesen zuerst diese Datei, bevor sie Storys schreiben oder umsetzen.
 
@@ -869,7 +869,7 @@ CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 
 ## v{{VERSION_START}} — {{TODAY}}
 
-- Initial project setup with Code-Crash Framework
+- Initial project setup with INTENTRON
 - Governance hooks installed: spec-gate.sh, doc-version-sync.sh
 - Base skills installed
 ```

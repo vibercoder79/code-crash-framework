@@ -63,7 +63,7 @@ Migration ist additive — bestehendes Verhalten bleibt unveraendert, neue Felde
 
 ## Designentscheid-Konformitaet
 
-Diese Wave folgt dem Code-Crash-Leitsatz "leichtgewichtig + pragmatisch, ohne Security-Kompromisse":
+Diese Wave folgt dem INTENTRON-Leitsatz "leichtgewichtig + pragmatisch, ohne Security-Kompromisse":
 
 - **Empfehlung statt Hard-Lock**: Operator kann jederzeit Modell uebersteuern, kein Block bei Tier-Wahl.
 - **Audit-Trail fuer Compliance**: jede Override wird protokolliert (FINMA/BaFin-faehig).
@@ -78,4 +78,4 @@ Bei 5 Lint-Iterationen pro Story: ~95% guenstiger als naive Opus + kein Cache (H
 
 - **PostToolUse-Hook fuer Auto-Token-Capture**: optionaler Folge-Skill, der `.claude/last-run-tokens.json` und `.claude/last-run-overrides.json` waehrend des Runs schreibt. Ohne Hook bleiben `meta.json.token_tracking`-Felder leer — kein Story-Lauf blockiert.
 - **BOO-74 Test-Probelauf**: BOO-74 (Constitution-Refactor) wird mit aktivem Routing + Caching durchlaufen, Vor/Nach-Cost-Tabelle wird im BOO-84-PR oder im BOO-74-PR dokumentiert.
-- **Release-Pflicht**: `model-tiers.json` Versions- und Pricing-Eintraege pro Code-Crash-Release gegen Anthropic-Pricing-Seite pruefen (Eintrag in der projektinternen Handbuch-Sync-Queue).
+- **Release-Pflicht**: `model-tiers.json` Versions- und Pricing-Eintraege pro INTENTRON-Release gegen Anthropic-Pricing-Seite pruefen (Eintrag in der projektinternen Handbuch-Sync-Queue).

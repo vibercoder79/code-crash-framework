@@ -1,9 +1,9 @@
-# Code-Crash optionales Toolchain-Image (BOO-81).
+# INTENTRON optionales Toolchain-Image (BOO-81).
 # Reproduzierbare Toolchain fuer Team-Setups — macht "Tools einmal installieren"
 # (HANDBUCH Anhang S) portabel: jeder Operator bekommt identische Linter/Tools,
 # kein "works on my machine". OPTIONAL — System-Install bleibt der Default-Pfad.
 #
-# Bewusst schlank: Node + Python Basis, dazu die Code-Crash-Standard-Toolchain.
+# Bewusst schlank: Node + Python Basis, dazu die INTENTRON-Standard-Toolchain.
 # Versionen anpassen wie es das Projekt braucht.
 FROM mcr.microsoft.com/devcontainers/base:debian
 

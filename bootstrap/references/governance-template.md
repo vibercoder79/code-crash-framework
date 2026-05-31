@@ -610,8 +610,8 @@ Story Points sind nicht nur Token-Schaetzung, sondern auch Modus-Selektor. Der M
 
 Vor jeder Story prueft `/implement` Schritt 0b den aktuellen Token-Stand gegen die Story-Schaetzung (siehe BOO-40). Bei Projektion > 80% wird Sprint-Ende empfohlen.
 
-**Details:** siehe `code-crash-framework/HANDBUCH.md` Anhang G "Sprint-Sizing-Mechanik".
+**Details:** siehe `intentron/HANDBUCH.md` Anhang G "Sprint-Sizing-Mechanik".
 
 ---
 
-*Dieses Dokument ist Teil des Code-Crash Frameworks — open-source unter MIT License.*
+*Dieses Dokument ist Teil von INTENTRON — open-source unter MIT License.*

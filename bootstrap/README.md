@@ -34,11 +34,11 @@ Die meisten AI-Development-Frameworks sind entweder zu viel Automation (Black Bo
 
 ## Detaillierter Framework-Vergleich
 
-### Code-Crash Framework vs. CrewAI vs. AutoGen vs. BMAD vs. Cursor Rules
+### INTENTRON vs. CrewAI vs. AutoGen vs. BMAD vs. Cursor Rules
 
 > Tausende AI-Development-Frameworks existieren. Hier ist eine ehrliche Einordnung — was andere besser machen, was dieses Framework einzigartig macht, und wann du welches wählen solltest.
 
-| Dimension | **Code-Crash Framework** | CrewAI | AutoGen / AG2 | BMAD | Cursor Rules |
+| Dimension | **INTENTRON** | CrewAI | AutoGen / AG2 | BMAD | Cursor Rules |
 |-----------|------------------------|--------|---------------|------|--------------|
 | **Governance-Enforcement** | ✅ Maschinell erzwungen (Git Hooks) | ❌ Keine | ❌ Keine | ⚠️ Manuell | ❌ Keine |
 | **Traceability** | ✅ Idee → Issue → Spec → Commit | ❌ | ❌ | ⚠️ Partiell | ❌ |
@@ -61,7 +61,7 @@ Die meisten AI-Development-Frameworks sind entweder zu viel Automation (Black Bo
 | **BMAD** | Strukturierter Agile-Workflow mit klaren Rollen (PM, Architect, Developer). Gut dokumentiert, große Community. | Teams die Scrum/Agile bereits kennen und einen AI-nativen Workflow wollen |
 | **Cursor Rules** | Sofort einsatzbereit, keine Setup-Zeit, direkt im Editor. | Einzelentwickler die schnell starten wollen ohne Governance-Overhead |
 
-### Was das Code-Crash Framework einzigartig macht
+### Was INTENTRON einzigartig macht
 
 **1. Governance ist maschinell erzwungen — nicht nur dokumentiert**
 
@@ -106,7 +106,7 @@ cp -r bootstrap/ ~/.claude/skills/bootstrap/
 ```
 Läuft auf Mac, VPS, Claude Code Desktop — überall gleich.
 
-### Wann das Code-Crash Framework wählen
+### Wann INTENTRON wählen
 
 ✅ **Ideal wenn:**
 - Solo-Entwickler oder Team bis ~5 Personen
@@ -492,7 +492,7 @@ Dieser Bootstrap-Skill richtet dein Projekt für folgende Skills ein:
 | `/status` | "Status" | System Status Dashboard | 7 |
 | `/wrap-up` | "Exit", "Ende" | Session-Abschluss + Memory-Persistierung | 7 |
 
-Alle Skills sind aus dem gleichen Code-Crash Framework und arbeiten zusammen.
+Alle Skills sind aus dem gleichen INTENTRON-Framework und arbeiten zusammen.
 
 ---
 
@@ -514,7 +514,7 @@ Der Bootstrap-Prozess richtet ein einfaches Self-Healing-Monitoring ein (Check M
 
 - **Prometheus** ist der Industriestandard für Metriken-Sammlung (verwendet von Google, Netflix, Spotify)
 - **Grafana Cloud** ermöglicht professionelle Dashboards ohne eigene Infrastruktur
-- Der **`/grafana` Skill** (Code-Crash Framework) erstellt und verwaltet Dashboards direkt via Grafana MCP Server — Claude baut die Dashboards für dich
+- Der **`/grafana` Skill** (INTENTRON) erstellt und verwaltet Dashboards direkt via Grafana MCP Server — Claude baut die Dashboards für dich
 
 ### Kurzanleitung
 
@@ -647,4 +647,4 @@ ssh -T git@github.com  # Test
 
 MIT — frei verwendbar, adaptierbar für dein Projekt.
 
-Teil des **Code-Crash Frameworks**.
+Teil von **INTENTRON**.

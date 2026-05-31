@@ -97,7 +97,7 @@ Schritt 6 (post-pitch, optional):
 
 ## Hintergrund / Motivation
 
-Schrader argumentiert in *Code Crash* Kapitel 5: Die 4P-Pipeline (Perceive / Prompt / Produce / Pitch) ist nur dann geschlossen, wenn der Stakeholder-Termin ein echter Pitch ist — Evidenz, nicht Live-Coding. Im Code-Crash Framework decken `/intent` (Perceive), `/ideation` + `/backlog` + `/implement` (Prompt + Produce) die ersten drei P ab. Das vierte P fehlte — bis BOO-37.
+Schrader argumentiert in *Code Crash* Kapitel 5: Die 4P-Pipeline (Perceive / Prompt / Produce / Pitch) ist nur dann geschlossen, wenn der Stakeholder-Termin ein echter Pitch ist — Evidenz, nicht Live-Coding. Im INTENTRON Framework decken `/intent` (Perceive), `/ideation` + `/backlog` + `/implement` (Prompt + Produce) die ersten drei P ab. Das vierte P fehlte — bis BOO-37.
 
 Am 2026-04-28 wurden drei Varianten diskutiert: (1) Vollautomatischer Slide-Generator, (2) KI-formuliertes Pitch-Skript, (3) Hybrid mit reiner Evidenz-Sammlung. Variante 2 wurde wegen KI-Slop-Risiko verworfen — formulierter Pitch-Text klingt generisch und untergraebt Vertrauen. Variante 3 (diese Implementierung) trennt sauber: Maschine sammelt Fakten, Mensch baut Story.
 
@@ -114,7 +114,7 @@ Am 2026-04-28 wurden drei Varianten diskutiert: (1) Vollautomatischer Slide-Gene
 ## Dateistruktur
 
 ```
-code-crash-framework/pitch/
+intentron/pitch/
 ├── SKILL.md                           ← Skill-Definition (DE — primaer)
 ├── SKILL.en.md                        ← Skill-Definition (EN)
 ├── README.md                          ← Diese Datei (DE)
