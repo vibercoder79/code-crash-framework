@@ -61,7 +61,7 @@ A dimension-by-dimension comparison against the agent-orchestration tools (an ho
 | **Deploy automation** | ⚠️ partial (Git push + manual) | ❌ | ❌ | ❌ | ❌ |
 | **Portability** | ✅ Zero dependencies, 1 folder | ⚠️ pip install | ⚠️ pip install | ⚠️ prompt files | ✅ |
 | **Project setup time** | ~30 min (guided) | hours | hours | ~1h | minutes |
-| **Target audience** | Solo dev to small team | Enterprise teams | Research / quality | Agile teams | Individual devs |
+| **Target audience** | Solo dev → enterprise team | Enterprise teams | Research / quality | Agile teams | Individual devs |
 
 **Where others are genuinely stronger** — and when to prefer them:
 
@@ -76,7 +76,7 @@ A dimension-by-dimension comparison against the agent-orchestration tools (an ho
 
 ![INTENTRON positioning — depth & enforcement vs. breadth](docs/intentron-positioning.en.png)
 
-*Two different axes: harness optimizers buy you breadth across tools; INTENTRON buys you depth — enforced discipline from intent to production.*
+*The full landscape on two axes: spec-driven, harness optimizers and orchestration frameworks all cluster on breadth/low enforcement; INTENTRON alone holds the governance zone — enforced discipline from intent to production, scaling solo → enterprise.*
 
 ---
 
@@ -287,7 +287,7 @@ Ein Dimension-für-Dimension-Vergleich gegen die Agent-Orchestrierungs-Tools (eh
 | **Deploy-Automation** | ⚠️ Teilweise (Git Push + Manual) | ❌ | ❌ | ❌ | ❌ |
 | **Portabilität** | ✅ Zero Dependencies, 1 Ordner | ⚠️ pip install | ⚠️ pip install | ⚠️ Prompt-Files | ✅ |
 | **Projekt-Setup-Zeit** | ~30 Min (geführt) | Stunden | Stunden | ~1h | Minuten |
-| **Zielgruppe** | Solo-Dev bis kleines Team | Enterprise-Teams | Forschung / Quality | Agile Teams | Einzelentwickler |
+| **Zielgruppe** | Solo-Dev → Enterprise-Team | Enterprise-Teams | Forschung / Quality | Agile Teams | Einzelentwickler |
 
 **Was andere Frameworks besser machen** — und wann du sie bevorzugen solltest:
 
@@ -302,7 +302,7 @@ Ein Dimension-für-Dimension-Vergleich gegen die Agent-Orchestrierungs-Tools (eh
 
 ![INTENTRON Positionierung — Tiefe & Erzwingung vs. Breite](docs/intentron-positioning.png)
 
-*Zwei verschiedene Achsen: Harness-Optimierer geben dir Breite über Tools; INTENTRON gibt dir Tiefe — erzwungene Disziplin von Intent bis Produktion.*
+*Die volle Landschaft auf zwei Achsen: Spec-Driven, Harness-Optimierer und Orchestrierungs-Frameworks clustern alle bei Breite/wenig Erzwingung; nur INTENTRON hält die Governance-Zone — erzwungene Disziplin von Intent bis Produktion, skaliert Solo → Enterprise.*
 
 ---
 

@@ -88,7 +88,7 @@ Läuft auf Mac, VPS, Claude Code Desktop — überall gleich.
 ### Wann INTENTRON wählen
 
 ✅ **Ideal wenn:**
-- Solo-Entwickler oder Team bis ~5 Personen
+- Solo-Entwickler bis Enterprise-Team — Governance skaliert mit (Solo → Konzern)
 - Langlebiges Projekt (>3 Monate) das wartbar bleiben muss
 - Produktion mit echten Business-Metriken (WinRate, Conversion, Latenz)
 - Compliance oder Audit-Anforderungen (vollständige Traceability benötigt)
@@ -96,7 +96,7 @@ Läuft auf Mac, VPS, Claude Code Desktop — überall gleich.
 
 ⚠️ **Nicht ideal wenn:**
 - Kurzes Experiment oder Proof-of-Concept (<2 Wochen)
-- Großes Team (>10) mit eigener CI/CD-Pipeline (→ CrewAI oder AutoGen besser)
+- Reine Multi-Agent-Orchestrierung im grossen Stil ohne Governance-Bedarf (→ CrewAI oder AutoGen besser)
 - Maximale Ausgabequalität wichtiger als Governance (→ AutoGen Debate-Pattern)
 - Gar keine Backlog-/Spec-Disziplin gewuenscht ist (ein externer Tracker ist optional, der neutrale Backlog-Record nicht)
 
