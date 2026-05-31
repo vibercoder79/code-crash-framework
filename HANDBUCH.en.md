@@ -2742,7 +2742,7 @@ This appendix is the map from the book into the bundle. Schrader's "Code Crash" 
 
 *The full bundle at a glance — skills, 4P pipeline, governance layer.*
 
-The bundle is Tobias' operating system for Code-Crash engineering. Schrader describes what changes when AI takes over the act of writing code. This bundle is the operational answer: 11 skills, the 4P pipeline, and a governance layer that turn the theory into daily practice.
+The bundle is Tobias' operating system for Intentron engineering. Schrader describes what changes when AI takes over the act of writing code. This bundle is the operational answer: 11 skills, the 4P pipeline, and a governance layer that turn the theory into daily practice.
 
 ### Chapter 1 — Second-Order Effects
 

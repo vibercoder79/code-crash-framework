@@ -4,7 +4,7 @@
     "purpose": "Zentrales Mapping fuer das BOO-84 Token-Efficiency-Routing — Tier-zu-Version-Mapping plus USD-Pricing. Wird von Bootstrap-Skill und meta.json-Cost-Berechnung gelesen.",
     "last_pricing_check": "2026-05-25",
     "pricing_source": "https://www.anthropic.com/pricing",
-    "release_pflicht": "Bei jedem Code-Crash-Release sind 'current_version' und 'pricing' pro Tier gegen Anthropic-Pricing-Seite zu pruefen und ggf. zu aktualisieren. Siehe Handbuch-Sync-Queue.",
+    "release_pflicht": "Bei jedem Intentron-Release sind 'current_version' und 'pricing' pro Tier gegen Anthropic-Pricing-Seite zu pruefen und ggf. zu aktualisieren. Siehe Handbuch-Sync-Queue.",
     "knowledge_caveat": "Die Pricing-Werte basieren auf Anthropic-Stand Januar 2026 (Knowledge-Cutoff). Vor erstem Release manuell gegen aktuelle Pricing-Seite verifizieren.",
     "pricing_unit": "USD pro Million Tokens"
   },

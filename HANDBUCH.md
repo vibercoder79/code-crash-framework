@@ -2879,7 +2879,7 @@ Dieser Anhang ist die Karte vom Buch ins Bundle. Schraders "Code Crash" (2026) l
 
 *Das ganze Bundle auf einen Blick — Skills, 4P-Pipeline, Governance-Schicht.*
 
-Das Bundle ist mein Operating System fuer Code-Crash-Engineering. Schrader beschreibt, was sich aendert, wenn KI das Code-Schreiben uebernimmt. Das Bundle ist die operative Antwort darauf — 11 Skills, die 4P-Pipeline und eine Governance-Schicht, die die Theorie in taegliche Praxis verwandelt.
+Das Bundle ist mein Operating System fuer Intentron-Engineering. Schrader beschreibt, was sich aendert, wenn KI das Code-Schreiben uebernimmt. Das Bundle ist die operative Antwort darauf — 11 Skills, die 4P-Pipeline und eine Governance-Schicht, die die Theorie in taegliche Praxis verwandelt.
 
 ### Kapitel 1 — Effekte zweiter Ordnung
 
