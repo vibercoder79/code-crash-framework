@@ -1237,6 +1237,123 @@ Mirror of the master checklist in `intentron/bootstrap/references/migration-chec
 
 ---
 
+## §BOO-86 — Layer-0 edit bodyguard (security from generation) — Wave V
+
+**Status:** ✓ in the v2 bundle — additive, non-destructive. Default is **warn** (low false positive); hard block is opt-in via `BODYGUARD_STRICT=1`.
+**Effort:** small (~2 min, automatic).
+**Linear:** <https://linear.app/owlist/issue/BOO-86>
+**Auto step:** yes (`migrate_boo_86`, idempotent + additive).
+
+**What it does:** a Claude Code PreToolUse hook on `Edit|Write|MultiEdit` that catches unsafe patterns (secrets, `eval`, disabled TLS verification, SQL concatenation) **before** the AI writes them to disk — a sibling hook to `spec-gate.sh` (which fires on `Bash`/`git commit`). A new **Layer 0** ahead of Layer 2 (CLI linter) and Layer 3 (CI). Dependency-free (only `bash` + `python3` stdlib). The pattern was rebuilt from `agentic-security` — **no code taken** (PolyForm license), only the idea.
+
+**Auto preparation:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-86` — creates (only if absent):
+  - `.claude/hooks/pre-edit-bodyguard.sh` (`chmod +x`)
+  - `.claude/hooks/bodyguard/patterns/{_universal,python,javascript,java,c-cpp}.yml`
+  - `.claude/hooks/bodyguard/SOURCES.md`
+  - `.claude/bodyguard.local.yml` (optional project overlay, **customer-owned — NEVER overwritten**)
+  - Registers the `Edit|Write|MultiEdit` matcher in `.claude/settings.json` **and** `.claude/settings.local.json` (only if the bodyguard entry is missing; existing Bash matchers are left untouched).
+- **Idempotency:** a second run produces no diffs — existing files and registrations are detected (`[SKIP]`).
+
+**Tests / verification:**
+
+- [ ] `bash -n .claude/hooks/pre-edit-bodyguard.sh` → exit 0 (clean syntax).
+- [ ] Smoke test BLOCK (`.py`): `printf '{"tool_input":{"file_path":"app.py","content":"AKIA0000000000000000"}}' | bash .claude/hooks/pre-edit-bodyguard.sh` → exit 1, `[BODYGUARD] BLOCKIERT`.
+- [ ] Smoke test BLOCK (`.js`): input with `rejectUnauthorized: false` in `x.js` → exit 1.
+- [ ] Smoke test PASS: clean code with no hit → exit 0, no output.
+- [ ] `.claude/settings.json` + `.claude/settings.local.json` contain the `Edit|Write|MultiEdit` matcher with `bash .claude/hooks/pre-edit-bodyguard.sh`.
+
+**Operator steps:**
+
+- [ ] Optionally set `BODYGUARD_STRICT=1` if a hard block (instead of warning) is wanted (higher compliance pressure).
+- [ ] Add project-specific patterns to `.claude/bodyguard.local.yml` (overrides the base by `name`, survives framework updates).
+
+**Rollback:**
+
+- Delete files: `.claude/hooks/pre-edit-bodyguard.sh`, `.claude/hooks/bodyguard/` (directory), and — only if not maintained by the project — `.claude/bodyguard.local.yml`.
+- Remove matcher: in `.claude/settings.json` **and** `.claude/settings.local.json` drop the `Edit|Write|MultiEdit` block with `pre-edit-bodyguard.sh` from `hooks.PreToolUse` (keep existing Bash matchers).
+
+**Skill source:** pattern rebuilt from `agentic-security` ("pre-edit-bodyguard") — **no code taken** (PolyForm license). Patterns curated from CWE / OWASP / gitleaks / Semgrep Registry / Bandit / eslint-plugin-security (provenance per pattern in the `quelle` field).
+
+**References:** `bootstrap/references/file-templates.md` §hooks/pre-edit-bodyguard.sh, `.claude/hooks/bodyguard/SOURCES.md`, `specs/BOO-86.md`.
+
+---
+
+## §BOO-88 — Coverage hook denominator: executable statement lines only — Wave W
+
+**Status:** ✓ in the v2 bundle — pure bugfix, non-destructive. Thresholds and the `/implement` workflow are unchanged.
+**Effort:** small (~2 min, automatic).
+**Linear:** <https://linear.app/owlist/issue/BOO-88>
+**Auto step:** yes (shipped via the BOO-15 coverage installer, `migrate_boo_15`, idempotent).
+
+**What it does:** fixes a counting bug in the diff-coverage gate `coverage-check.sh` (BOO-15). The denominator used to count **all** added lines — including comments and blank lines — making the ratio too low and causing the gate to block falsely. Fix: the denominator now derives only from **executable statement lines** (c8 `statementMap`; pytest-cov `executed_lines ∪ missing_lines`), via new `parse_statement_lines_*` functions + a `continue` guard in the counting loop. **No regex** — dependency-free (only `bash` + `python3` stdlib). The script now carries the version marker `# coverage-check v2`.
+
+**IMPORTANT — existing installs must re-migrate:** the fix ships **through the BOO-15 coverage installer** (there is **no** separate `--issue BOO-88`). `migrate_boo_15` now replaces an old v1 (missing marker) instead of only creating the file when absent. Existing projects that already migrated BOO-15 **must** re-run the command — otherwise the bug persists.
+
+**Auto preparation:**
+
+- Run `bash <path>/migrate-to-v2.sh --issue BOO-15` — detects an old v1 `coverage-check.sh` (marker `# coverage-check v2` missing), backs it up as `.claude/hooks/coverage-check.sh.bak`, and writes the v2.
+- **Idempotency:** an existing v2 (marker detected) is skipped (`[SKIP]`) — a second run produces no diffs.
+
+**Tests / verification:**
+
+- [ ] `bash -n .claude/hooks/coverage-check.sh` → exit 0 (clean syntax).
+- [ ] Version marker present: `grep -q 'coverage-check v2' .claude/hooks/coverage-check.sh` → exit 0.
+- [ ] Conceptual: a diff with comments/blank lines **no longer** lowers the ratio — verified (8 code + 4 comment + 2 blank lines → 100%, previously 57%; 6/8 executable → 75%).
+- [ ] Pure bugfix — thresholds and workflow are unchanged; no further adjustments needed.
+
+**Rollback:**
+
+- Restore the `.bak`: `mv .claude/hooks/coverage-check.sh.bak .claude/hooks/coverage-check.sh` (restores the old v1).
+
+**Skill source:** `bootstrap/references/file-templates.md` §coverage-check.sh (v2, BOO-88) + heredoc in `bootstrap/scripts/migrate-to-v2.sh` (`migrate_boo_15`).
+
+**References:** `bootstrap/references/file-templates.md` §coverage-check.sh, `docs/releases/wave-w-coverage-denominator-fix.md`.
+
+---
+
+## §BOO-87 — Deterministic dpo control catalog: project overlay + reports — Wave X
+
+**Status:** ✓ in the v2 bundle — additive, non-destructive. Lightweight project migration (overlay directory + reports dir).
+**Effort:** small (~1 min, automatic).
+**Linear:** <https://linear.app/owlist/issue/BOO-87>
+**Auto step:** yes (`migrate_boo_87`, idempotent + additive).
+
+**What it does:** prepares an existing project for the deterministic dpo control catalog. The catalogs (`dpo/controls/gdpr.yml` + `ndsg.yml`) and the runner (`dpo/scripts/dpo-audit.py`) ship **with the dpo skill (v1.2.0)** and are **not** scaffolded per project — so the project migration is deliberately lightweight. It only creates: (1) the **project overlay** `.claude/dpo/controls/` (bring-your-own controls, survives framework updates) with an explanatory `README.md`, and (2) the **reports directory** `dpo/reports/` (with `.gitkeep`). The audit runs deterministically and yields a per-control status (PASS / GAP / REVIEW-NEEDED) — auditor-ready compliance evidence with no DB.
+
+**Auto preparation:**
+
+- `bash bootstrap/scripts/migrate-to-v2.sh --issue BOO-87` — creates (only if absent):
+  - `.claude/dpo/controls/` (project overlay directory, **customer-owned — NEVER overwritten**)
+  - `.claude/dpo/controls/README.md` (explains the BYO overlay; flat schema like `dpo/controls/*.yml`: `id` / `titel` / `evidenz` / `check_typ` / `check_arg` / `mapsTo` / `quelle`; `check_typ ∈ file-exists | file-contains | grep-absent | review`)
+  - `dpo/reports/` (with `.gitkeep`)
+- **No scaffolding** of catalog / runner / skill — those ship with the dpo skill. The function only emits `[MANUAL]` hints.
+- **Idempotency:** a second run produces no diffs — existing directories/files are detected (`[SKIP]`); `--dry-run` only logs (`[DRY]`).
+
+**Tests / verification:**
+
+- [ ] Directories exist: `test -d .claude/dpo/controls && test -d dpo/reports` → exit 0.
+- [ ] Overlay doc present: `test -f .claude/dpo/controls/README.md` → exit 0.
+- [ ] Reports keep present: `test -f dpo/reports/.gitkeep` → exit 0.
+- [ ] Audit produces a report: `DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py` → writes a report to `dpo/reports/` (PASS/GAP/REVIEW-NEEDED per control).
+- [ ] Idempotency: a second `--issue BOO-87` run → only `[SKIP]`, no diff, customer overlay untouched.
+
+**Operator steps:**
+
+- [ ] Add project-specific controls in `.claude/dpo/controls/*.yml` (or `.json`) — flat schema, see the overlay `README.md`.
+- [ ] Run the audit: `DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py` (uses the framework catalogs `dpo/controls/*.yml` + your overlay; report lands in `dpo/reports/`).
+
+**Rollback:**
+
+- Remove the directories: `.claude/dpo/controls/` and `dpo/reports/` (only if the project does not maintain them — back up your own overlays first). Catalog/runner live in the dpo skill and are unaffected.
+
+**Skill source:** dpo skill **v1.2.0** (bump 1.1.0 → 1.2.0) — ships catalogs `dpo/controls/{gdpr,ndsg}.yml` + runner `dpo/scripts/dpo-audit.py`. nDSG is the CH differentiator. **No** database; OSCAL is a later expansion stage. Relates to the `agentic-security` pattern (deterministic control runner) — **no code taken** (PolyForm license), only the idea.
+
+**References:** `docs/releases/wave-x-dpo-control-catalog.md`, dpo skill `dpo/controls/*.yml` + `dpo/scripts/dpo-audit.py`, `specs/BOO-87.md`.
+
+---
+
 ## Non-skill Issues (Skipped)
 
 These issues touch operator tooling, meta work or duplicates and require **no** migration in existing projects. They appear in `migration-status.md` with status ✗.

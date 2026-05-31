@@ -9,7 +9,7 @@ description: |
   "personenbezogene Daten", "Einwilligung", "Consent", "Verarbeitungsverzeichnis",
   "Betroffenenrechte", "Loeschkonzept", "/dpo" sagt — oder automatisch wenn andere
   Skills Features mit personenbezogenen Daten planen oder implementieren.
-version: 1.1.0
+version: 1.2.0
 recommended_model: opus  # BOO-69 — Compliance-kritisch, Audit-relevant
 metadata:
   hermes:
@@ -183,46 +183,105 @@ Anderer Skill ruft DPO auf?               → ASSESS oder REVIEW (je nach Phase)
 
 **Wann:** Auf Abruf ("/dpo audit"), vor Releases, periodisch, bei Anfragen von Aufsichtsbehoerden.
 
+Der AUDIT-Modus ist **katalog-getrieben und deterministisch**: Statt einer freien LLM-Bewertung
+arbeitet ein Runner die versionierten Kontrollkataloge unter `dpo/controls/*.yml` ab. Gleicher
+Projektstand = gleiches Ergebnis, reproduzierbar und Git-belegbar.
+
 **Workflow:**
 
-1. **Verarbeitungsverzeichnis erstellen/pruefen (Art. 30)**
-   → [references/verarbeitungsverzeichnis.md](references/verarbeitungsverzeichnis.md)
+1. **Kataloge abarbeiten (deterministischer Runner)**
 
-   Fuer jede Verarbeitungstaetigkeit dokumentieren:
-   - Bezeichnung und Zweck
-   - Kategorien betroffener Personen und Daten
-   - Empfaenger (intern + extern)
-   - Drittlandtransfers
-   - Aufbewahrungsfristen
-   - TOMs (Verweis auf Security Architect)
+   Der Runner liest die Framework-Kataloge `dpo/controls/*.yml` (`gdpr`, `ndsg`,
+   optional `nist-ai-600`) plus ein optionales **Projekt-Overlay** unter
+   `.claude/dpo/controls/` (`.yml` + `.json`) und fuehrt jeden Control-Check mechanisch aus:
 
-2. **Alle REVIEW-Checks** auf das gesamte Projekt anwenden
+   ```bash
+   DPO_PROJECT_ROOT=. python3 <skill-dir>/scripts/dpo-audit.py
+   ```
 
-3. **Informationspflichten pruefen (Art. 13/14)**
-   - Datenschutzerklaerung vollstaendig und aktuell?
-   - Alle Verarbeitungszwecke aufgefuehrt?
-   - Rechtsgrundlagen benannt?
-   - Betroffenenrechte erlaeutert?
-   - Kontaktdaten des Verantwortlichen/DPO?
+   (`<skill-dir>` ist das Verzeichnis dieses Skills. Der Aufruf ist dependency-frei —
+   reine python3-Stdlib, kein PyYAML, keine Datenbank.)
 
-4. **Auftragsverarbeitung pruefen (Art. 28)**
-   - Alle Dienstleister mit AVV/DPA erfasst?
-   - Unterauftragnehmer dokumentiert?
-   - Weisungsgebundenheit sichergestellt?
+2. **Report wird deterministisch erzeugt**
 
-5. **TOM-Pruefung (Art. 32)**
-   Verweis auf Security Architect fuer technische Massnahmen:
-   - Verschluesselung (at rest + in transit)
-   - Pseudonymisierung
-   - Zugriffskontrolle
-   - Backup & Wiederherstellung
-   - Regemaessige Tests der Massnahmen
+   Der Runner schreibt das Report-Paar unter `dpo/reports/`:
+   - `dpo/reports/<date>_audit.md` — menschenlesbar: Pass/Gap-Tabelle, pro GAP der Fix-Hinweis (`mapsTo`)
+   - `dpo/reports/<date>_audit.json` — maschinenlesbar: gleiche Daten strukturiert
 
-**Output:** Compliance-Audit-Report mit:
-- Verarbeitungsverzeichnis (Zusammenfassung)
-- Compliance-Status pro Verarbeitungstaetigkeit
-- Offene Massnahmen priorisiert
-- Positiv-Befunde
+   Jede Zeile traegt Control-ID, Titel, `quelle` (DSGVO-/nDSG-Artikel als Audit-Beleg), Status und Detail.
+
+3. **Ehrlicher Determinismus — mechanisch vs. Urteil**
+
+   Der Runner unterscheidet sauber zwei Klassen von Checks und taeuscht KEINE Voll-Automatik vor:
+
+   | Check-Klasse | check_typ | Ergebnis | Wer entscheidet |
+   |--------------|-----------|----------|-----------------|
+   | **Mechanisch** | `file-exists`, `file-contains`, `grep-absent` | **PASS / GAP** (reproduzierbar) | Maschine |
+   | **Urteil** | `review` (Zweckbindung, Verhaeltnismaessigkeit, Drittland, AVV) | **REVIEW-NEEDED** | Operator/Skill — manuell danach |
+
+   Mechanische Checks liefern reproduzierbar PASS/GAP. Urteils-Checks liefern bewusst
+   **REVIEW-NEEDED** — die arbeitet der Operator (oder der Skill im Anschluss) anhand der
+   Leitfragen unten ab und traegt das Ergebnis in den Report nach. Keine erfundene
+   Rechtsberatung — der Skill stellt die Pruef-Frage, der Operator entscheidet.
+
+4. **REVIEW-NEEDED-Leitfragen (an Control-IDs gebunden)**
+
+   Die bisherigen inhaltlichen Pruefpunkte bleiben als Leitfragen erhalten — sie sind jetzt
+   je an eine Control-ID gebunden und werden ueber den `review`-Typ in den Report gehoben:
+
+   - **Verarbeitungsverzeichnis (Art. 30)** — `GDPR-Art30-001`, `NDSG-Art12-001`
+     → [references/verarbeitungsverzeichnis.md](references/verarbeitungsverzeichnis.md)
+     Pro Verarbeitungstaetigkeit: Bezeichnung/Zweck, Kategorien betroffener Personen und Daten,
+     Empfaenger (intern + extern), Drittlandtransfers, Aufbewahrungsfristen, TOMs (→ Security Architect).
+   - **Informationspflichten (Art. 13/14)** — `GDPR-Art13-001`, `NDSG-Art19-001`
+     Datenschutzerklaerung vollstaendig/aktuell? Alle Zwecke und Rechtsgrundlagen benannt?
+     Betroffenenrechte erlaeutert? Kontaktdaten Verantwortlicher/DPO?
+   - **Rechtsgrundlage & Zweckbindung (Art. 6 / Art. 5)** — `GDPR-Art6-001`, `GDPR-Art5-001`, `GDPR-Art5-002`
+     Greift je Verarbeitung eine Rechtsgrundlage? Fester, dokumentierter Zweck? Datenminimierung erfuellt?
+   - **Auftragsverarbeitung (Art. 28)** — `GDPR-Art28-001`
+     Alle Dienstleister mit AVV/DPA erfasst? Unterauftragnehmer dokumentiert? Weisungsgebundenheit?
+   - **Drittland-Transfer (nDSG Auswirkungsprinzip)** — `NDSG-Art16-001`
+     Transfers gegen die Bundesrats-Laenderliste geprueft? Verhaeltnismaessigkeit?
+   - **TOMs (Art. 32 / nDSG Art. 8)** — `GDPR-Art32-001`, `GDPR-Art32-002`, `NDSG-Art8-001`
+     Verschluesselung at rest/in transit, Pseudonymisierung, Zugriffskontrolle, Backup, regelmaessige Tests
+     (→ Security Architect). Die Secret-/TLS-Checks laufen hier bereits mechanisch als `grep-absent`.
+
+**Output:** Das deterministische Report-Paar `dpo/reports/<date>_audit.{md,json}` —
+Pass/Gap-Tabelle mit Fix-Hinweisen und die offene REVIEW-NEEDED-Liste fuer den Operator.
+
+> Ein **OSCAL-Export** der Ergebnisse ist als optionale spaetere Ausbaustufe vorgesehen (nicht Teil
+> dieser Story). Der Determinismus kommt aus den versionierten Git-YAML-Katalogen — bewusst KEINE Datenbank.
+
+---
+
+## Kontrollkataloge
+
+Der AUDIT-Modus speist sich aus flachen, versionierten YAML-Katalogen. Jede Control ist ein
+Mapping mit festem Schema:
+
+| Feld | Bedeutung |
+|------|-----------|
+| `id` | Control-ID (z.B. `GDPR-Art30-001`) |
+| `titel` | Klartext-Bezeichnung |
+| `evidenz` | Geforderter Nachweis |
+| `check_typ` | `file-exists` \| `file-contains` \| `grep-absent` \| `review` |
+| `check_arg` | `file-exists` → Pfad · `file-contains` → `Pfad::Suchtext` · `grep-absent` → Regex (GAP wenn im Source gefunden) · `review` → leer |
+| `mapsTo` | Verweis auf Check/Artefakt/Fix-Hinweis |
+| `quelle` | **Pflicht** — Herkunft (DSGVO-/nDSG-Artikel), Audit-Beleg |
+| `ergebnis` | wird beim Lauf gesetzt (PASS \| GAP \| REVIEW-NEEDED), im Katalog leer |
+
+**Framework-Kataloge** (`dpo/controls/`):
+
+| Katalog | Inhalt |
+|---------|--------|
+| `gdpr.yml` | DSGVO-Kontrollen (Art. 5/6/13/17/28/30/32) |
+| `ndsg.yml` | Schweizer nDSG-Kontrollen (Art. 8/12/16/19/22/24/25) — CH-Alleinstellung |
+| `nist-ai-600.yml` | optional, fuer KI-Verarbeitungen |
+
+**Projekt-Overlay (BYO-Framework):** Ein Projekt kann eigene Kataloge unter
+`.claude/dpo/controls/` ablegen (`.yml` + `.json`, gleiches Schema). Der Runner mergt sie
+automatisch zu den Framework-Katalogen. So ueberleben projektspezifische Controls ein
+Framework-Update — sie liegen im Projekt-Repo, nicht im Skill.
 
 ---
 
@@ -289,3 +348,5 @@ Security Architect                    DPO
 | [privacy-patterns.md](references/privacy-patterns.md) | Privacy by Design Code-Patterns, Pseudonymisierung, Consent-Flows |
 | [verarbeitungsverzeichnis.md](references/verarbeitungsverzeichnis.md) | Art. 30 Template, Beispieleintraege, Pflichtfelder |
 | [ndsg-schweiz.md](references/ndsg-schweiz.md) | Schweizer nDSG Besonderheiten, Vergleich mit DSGVO, EDOEB |
+| [controls/gdpr.yml](controls/gdpr.yml), [controls/ndsg.yml](controls/ndsg.yml) | Deterministische Kontrollkataloge (Schema: id/titel/evidenz/check_typ/check_arg/mapsTo/quelle/ergebnis); Projekt-Overlay unter `.claude/dpo/controls/` |
+| [scripts/dpo-audit.py](scripts/dpo-audit.py) | Deterministischer AUDIT-Runner (python3-Stdlib, dependency-frei); erzeugt `dpo/reports/<date>_audit.{md,json}` |

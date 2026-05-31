@@ -25,7 +25,7 @@
 10. [Governance für dein Projekt anpassen](#10-governance-für-dein-projekt-anpassen)
 11. [Tägliche Nutzung — ein typischer Workflow](#11-tägliche-nutzung--ein-typischer-workflow)
 12. [Häufige Fragen](#12-häufige-fragen) — inkl. Claude Agent SDK Migration
-13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis U im Überblick
+13. [Anhänge — Wegweiser](#13-anhänge--wegweiser) — A bis V im Überblick
 
 ---
 
@@ -2087,7 +2087,7 @@ und Provider-Postflight.
 
 ## 13. Anhänge — Wegweiser
 
-Das Handbuch hat 21 Anhänge (A–U). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–U die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation).
+Das Handbuch hat 22 Anhänge (A–V). Sie sind **Nachschlage- und Vertiefungs-Schicht** — du musst sie nicht von vorn bis hinten lesen. Diese Tabelle sagt dir, **wann welcher Anhang relevant ist**. Anhänge A–M sind die Grundlagen-/Tooling-Schicht, N–V die v0.2.0-Themen (Effizienz, Privacy, Deployment, Skalierung, Verifikation, Edit-Bodyguard).
 
 | Anhang | Thema | Wann relevant |
 |--------|-------|---------------|
@@ -2112,6 +2112,7 @@ Das Handbuch hat 21 Anhänge (A–U). Sie sind **Nachschlage- und Vertiefungs-Sc
 | **S** | Skill-Installations-Strategie | wo Skills / Tools / Hooks hingehören |
 | **T** | Post-Install-Verifikation | "funktioniert mein Setup?" + E2E-Probelauf |
 | **U** | Multi-Projekt-Betrieb | mehrere Projekte auf einer Maschine |
+| **V** | Layer 0 — Edit-Bodyguard | Secrets/Unsafe-Patterns vor dem Schreiben abfangen |
 
 ---
 
@@ -3207,7 +3208,7 @@ Der DPO-Skill ist seit **BOO-74 (Wave M)** ein **Framework-Bundle-Skill**: er li
 |-------|---------|------------------|--------|
 | ASSESS | Story plant neue Verarbeitung personenbezogener Daten | `/ideation` Schritt 0e (`personal_data: true` im Story-Frontmatter) | `dpia/DPIA-<feature>.md` aus DPIA-Template, Rechtsgrundlage gewaehlt |
 | REVIEW | Code-Aenderung trifft personal-data-paths | `/implement` Schritt 5.5b (Personal-Data-Paths-Gate) | Privacy-Findings inline + `journal/reports/local/<date>_<story>/privacy.md` |
-| AUDIT | Alle N Sprints (Default 4, konfigurierbar via `environment.json.privacy_audit_cadence`) | `/sprint-review` Schritt 7c | Verarbeitungsverzeichnis-Diff im Sprint-Report, offene Compliance-Punkte |
+| AUDIT | Alle N Sprints (Default 4, konfigurierbar via `environment.json.privacy_audit_cadence`) | `/sprint-review` Schritt 7c | Deterministischer Katalog-Report `dpo/reports/<date>_audit.{md,json}` mit PASS/GAP/REVIEW-NEEDED je Control (BOO-87) |
 
 DPO deckt DSGVO/GDPR (EU), BDSG (DE) und nDSG (CH) ab. Schweizer Spezialitaeten (kein 72h-Limit, Bussen gegen natuerliche Personen, EDOEB statt EU-Behoerde) sind in den Skill-References dokumentiert.
 
@@ -3251,9 +3252,33 @@ bash bootstrap/scripts/migrate-to-v2.sh migrate_boo_69
 
 Operator pflegt `PRIVACY.md` nach der Erstausgabe manuell — fuellt Rechtsgrundlagen, Datenkategorien und Loeschfristen mit Projekt-Realdaten. DPO ASSESS-Modus kann beim Erstausfuellen unterstuetzen.
 
+### Deterministischer Kontrollkatalog (BOO-87)
+
+Der AUDIT-Modus arbeitet seit BOO-87 einen **deterministischen Kontrollkatalog** ab statt einer KI-Freitext-Bewertung. Der Katalog-Runner `dpo/scripts/dpo-audit.py` liest die versionierten YAML-Kataloge unter `dpo/controls/` Control-fuer-Control und erzeugt ein reproduzierbares Report-Paar `dpo/reports/<date>_audit.md` (+ `.json`). Aufruf aus dem Projekt-Root:
+
+```bash
+DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py
+```
+
+**Was es ist — Control-fuer-Control statt KI-Aufsatz.** Jeder Control ist ein klar umrissener Pruefpunkt mit `id`, `quelle` (z.B. DSGVO-Artikel), geforderter `evidenz` und einem `check_typ`. Mechanische Checks (`file-exists`, `file-contains`, `grep-absent`) liefern reproduzierbar **PASS** oder **GAP**; Urteils-Checks (`review`) liefern **REVIEW-NEEDED**. Die KI bewertet nicht selbst, ob "compliant" — sie fuehrt den Katalog aus und protokolliert das Ergebnis.
+
+**Warum keine Datenbank.** Determinismus und Versionierung kommen direkt aus dem **Git-YAML**. Die Kataloge sind Klartext, diff-bar und mit dem Code zusammen versioniert. Damit ist jederzeit beantwortbar: "welche Regel galt bei welchem Commit?" — der Audit-Stand laesst sich gegen jeden Git-Stand reproduzieren (`gleicher Projektstand = gleiches Ergebnis`). Eine Datenbank wuerde diesen Audit-Trail in einen separaten, schwerer pruefbaren Zustand auslagern; die YAML-im-Repo-Loesung bleibt dependency-frei (python3-Stdlib, kein PyYAML) und auditierbar.
+
+**Wie man den Report liest.** Der Kopf nennt die geladenen Kataloge und die Summe `n PASS · n GAP · n REVIEW-NEEDED`. Die Control-Tabelle listet jeden Pruefpunkt mit Status:
+
+- **PASS** — mechanischer Check erfuellt, kein Handlungsbedarf.
+- **GAP** — mechanischer Check fehlgeschlagen; die Sektion "Offene GAPs" nennt Evidenz und `mapsTo` (wohin es gehoert). Der Operator schliesst die Luecke.
+- **REVIEW-NEEDED** — Urteils-Check, der **nicht** automatisch entschieden wird. Ehrlicher Determinismus: Das Tool maszt sich kein Rechts-Urteil an, sondern markiert den Punkt, den ein **Mensch bestaetigt**. Das ist Feature, kein Mangel — keine erfundene Rechtsberatung.
+
+**nDSG als CH-Alleinstellung.** Der Katalog `dpo/controls/ndsg.yml` deckt das Schweizer nDSG (in Kraft seit 2023) ab — inklusive der CH-Spezifika (Begriff "Bearbeitung" statt "Verarbeitung", Auswirkungsprinzip bei Auslandbekanntgabe, EDOEB, DSFA nach Art. 22). Das ist ein bewusstes Alleinstellungsmerkmal: gaengige agentic-security-Werkzeuge decken das nDSG nicht ab.
+
+**OSCAL als spaetere Ausbaustufe.** Das flache YAML-Schema ist bewusst minimal gehalten. Ein Export nach **OSCAL** (NIST Open Security Controls Assessment Language) fuer maschinen-interoperable Compliance-Nachweise ist als spaetere Ausbaustufe vorgesehen, aktuell aber nicht implementiert.
+
+**Projekt-Overlays.** Projekt-eigene Controls werden additiv unter `.claude/dpo/controls/` ergaenzt (`.yml` oder `.json`); der Runner liest Framework-Kataloge und Overlays gemeinsam. Die Framework-/Runner-Dateien selbst werden nicht pro Projekt veraendert.
+
 ### Verwandte Anhaenge
 
-- **Anhang N (Token-Effizienz):** DPO laeuft auf `recommended_model: opus` (Compliance-kritisch, Audit-relevant). Bei aktivem Modell-Routing wird das im Sprint-Review-Cost-Aggregat fair als Opus-Tier ausgewiesen.
+- **Anhang N (Token-Effizienz):** DPO laeuft auf `recommended_model: opus` (Compliance-kritisch, Audit-relevant). Bei aktivem Modell-Routing wird das im Sprint-Review-Cost-Aggregat fair als Opus-Tier ausgewiesen. Der deterministische Katalog-Runner (BOO-87) selbst braucht kein Modell — er laeuft dependency-frei in python3.
 - **Anhang Q (Souveraenitaets-Stack, BOO-71, geplant):** Datensouveraenitaet (US-vs-EU-Cloud-Anbieter) ist ein **separates Thema** und kein Privacy-Ersatz — auch ein souveraener Stack braucht Privacy-by-Design. Anhang Q gibt die Inspirations-Schicht fuer EU-konforme Alternativen.
 - **Anhang F (Hermes Compound-Layer):** DPO ist im `metadata.hermes`-Mapping mit `category: governance` und Tags `[privacy, gdpr, dsgvo, ndsg, compliance]` registriert.
 
@@ -4021,6 +4046,58 @@ Was **muss** pro Projekt passieren, sonst greifen Gates + Skills nicht:
 - **Bootstrap Block B + Phase 5:** Infra-Erkennung + Skill-Installation, die den Schnellpfad ermoeglichen.
 
 Quelle: Operator-Frage Tobias 2026-05-28 ("mehrere Projekte — pro Projekt bootstrappen oder Basis-schon-da-Pfad?").
+
+---
+
+## Anhang V: Layer 0 — Edit-Bodyguard (BOO-86)
+
+### Wann und warum
+
+Die Drei-Layer-Quality-Gate-Architektur (Anhang §8d, BOO-2/4/15/16) faengt unsicheren Code an drei Stellen: in der IDE (Layer 1), beim Pre-Commit (Layer 2) und in der CI (Layer 3). Allen gemeinsam ist: sie greifen **nachdem** die KI den Code geschrieben hat. Der **Edit-Bodyguard** schiebt eine **Layer 0 VOR** diese Kette — er prueft den Code-Block in dem Moment, in dem die KI ihn auf die Platte schreiben will, und kann ihn **vor** dem Schreiben stoppen.
+
+Konkret ist Layer 0 ein **`PreToolUse`-Hook auf `Edit|Write`** (Geschwister-Hook zu `spec-gate.sh`, das auf `Bash`/`git commit` feuert). Er liest das `tool_input`-JSON, matched den geplanten Inhalt gegen eine kleine, kuratierte Muster-Menge (Secrets, `eval`, abgeschaltete TLS-Pruefung, SQL-Konkatenation) und meldet Treffer **bevor** die Datei entsteht. So bleibt unsicheres Material gar nicht erst im Repo-Zustand — der schnellste moegliche Reflex.
+
+### Einordnung in die Drei-Layer-Architektur
+
+| Layer | Greift wann | Werkzeug | Tiefe |
+|-------|-------------|----------|-------|
+| **Layer 0 — Edit-Bodyguard** | **vor** dem Schreiben (PreToolUse) | `pre-edit-bodyguard.sh` | flach, kuratierte Muster — schneller Reflex |
+| Layer 1 — IDE | waehrend des Tippens | Error Lens, ESLint-Plugin | live, editor-abhaengig |
+| Layer 2 — CLI / Pre-Commit | vor dem Commit | ESLint/Ruff, Semgrep | voll, lokal blockierend |
+| Layer 3 — CI | vor dem Merge | GitHub Actions | voll, `--no-verify`-sicher |
+
+**Wichtig:** Layer 0 ist **leichtgewichtig** und ersetzt nicht Layer 2/3. **KEIN voller Semgrep-/SAST-Lauf im Hook** — die Tiefe bleibt bei Layer 2 (lokaler Semgrep-Pass) und Layer 3 (CI). Layer 0 ist der schnelle, kontextunabhaengige Reflex auf eindeutige Muster; die gruendliche Analyse passiert weiter unten in der Kette.
+
+### Muster-Schichtung (Basis + Overlay)
+
+Der Hook laedt seine Muster in drei Lagen, jede spaetere uebersteuert die fruehere per `name`:
+
+1. **`_universal.yml`** — sprachunabhaengige Secrets (AWS-Key, Private-Key-Block, Slack-/GitHub-Token, generische Secret-Zuweisung).
+2. **sprachspezifische Datei** (`python.yml`, `javascript.yml`, `java.yml`, `c-cpp.yml`) — anhand der Datei-Endung gewaehlt (z.B. `subprocess(..., shell=True)`, `verify=False`, `rejectUnauthorized: false`, `eval(`, SQL-Konkatenation).
+3. **`.claude/bodyguard.local.yml`** — **optionales** Projekt-Overlay. Kundeneigen, gleiches Schema, **uebersteuert die Basis per `name`** und **ueberlebt Framework-Updates** (z.B. einen internen Legacy-Endpoint verbieten).
+
+Muster-Schema (flacher YAML-Subset, vom Mini-Parser im Hook gelesen — kein PyYAML noetig): `name` · `pattern` (Regex) · `sprache` · `quelle` (CWE/OWASP/gitleaks/Semgrep — Pflicht als Audit-Beleg) · `action` (`block|warn`).
+
+### Default Warnung, Hard-Block per Env
+
+Der Default ist **Warnung** (`action: warn`) — bewusst low-false-positive, um **Alarm-Muedigkeit** zu vermeiden (ein Hook, der staendig nervt, wird abgeschaltet). Nur eindeutige, kontextunabhaengige Treffer (Secrets, abgeschaltete TLS-Pruefung, `gets`) sind `action: block`. Wer ein hartes Gate will, setzt **`BODYGUARD_STRICT=1`** — dann werden auch `warn`-Muster zu Blocks (opt-in Hard-Block).
+
+### Pflege (kuratiert klein halten)
+
+Die Muster sind **aus anerkannten Katalogen kuratiert, nicht erfunden** — jedes traegt im `quelle`-Feld seinen Beleg. **Prinzip: wenige Muster mit hoher Trefferquote** — lieber 30 wasserdichte als 300 nervige. Die **Basis** kommt mit den Framework-Versionen, das **Overlay** ist projekteigen. Ein optionales `sync-bodyguard-patterns.sh` gleicht gegen Upstream ab und **schlaegt** neue Muster **vor** — der Mensch entscheidet, **KEIN Auto-Merge** (Supply-Chain-Schutz).
+
+### Prompt-Ebenen-Geschwister
+
+Layer 0 ist der deterministische Backstop zum **Secure-Coding-Hinweis** in `/implement` Schritt 5 (Shift-Left auf Prompt-Ebene): die KI schreibt bereits sicher-by-default (Secrets in env/Secret-Manager, parametrisierte Queries, TLS-Verifikation an, kein `eval`/`exec` auf Fremd-Input), und der Bodyguard faengt ab, was trotzdem durchrutscht.
+
+### Verwandte Anhaenge & Quellen
+
+- **Anhang §8d (Drei-Layer-Quality-Gate):** Layer 1-3, in die sich Layer 0 davorschiebt.
+- **`bootstrap/references/file-templates.md §pre-edit-bodyguard`:** kanonische Quelle — Hook-Script, alle Muster-Dateien, Schema und Anti-Patterns.
+- **`bodyguard/SOURCES.md`:** Herkunft (CWE/OWASP/gitleaks/Semgrep) + Pflege-Konvention pro Muster.
+- **`/implement` Schritt 5 (Secure-Coding-Hinweis):** die Prompt-Ebenen-Variante, fuer die Layer 0 der Backstop ist.
+
+Quelle: BOO-86 (Layer-0 Edit-Bodyguard).
 
 ---
 

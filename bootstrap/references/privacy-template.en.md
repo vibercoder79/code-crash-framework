@@ -103,7 +103,7 @@ The `dpo` skill provides three modes, each with a clear trigger point in the pip
 |------|---------|--------------------|--------|
 | ASSESS | Story plans new processing of personal data | `/ideation` Step 0e (`personal_data: true`) | `dpia/DPIA-<feature>.md` from template, legal basis chosen |
 | REVIEW | Code change hits personal-data-paths | `/implement` Step 5.5b (Personal-Data-Paths-Gate) | Privacy findings inline + `journal/reports/local/<date>_<story>/privacy.md` |
-| AUDIT | Every N sprints (default 4, configurable) | `/sprint-review` Step 7c | Records-of-Processing diff in sprint report, open compliance items |
+| AUDIT | Every N sprints (default 4, configurable) | `/sprint-review` Step 7c | Deterministic catalog report `dpo/reports/<date>_audit.md` with PASS/GAP/REVIEW-NEEDED per control |
 
 Flow of a story with `personal_data: true`:
 
@@ -112,7 +112,23 @@ Flow of a story with `personal_data: true`:
 3. `/implement` Step 5.5b checks on code change in personal-data-paths → triggers `dpo --mode review`
 4. DPO REVIEW documents findings, blocks on HIGH findings
 5. `/implement` Step 6e adds privacy findings to security-findings documentation
-6. `/sprint-review` Step 7c (every N sprints) triggers DPO AUDIT for records-of-processing maintenance
+6. `/sprint-review` Step 7c (every N sprints) triggers the deterministic DPO AUDIT for the compliance proof
+
+## 7a. Audit Proof (deterministic control catalog, BOO-87)
+
+This project's compliance status is **proven control by control** — not via free-text assessment. The respective current report
+
+`dpo/reports/<date>_audit.md`
+
+is the **auditor-ready proof**: it lists every control with its status — **PASS** (mechanical check satisfied), **GAP** (concrete gap) or **REVIEW-NEEDED** (judgment check, confirmed manually by the operator). Because the report is generated deterministically from versioned catalogs: same project state = same result (reproducible).
+
+The catalogs live as versioned YAML under `dpo/controls/` (`gdpr.yml` for GDPR/EU, `ndsg.yml` for the Swiss nFADP). **Project-specific controls** are added additively as an overlay under `.claude/dpo/controls/` (`.yml` or `.json`) — the runner reads framework catalogs and project overlays together. Generate the report:
+
+```bash
+DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py
+```
+
+Background and reading guide: HANDBUCH Appendix O §Deterministic control catalog (BOO-87).
 
 ## 8. Incident Note (Privacy Breach)
 

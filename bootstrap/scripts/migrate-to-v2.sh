@@ -567,14 +567,24 @@ migrate_boo_15() {
     local hooks_dir=".claude/hooks"
     local hook_script="$hooks_dir/coverage-check.sh"
     ensure_dir "$hooks_dir"
-    if [[ -f "$hook_script" ]]; then
-        log_skip "$hook_script existiert"
-    elif [[ "$DRY_RUN" == "true" ]]; then
-        log_dry "write $hook_script (Diff-Coverage-Gate, COVERAGE_PASS=80, COVERAGE_WARN=60)"
+    # BOO-88: v2 ersetzt alte v1 (Nenner-Bug). Marker-basierte, idempotente Migration.
+    local needs_write=false replace_v1=false
+    if [[ ! -f "$hook_script" ]]; then
+        needs_write=true
+    elif ! grep -q 'coverage-check v2' "$hook_script" 2>/dev/null; then
+        needs_write=true; replace_v1=true
     else
+        log_skip "$hook_script bereits v2 (BOO-88)"
+    fi
+    if [[ "$needs_write" == "true" && "$DRY_RUN" == "true" ]]; then
+        [[ "$replace_v1" == "true" ]] && log_dry "backup $hook_script -> .bak (BOO-88 v1->v2)"
+        log_dry "write $hook_script (Diff-Coverage-Gate v2, COVERAGE_PASS=80, COVERAGE_WARN=60)"
+    elif [[ "$needs_write" == "true" ]]; then
+        [[ "$replace_v1" == "true" ]] && { cp "$hook_script" "$hook_script.bak"; log_info "BOO-88: alte v1 nach $hook_script.bak gesichert"; }
         cat > "$hook_script" <<'COVCHECK_EOF'
 #!/usr/bin/env bash
 # .claude/hooks/coverage-check.sh — Diff-Coverage-Gate (BOO-15)
+# coverage-check v2 (BOO-88: Nenner zaehlt nur ausfuehrbare Statement-Zeilen)
 # Inhalt aus bootstrap/references/file-templates.md §hooks/coverage-check.sh
 set -euo pipefail
 
@@ -666,6 +676,48 @@ for k, v in files.items():
 PYEOF
 }
 
+# NEU (BOO-88): Statement-Zeilen (alle ausfuehrbaren Zeilen, unabhaengig vom Count)
+parse_statement_lines_c8() {
+    local file="$1"
+    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
+import json, sys
+cov_file, target = sys.argv[1], sys.argv[2]
+try:
+    data = json.load(open(cov_file))
+except Exception:
+    sys.exit(0)
+target_abs = target.lstrip("./")
+for k, v in data.items():
+    if k.endswith(target_abs) or k.endswith(target):
+        for stmt_id, loc in v.get("statementMap", {}).items():
+            line = loc.get("start", {}).get("line")
+            if line:
+                print(line)
+        break
+PYEOF
+}
+
+parse_statement_lines_pytest() {
+    local file="$1"
+    python3 - "$COVERAGE_FILE" "$file" <<'PYEOF'
+import json, sys
+cov_file, target = sys.argv[1], sys.argv[2]
+try:
+    data = json.load(open(cov_file))
+except Exception:
+    sys.exit(0)
+files = data.get("files", {})
+target_norm = target.lstrip("./")
+for k, v in files.items():
+    if k.endswith(target_norm) or k.endswith(target):
+        for line in v.get("executed_lines", []):
+            print(line)
+        for line in v.get("missing_lines", []):
+            print(line)
+        break
+PYEOF
+}
+
 ADDED=$(extract_added_lines)
 
 if [[ -z "$ADDED" ]]; then
@@ -676,6 +728,7 @@ fi
 TOTAL_ADDED=0
 COVERED_ADDED=0
 declare -A FILES_SEEN
+declare -A STMT_SEEN
 
 while IFS= read -r entry; do
     [[ -z "$entry" ]] && continue
@@ -692,9 +745,16 @@ while IFS= read -r entry; do
     if [[ -z "${FILES_SEEN[$file]:-}" ]]; then
         if [[ "$COVERAGE_TOOL" == "c8" ]]; then
             FILES_SEEN[$file]="$(parse_covered_lines_c8 "$file" | tr '\n' ' ')"
+            STMT_SEEN[$file]="$(parse_statement_lines_c8 "$file" | tr '\n' ' ')"
         else
             FILES_SEEN[$file]="$(parse_covered_lines_pytest "$file" | tr '\n' ' ')"
+            STMT_SEEN[$file]="$(parse_statement_lines_pytest "$file" | tr '\n' ' ')"
         fi
+    fi
+
+    # NEU (BOO-88): Nenner-Guard — nur ausfuehrbare Statement-Zeilen zaehlen.
+    if ! echo " ${STMT_SEEN[$file]} " | grep -qw "$line"; then
+        continue
     fi
 
     TOTAL_ADDED=$(( TOTAL_ADDED + 1 ))
@@ -725,7 +785,7 @@ else
 fi
 COVCHECK_EOF
         chmod +x "$hook_script"
-        log_info "created $hook_script (executable)"
+        log_info "created $hook_script (executable, v2)"
     fi
 
     log_manual "Operator (Node): 'npm install --save-dev c8' falls nicht installiert"
@@ -3416,6 +3476,525 @@ migrate_boo_81() {
 }
 
 # -----------------------------------------------------------------------------
+# BOO-86 — Layer-0 PreToolUse-Bodyguard-Hook (Security ab Erzeugung) — Wave V
+# -----------------------------------------------------------------------------
+
+migrate_boo_86() {
+    # BOO-86 — Layer-0 Edit-Bodyguard: PreToolUse-Hook auf Edit|Write|MultiEdit, der
+    # unsichere Muster (Secrets, eval, abgeschaltete TLS-Pruefung, SQL-Konkatenation)
+    # abfaengt, BEVOR die KI sie schreibt. Geschwister-Hook zu spec-gate.sh.
+    # Inhalt 1:1 aus bootstrap/references/file-templates.md §hooks/pre-edit-bodyguard.sh.
+    # Idempotent + additiv: vorhandene Dateien/Registrierungen werden erkannt, das
+    # Overlay (.claude/bodyguard.local.yml, Kunden-Eigentum) wird NIE ueberschrieben.
+    # https://linear.app/owlist/issue/BOO-86
+    log_info "BOO-86: Layer-0 Edit-Bodyguard-Hook anlegen (PreToolUse Edit|Write|MultiEdit)"
+
+    local hooks_dir=".claude/hooks"
+    local pattern_dir="$hooks_dir/bodyguard/patterns"
+    local hook_script="$hooks_dir/pre-edit-bodyguard.sh"
+    local overlay=".claude/bodyguard.local.yml"
+    ensure_dir "$pattern_dir"
+
+    # --- 1. Hook-Skript .claude/hooks/pre-edit-bodyguard.sh (chmod +x) ---
+    if [[ -f "$hook_script" ]]; then
+        log_skip "$hook_script existiert"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $hook_script (Layer-0 Bodyguard, Default warn, BODYGUARD_STRICT=1 -> block)"
+    else
+        cat > "$hook_script" <<'BODYGUARD_HOOK_EOF'
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────────────
+#  PRE-EDIT-BODYGUARD — Layer-0 Governance Hook (BOO-86)
+#  Faengt unsichere Muster ab, BEVOR die KI sie schreibt.
+#
+#  Claude Code PreToolUse Hook (Bash) — Matcher: Edit|Write
+#  Input: JSON via stdin: {"tool_input": {"file_path": "...", "content"/"new_string": "..."}}
+#  Exit 1 → Tool-Call blockiert | Exit 0 → erlaubt (Default: Warnung)
+#  BODYGUARD_STRICT=1 → warn-Muster werden zu block (opt-in Hard-Block)
+# ─────────────────────────────────────────────────────────────────────────────
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PATTERN_DIR="${SCRIPT_DIR}/bodyguard/patterns"
+PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo ".")"
+OVERLAY="${PROJECT_ROOT}/.claude/bodyguard.local.yml"
+STRICT="${BODYGUARD_STRICT:-0}"
+
+INPUT="$(cat)"
+
+printf '%s' "$INPUT" | python3 -c "$(cat <<'PYEOF'
+import sys, json, re, os
+pattern_dir, overlay, strict = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
+try:
+    data = json.loads(sys.stdin.read())
+except Exception:
+    sys.exit(0)  # nicht parsebar → nicht blockieren
+ti = data.get("tool_input", {}) or {}
+file_path = ti.get("file_path", "") or ""
+content = ti.get("content") or ti.get("new_string") or ""
+if not content and isinstance(ti.get("edits"), list):
+    content = "\n".join(e.get("new_string", "") for e in ti["edits"])
+if not content:
+    sys.exit(0)
+ext = os.path.splitext(file_path)[1].lower()
+lang_map = {".js":"javascript",".mjs":"javascript",".cjs":"javascript",".ts":"javascript",
+            ".tsx":"javascript",".jsx":"javascript",".py":"python",".java":"java",
+            ".c":"c-cpp",".h":"c-cpp",".cpp":"c-cpp",".cc":"c-cpp",".hpp":"c-cpp"}
+lang = lang_map.get(ext)
+def parse_patterns(path):
+    out, cur = [], None
+    if not os.path.isfile(path):
+        return out
+    for line in open(path, encoding="utf-8"):
+        s = line.rstrip("\n")
+        if not s.strip() or s.lstrip().startswith("#"):
+            continue
+        if s.lstrip().startswith("- "):
+            if cur: out.append(cur)
+            cur, s = {}, s.lstrip()[2:]
+        if ":" in s and cur is not None:
+            k, v = s.split(":", 1)
+            cur[k.strip()] = v.strip().strip("'\"")
+    if cur: out.append(cur)
+    return out
+files = [os.path.join(pattern_dir, "_universal.yml")]
+if lang: files.append(os.path.join(pattern_dir, lang + ".yml"))
+files.append(overlay)  # Overlay zuletzt → uebersteuert per name
+patterns, order = {}, []
+for f in files:
+    for p in parse_patterns(f):
+        n = p.get("name")
+        if not n or not p.get("pattern"): continue
+        if n not in patterns: order.append(n)
+        patterns[n] = p
+blocks, warns = [], []
+for n in order:
+    p = patterns[n]
+    try: rx = re.compile(p["pattern"])
+    except re.error: continue
+    if rx.search(content):
+        action = (p.get("action") or "warn").lower()
+        if strict and action == "warn": action = "block"
+        msg = "  [%s] %s — %s" % (n, p.get("quelle","?"), file_path or "?")
+        (blocks if action == "block" else warns).append(msg)
+if warns:
+    sys.stderr.write("[BODYGUARD] WARNUNG — unsichere Muster im neuen Code:\n" + "\n".join(warns) + "\n")
+if blocks:
+    sys.stderr.write("\n[BODYGUARD] BLOCKIERT — sicherheitskritische Muster:\n" + "\n".join(blocks) +
+                     "\n  Bitte entfernen/ersetzen: Secret in env/Secret-Manager, parametrisierte Query, sichere API/TLS.\n")
+    sys.exit(1)
+sys.exit(0)
+PYEOF
+)" "$PATTERN_DIR" "$OVERLAY" "$STRICT"
+BODYGUARD_HOOK_EOF
+        chmod +x "$hook_script"
+        log_info "created $hook_script (executable)"
+    fi
+
+    # --- 2. Muster-Kataloge bodyguard/patterns/*.yml ---
+    local f="$pattern_dir/_universal.yml"
+    if [[ -f "$f" ]]; then
+        log_skip "$f existiert"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $f (Secrets, sprachunabhaengig)"
+    else
+        cat > "$f" <<'UNIVERSAL_YML_EOF'
+# Bodyguard Layer-0 — universelle Muster (sprachunabhaengig)
+# Schema: - name / pattern / sprache / quelle / action(block|warn)
+- name: aws-access-key-id
+  pattern: 'AKIA[0-9A-Z]{16}'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: block
+- name: private-key-block
+  pattern: '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----'
+  sprache: alle
+  quelle: 'gitleaks / CWE-321'
+  action: block
+- name: slack-token
+  pattern: 'xox[baprs]-[0-9A-Za-z-]{10,}'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: block
+- name: github-token
+  pattern: 'gh[pousr]_[0-9A-Za-z]{36,}'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: block
+- name: generic-secret-assignment
+  pattern: '(?i)(api[_-]?key|secret|token|passwd|password)\s*[:=]\s*[\x27"][^\x27"]{8,}[\x27"]'
+  sprache: alle
+  quelle: 'gitleaks / CWE-798'
+  action: warn
+UNIVERSAL_YML_EOF
+        log_info "created $f"
+    fi
+
+    f="$pattern_dir/python.yml"
+    if [[ -f "$f" ]]; then
+        log_skip "$f existiert"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $f (python-spezifisch)"
+    else
+        cat > "$f" <<'PYTHON_YML_EOF'
+- name: python-subprocess-shell-true
+  pattern: 'subprocess\.(run|call|Popen|check_output)\([^)]*shell\s*=\s*True'
+  sprache: python
+  quelle: 'CWE-78 / Bandit B602'
+  action: block
+- name: python-requests-verify-false
+  pattern: 'verify\s*=\s*False'
+  sprache: python
+  quelle: 'CWE-295'
+  action: block
+- name: python-eval
+  pattern: '\beval\s*\('
+  sprache: python
+  quelle: 'CWE-95 / Bandit B307'
+  action: warn
+- name: python-yaml-load-unsafe
+  pattern: 'yaml\.load\s*\((?![^)]*SafeLoader)'
+  sprache: python
+  quelle: 'CWE-20 / Bandit B506'
+  action: warn
+- name: python-sql-fstring
+  pattern: '(?i)(execute|executemany)\s*\(\s*f[\x27"]'
+  sprache: python
+  quelle: 'CWE-89'
+  action: warn
+PYTHON_YML_EOF
+        log_info "created $f"
+    fi
+
+    f="$pattern_dir/javascript.yml"
+    if [[ -f "$f" ]]; then
+        log_skip "$f existiert"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $f (javascript/typescript-spezifisch)"
+    else
+        cat > "$f" <<'JAVASCRIPT_YML_EOF'
+- name: js-tls-reject-unauthorized-false
+  pattern: 'rejectUnauthorized\s*:\s*false'
+  sprache: javascript
+  quelle: 'CWE-295'
+  action: block
+- name: js-node-tls-env-0
+  pattern: 'NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*[\x27"]?0'
+  sprache: javascript
+  quelle: 'CWE-295'
+  action: block
+- name: js-eval
+  pattern: '\beval\s*\('
+  sprache: javascript
+  quelle: 'CWE-95 / eslint no-eval'
+  action: warn
+- name: js-child-process-exec
+  pattern: '(?i)child_process[\s\S]{0,20}\bexec\s*\('
+  sprache: javascript
+  quelle: 'CWE-78'
+  action: warn
+- name: js-sql-string-concat
+  pattern: '(?i)(query|execute)\s*\(\s*[`\x27"][^`\x27"]*\+'
+  sprache: javascript
+  quelle: 'CWE-89'
+  action: warn
+JAVASCRIPT_YML_EOF
+        log_info "created $f"
+    fi
+
+    f="$pattern_dir/java.yml"
+    if [[ -f "$f" ]]; then
+        log_skip "$f existiert"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $f (java-spezifisch)"
+    else
+        cat > "$f" <<'JAVA_YML_EOF'
+- name: java-runtime-exec
+  pattern: 'Runtime\.getRuntime\(\)\.exec\s*\('
+  sprache: java
+  quelle: 'CWE-78'
+  action: warn
+- name: java-deserialize
+  pattern: 'new\s+ObjectInputStream\s*\('
+  sprache: java
+  quelle: 'CWE-502'
+  action: warn
+- name: java-sql-concat
+  pattern: '(?i)(createStatement|executeQuery)\s*\([^)]*\+'
+  sprache: java
+  quelle: 'CWE-89'
+  action: warn
+JAVA_YML_EOF
+        log_info "created $f"
+    fi
+
+    f="$pattern_dir/c-cpp.yml"
+    if [[ -f "$f" ]]; then
+        log_skip "$f existiert"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $f (c/c++-spezifisch)"
+    else
+        cat > "$f" <<'CCPP_YML_EOF'
+- name: c-gets
+  pattern: '\bgets\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-242'
+  action: block
+- name: c-strcpy
+  pattern: '\bstrcpy\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-120'
+  action: warn
+- name: c-system
+  pattern: '\bsystem\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-78'
+  action: warn
+- name: c-sprintf
+  pattern: '\bsprintf\s*\('
+  sprache: c-cpp
+  quelle: 'CWE-120'
+  action: warn
+CCPP_YML_EOF
+        log_info "created $f"
+    fi
+
+    # --- 3. SOURCES.md (Herkunft + Pflege-Konvention) ---
+    local sources="$hooks_dir/bodyguard/SOURCES.md"
+    if [[ -f "$sources" ]]; then
+        log_skip "$sources existiert"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $sources"
+    else
+        cat > "$sources" <<'SOURCES_MD_EOF'
+# Bodyguard-Muster — Quellen & Pflege (BOO-86)
+
+Die Muster sind **kuratiert aus anerkannten Katalogen**, nicht erfunden. Jedes Muster
+traegt im `quelle`-Feld seinen Beleg.
+
+| Quelle | Wofuer |
+|--------|--------|
+| CWE (Common Weakness Enumeration) | kanonische Schwachstellen-IDs pro Muster |
+| OWASP (Top 10, ASVS, Cheat Sheets) | Priorisierung/Begruendung |
+| gitleaks (open source) | Secret-Muster (`_universal.yml`) |
+| Semgrep Registry / Bandit / eslint-plugin-security | sprachspezifische Unsafe-Code-Muster |
+
+## Pflege-Konvention
+- **Kuratiert + klein halten** — wenige Muster mit hoher Trefferquote. Lieber 30
+  wasserdichte als 300 nervige (sonst Alarm-Muedigkeit → Hook wird abgeschaltet).
+- **Basis** kommt mit Framework-Versionen (dieses Template). **Projekt-Overlay**
+  `.claude/bodyguard.local.yml` ist kundeneigen und ueberlebt Updates.
+- Optionales `sync-bodyguard-patterns.sh` gleicht gegen Upstream ab und **schlaegt** Muster
+  **vor** — Mensch entscheidet, KEIN Auto-Merge (Supply-Chain-Schutz).
+- Default-Schweregrad ist `warn`; `block` nur fuer eindeutige, kontextunabhaengige Treffer
+  (Secrets, abgeschaltete TLS-Pruefung, `gets`).
+SOURCES_MD_EOF
+        log_info "created $sources"
+    fi
+
+    # --- 4. Overlay .claude/bodyguard.local.yml — NUR wenn nicht vorhanden (Kunden-Eigentum) ---
+    if [[ -f "$overlay" ]]; then
+        log_skip "$overlay existiert — Kunden-Overlay wird NIE ueberschrieben"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $overlay (optionales Projekt-Overlay, Kunden-Eigentum)"
+    else
+        cat > "$overlay" <<'OVERLAY_YML_EOF'
+# Projekt-eigene Bodyguard-Muster — uebersteuert die Framework-Basis per `name`.
+# Ueberlebt Framework-Updates. Gleiches Schema wie patterns/*.yml.
+# Beispiel: internen Legacy-Endpoint verbieten
+# - name: no-legacy-internal-api
+#   pattern: 'https?://legacy-intern\.example\.local'
+#   sprache: alle
+#   quelle: 'projekt-policy'
+#   action: block
+OVERLAY_YML_EOF
+        log_info "created $overlay (Kunden-Overlay — ab jetzt nie ueberschrieben)"
+    fi
+
+    # --- 5. Matcher in settings.json UND settings.local.json registrieren (idempotent) ---
+    local settings_file
+    for settings_file in ".claude/settings.json" ".claude/settings.local.json"; do
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log_dry "register Edit|Write|MultiEdit-Bodyguard-Matcher in $settings_file (nur falls fehlend)"
+            continue
+        fi
+        python3 - "$settings_file" <<'REGISTER_PYEOF'
+import json, os, sys
+path = sys.argv[1]
+hook_cmd = "bash .claude/hooks/pre-edit-bodyguard.sh"
+matcher = "Edit|Write|MultiEdit"
+
+if os.path.isfile(path):
+    try:
+        with open(path, encoding="utf-8") as f:
+            cfg = json.load(f)
+    except Exception:
+        print("[WARN]   %s ist kein gueltiges JSON — Bodyguard-Matcher NICHT registriert (Operator pruefen)." % path)
+        sys.exit(0)
+else:
+    cfg = {}
+
+hooks = cfg.setdefault("hooks", {})
+pre = hooks.setdefault("PreToolUse", [])
+
+# Schon registriert? (irgendein Eintrag mit unserem command)
+def has_cmd(entry):
+    for h in entry.get("hooks", []) or []:
+        if h.get("command") == hook_cmd:
+            return True
+    return False
+
+if any(has_cmd(e) for e in pre if isinstance(e, dict)):
+    print("[SKIP]   %s enthaelt bereits den Bodyguard-Matcher" % path)
+    sys.exit(0)
+
+# Bestehende Bash-/andere Matcher NICHT anfassen — eigenen Edit|Write|MultiEdit-Block ergaenzen.
+# Falls bereits ein Edit|Write|MultiEdit-Block existiert (z.B. anderer Hook), nur den command anhaengen.
+target = None
+for e in pre:
+    if isinstance(e, dict) and e.get("matcher") == matcher:
+        target = e
+        break
+
+if target is not None:
+    target.setdefault("hooks", []).append({"type": "command", "command": hook_cmd})
+else:
+    pre.append({"matcher": matcher, "hooks": [{"type": "command", "command": hook_cmd}]})
+
+with open(path, "w", encoding="utf-8") as f:
+    json.dump(cfg, f, indent=2)
+    f.write("\n")
+print("[INFO]   Bodyguard-Matcher (%s) in %s registriert" % (matcher, path))
+REGISTER_PYEOF
+    done
+
+    log_manual "Operator: Default ist WARNUNG (low-false-positive). Hard-Block opt-in via 'BODYGUARD_STRICT=1'."
+    log_manual "Operator: Projekt-eigene Muster in .claude/bodyguard.local.yml ergaenzen (uebersteuert Basis per name, ueberlebt Updates)."
+    log_manual "Operator: Smoke-Test — Test-Secret in einer .py/.js wird abgefangen; sauberer Code laeuft durch (Exit 0)."
+    log_info "BOO-86 done. Idempotent + additiv: zweiter Lauf erzeugt keine Diffs."
+    return 0
+}
+
+# -----------------------------------------------------------------------------
+# BOO-87 — Deterministischer dpo-Kontrollkatalog: Projekt-Overlay + Reports-Dir — Wave X
+# -----------------------------------------------------------------------------
+
+migrate_boo_87() {
+    # BOO-87 — Leichtgewichtige Projekt-Migration fuer den deterministischen dpo-
+    # Kontrollkatalog. Kataloge (dpo/controls/gdpr.yml + ndsg.yml) und Runner
+    # (dpo/scripts/dpo-audit.py) werden MIT dem dpo-Skill (v1.2.0) verteilt und NICHT
+    # pro Projekt gescaffoldet. Diese Funktion legt nur das Projekt-Overlay-Verzeichnis
+    # (.claude/dpo/controls/) und das Reports-Verzeichnis (dpo/reports/) an.
+    # Idempotent + additiv: vorhandene Dateien/Verzeichnisse werden NIE ueberschrieben;
+    # das Kunden-Overlay ueberlebt Framework-Updates.
+    # https://linear.app/owlist/issue/BOO-87
+    log_info "BOO-87: dpo-Kontrollkatalog — Projekt-Overlay (.claude/dpo/controls/) + Reports-Dir (dpo/reports/) anlegen"
+    log_info "BOO-87: dpo control catalog — project overlay (.claude/dpo/controls/) + reports dir (dpo/reports/)"
+
+    local overlay_dir=".claude/dpo/controls"
+    local overlay_readme="$overlay_dir/README.md"
+    local reports_dir="dpo/reports"
+    local reports_keep="$reports_dir/.gitkeep"
+
+    # --- 1. Projekt-Overlay-Verzeichnis .claude/dpo/controls/ ---
+    ensure_dir "$overlay_dir"
+
+    # --- 2. Overlay-README.md (BYO-Overlay erklaeren) ---
+    if [[ -f "$overlay_readme" ]]; then
+        log_skip "$overlay_readme existiert (Kunden-Overlay nicht angetastet)"
+    elif [[ "$DRY_RUN" == "true" ]]; then
+        log_dry "write $overlay_readme (BYO-Overlay-Doku, flaches dpo-Schema)"
+    else
+        cat > "$overlay_readme" <<'OVERLAY_README_EOF'
+# dpo — Projekt-Overlay (Bring Your Own Controls)
+
+Dieses Verzeichnis (`.claude/dpo/controls/`) ist das **Projekt-Overlay** fuer den
+deterministischen dpo-Kontrollkatalog. Hier ergaenzt du **projekt-eigene** Datenschutz-
+Kontrollen, die der Runner `dpo-audit.py` zusaetzlich zu den Framework-Katalogen
+(`dpo/controls/gdpr.yml` + `ndsg.yml`, kommen mit dem dpo-Skill) auswertet.
+
+Dieses Overlay **ueberlebt Framework-Updates** — der Skill-Katalog wird beim Update
+ersetzt, dein Overlay nie.
+
+## Format
+
+Dateien: `*.yml` oder `*.json` in diesem Verzeichnis. Gleiches **flaches Schema** wie
+`dpo/controls/*.yml`. Eine Liste von Kontroll-Eintraegen mit folgenden Feldern:
+
+| Feld        | Pflicht | Beschreibung                                                              |
+|-------------|---------|---------------------------------------------------------------------------|
+| `id`        | ja      | Eindeutige Kontroll-ID (z.B. `OV-001`).                                    |
+| `titel`     | ja      | Kurztitel der Kontrolle.                                                   |
+| `evidenz`   | ja      | Welcher Nachweis belegt die Kontrolle (auditor-ready Evidenz-Beschreibung).|
+| `check_typ` | ja      | Einer von: `file-exists`, `file-contains`, `grep-absent`, `review`.       |
+| `check_arg` | ja*     | Argument zum Check (Pfad bzw. Pfad + Muster). Bei `review` optional/leer.  |
+| `mapsTo`    | nein    | Verweis auf Regulierung/Artikel (z.B. `GDPR Art. 30`, `nDSG Art. 12`).     |
+| `quelle`    | nein    | Herkunft/Begruendung der Kontrolle (Policy, Interne Richtlinie, …).        |
+
+`*` `check_arg` ist Pflicht fuer alle Check-Typen ausser `review`.
+
+### check_typ — Semantik
+
+- `file-exists`  — PASS, wenn die in `check_arg` genannte Datei existiert; sonst GAP.
+- `file-contains`— PASS, wenn die Datei das Muster enthaelt (`check_arg`: `pfad::muster`); sonst GAP.
+- `grep-absent`  — PASS, wenn das Muster **nicht** vorkommt (`check_arg`: `pfad::muster`); sonst GAP.
+- `review`       — immer REVIEW-NEEDED (manuelle Pruefung durch DPO/Operator erforderlich).
+
+## Beispiel (`overlay.yml`)
+
+```yaml
+- id: OV-001
+  titel: Auftragsverarbeitungsvertrag dokumentiert
+  evidenz: docs/privacy/avv-liste.md listet alle Auftragsverarbeiter mit AVV-Status.
+  check_typ: file-exists
+  check_arg: docs/privacy/avv-liste.md
+  mapsTo: GDPR Art. 28
+  quelle: Interne Datenschutz-Richtlinie §4
+
+- id: OV-002
+  titel: Keine Klartext-Personendaten in Logs
+  evidenz: Quellcode enthaelt kein Logging von E-Mail/Name auf INFO-Level.
+  check_typ: grep-absent
+  check_arg: src/::logger.info\(.*email
+  mapsTo: GDPR Art. 5 (1)(f)
+  quelle: Security-Review-Befund 2026
+
+- id: OV-003
+  titel: Loeschkonzept fachlich freigegeben
+  evidenz: DPO bestaetigt Loeschfristen pro Verarbeitungstaetigkeit.
+  check_typ: review
+  mapsTo: GDPR Art. 17
+  quelle: Jaehrliches Datenschutz-Audit
+```
+
+## Audit ausfuehren
+
+Der Runner kommt mit dem dpo-Skill (v1.2.0+), nicht aus diesem Repo:
+
+```bash
+DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py
+```
+
+Er liest die Framework-Kataloge `dpo/controls/*.yml`, ergaenzt dieses Overlay und
+schreibt den Report nach `dpo/reports/`.
+OVERLAY_README_EOF
+        log_info "created $overlay_readme (BOO-87, BYO-Overlay-Doku)"
+    fi
+
+    # --- 3. Reports-Verzeichnis dpo/reports/ (mit .gitkeep) ---
+    ensure_dir "$reports_dir"
+    ensure_file "$reports_keep"
+
+    # --- 4. KEIN Scaffolding von Katalog/Runner/Skill — nur Operator-Hinweis ---
+    log_manual "Operator: Kataloge (dpo/controls/*.yml) + Runner (dpo-audit.py) kommen MIT dem dpo-Skill (v1.2.0) — werden NICHT pro Projekt scaffolded."
+    log_manual "Operator: Audit laeuft via 'DPO_PROJECT_ROOT=. python3 <dpo-skill>/scripts/dpo-audit.py' und nutzt die Framework-Kataloge dpo/controls/*.yml; Report landet in dpo/reports/."
+    log_manual "Operator: Projekt-eigene Kontrollen in .claude/dpo/controls/*.yml ergaenzen (siehe README — flaches Schema, ueberlebt Framework-Updates)."
+
+    log_info "BOO-87 done. Idempotent + additiv: zweiter Lauf erzeugt nur SKIPs, Kunden-Overlay bleibt unberuehrt."
+    return 0
+}
+
+# -----------------------------------------------------------------------------
 # CLI / Argument Parsing
 # -----------------------------------------------------------------------------
 
@@ -3435,6 +4014,8 @@ ALL_ISSUES=(
     BOO-74
     BOO-75 BOO-76 BOO-77
     BOO-79 BOO-80 BOO-81
+    BOO-86
+    BOO-87
 )
 
 print_help() {
